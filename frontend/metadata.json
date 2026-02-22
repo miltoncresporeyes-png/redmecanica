@@ -1,0 +1,8 @@
+
+{
+  "name": "RedMecánica - Confianza Algorítmica",
+  "description": "An on-demand automotive services marketplace for Chile that replaces transactional ambiguity with algorithmic trust. It features dynamic quoting, real-time mechanic tracking, verified reviews, and AI-powered diagnostics.",
+  "requestFramePermissions": [
+    "geolocation"
+  ]
+}

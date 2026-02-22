@@ -1,0 +1,457 @@
+generator client {
+  provider = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x", "windows"]
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String   @default("$2b$10$YourDefaultHashedPasswordHere") // En producción usar bcrypt
+  name      String?
+  role      String   @default("USER") // USER, MECHANIC, ADMIN
+  phone     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  vehicles        Vehicle[]
+  serviceRequests ServiceRequest[]
+  serviceProvider ServiceProvider?
+  notifications   Notification[]
+  conversations   Conversation[]
+  reviews         Review[]
+  jobs            Job[]
+}
+
+model ServiceProvider {
+  id           String   @id @default(uuid())
+  userId       String   @unique
+  user         User     @relation(fields: [userId], references: [id])
+  type         String   @default("MECHANIC") // MECHANIC, WORKSHOP, TOWING, INSURANCE
+  status       String   @default("PENDING") // PENDING, UNDER_REVIEW, APPROVED, REJECTED, SUSPENDED
+  bio          String?
+  rating       Float    @default(0.0)
+  vehicle      String?  // Optional for workshops
+  licensePlate String?  // Optional for workshops
+  latitude     Float?
+  longitude    Float?
+  address      String?
+  commune      String?
+  region       String?
+  phone        String?
+  website      String?
+  paymentMethods String? // JSON or comma-separated
+  specialties  String?  // Comma-separated list of specialties
+  
+  // Campos de validación y seguridad
+  rut          String?  // RUT chileno
+  emailVerified Boolean @default(false)
+  phoneVerified Boolean @default(false)
+  
+  // Documentos de verificación
+  idDocumentUrl      String?  // URL de cédula de identidad
+  certificationUrl   String?  // Certificaciones profesionales
+  backgroundCheckUrl String?  // Certificado de antecedentes
+  insuranceUrl       String?  // Seguro de responsabilidad civil
+  municipalPermitUrl String?  // Permiso municipal (talleres)
+  
+  // Proceso de aprobación
+  submittedAt        DateTime?  // Fecha de envío de documentos
+  reviewedAt         DateTime?  // Fecha de revisión
+  reviewedBy         String?    // Admin que revisó
+  rejectionReason    String?    // Razón de rechazo si aplica
+  
+  // Confianza progresiva
+  completedJobs      Int      @default(0)
+  trustScore         Float    @default(0.0)  // 0-100
+  canAcceptHighValueJobs Boolean @default(false)
+  
+  subscription  Subscription?
+  jobs         Job[]
+  quotes       Quote[]
+  history      ProviderHistory[]
+  categories   ProviderCategory[]
+  zones        ProviderZone[]
+  availability ProviderAvailability[]
+  conversations Conversation[]
+  reviews      Review[]
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Subscription {
+  id              String   @id @default(uuid())
+  providerId      String   @unique
+  provider        ServiceProvider @relation(fields: [providerId], references: [id])
+  plan            String   // MONTHLY, YEARLY
+  status          String   @default("ACTIVE") // ACTIVE, EXPIRED, CANCELLED, PENDING
+  startDate       DateTime @default(now())
+  endDate         DateTime
+  amount          Float
+  currency        String   @default("CLP")
+  lastPaymentDate DateTime @default(now())
+  nextBillingDate DateTime?
+  autoRenew       Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model ProviderHistory {
+  id          String   @id @default(uuid())
+  providerId  String
+  provider    ServiceProvider @relation(fields: [providerId], references: [id])
+  action      String   // ACTIVATION, BLOCK, JOB_COMPLETED, SUBSCRIPTION_RENEWAL, SUBSCRIPTION_EXPIRED
+  description String
+  metadata    String?  // JSON string for extra data
+  createdAt   DateTime @default(now())
+}
+
+model Vehicle {
+  id        String   @id @default(uuid())
+  make      String
+  model     String
+  year      Int
+  licensePlate String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  requests  ServiceRequest[]
+}
+
+// Registro de correos captados durante la preventa/lanzamiento del producto.
+// Se guarda el email para poder notificar cuando el servicio esté disponible
+// y evitar reenviar varias veces el mismo contacto.
+model LaunchLead {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  createdAt DateTime @default(now())
+}
+
+model Service {
+  id          String   @id @default(uuid())
+  name        String
+  description String
+  price       Float    // Simple pricing for now
+  categoryId  String?
+  category    ServiceCategory? @relation(fields: [categoryId], references: [id])
+  requests    ServiceRequest[]
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model ServiceRequest {
+  id                 String   @id @default(uuid())
+  userId             String
+  user               User     @relation(fields: [userId], references: [id])
+  vehicleId          String
+  vehicle            Vehicle  @relation(fields: [vehicleId], references: [id])
+  serviceId          String
+  service            Service  @relation(fields: [serviceId], references: [id])
+  problemDescription String?
+  damagePhoto        String? // URL to photo
+  createdAt          DateTime @default(now())
+  status             String   @default("PENDING") // PENDING, ACCEPTED, REJECTED, CANCELLED
+  
+  job                Job?
+}
+
+model Quote {
+  id                   String   @id @default(uuid())
+  jobId                String
+  job                  Job      @relation("JobQuotes", fields: [jobId], references: [id])
+  providerId           String
+  provider             ServiceProvider @relation(fields: [providerId], references: [id])
+  preliminaryDiagnosis String?
+  serviceItems         String   // JSON string
+  laborCost            Float
+  partsCost            Float
+  totalCost            Float
+  estimatedDuration    Int      // in minutes
+  warranty             String   @default("Sin garantía")
+  paymentMethods       String   @default("CASH")
+  validUntil           DateTime
+  status               String   @default("SENT") // SENT, ACCEPTED, REJECTED
+  respondedAt          DateTime?
+
+  // Inverse relation for selected quote in Job
+  selectedForJob       Job?     @relation("JobSelectedQuote")
+
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+}
+
+model AuditLog {
+  id         String   @id @default(uuid())
+  userId     String?
+  action     String   // e.g., "LOGIN", "CREATE_JOB", "UPDATE_PROFILE"
+  resource   String   // e.g., "User", "Job", "Quote"
+  resourceId String?
+  oldValue   String?
+  newValue   String?
+  ipAddress  String?
+  userAgent  String?
+  createdAt  DateTime @default(now())
+}
+
+model Review {
+  id        String   @id @default(uuid())
+  jobId     String
+  job       Job      @relation(fields: [jobId], references: [id])
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  providerId String
+  provider  ServiceProvider @relation(fields: [providerId], references: [id])
+  
+  // Ratings (1-5)
+  rating           Int
+  qualityScore     Int?
+  professionalismScore Int?
+  punctualityScore Int?
+  priceValueScore  Int?
+  cleanlinessScore  Int?
+  
+  review           String?
+  privateFeedback  String?
+  wouldRecommend   Boolean?
+  
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+model JobEvent {
+  id          String   @id @default(uuid())
+  jobId       String
+  job         Job      @relation(fields: [jobId], references: [id])
+  status      String   
+  description String?
+  metadata    String?  
+  createdAt   DateTime @default(now())
+}
+
+model ServiceCategory {
+  id          String   @id @default(uuid())
+  name        String
+  slug        String   @unique
+  description String?
+  icon        String?  // Icono para UI
+  type        String   // MECHANIC, TOWING, INSURANCE, EMERGENCY
+  isActive    Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  
+  services    Service[]
+  providers   ProviderCategory[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model ProviderCategory {
+  id         String   @id @default(uuid())
+  providerId String
+  provider   ServiceProvider @relation(fields: [providerId], references: [id])
+  categoryId String
+  category   ServiceCategory @relation(fields: [categoryId], references: [id])
+  
+  @@unique([providerId, categoryId])
+}
+
+model Zone {
+  id          String   @id @default(uuid())
+  name        String
+  slug        String   @unique
+  type        String   // REGION, COMMUNE, CUSTOM
+  parentId    String?
+  parent      Zone?    @relation("ZoneHierarchy", fields: [parentId], references: [id])
+  children    Zone[]   @relation("ZoneHierarchy")
+  
+  latitude    Float?
+  longitude   Float?
+  radiusKm    Float?   // Radio de cobertura
+  
+  providers   ProviderZone[]
+  jobs        Job[]    @relation("JobZone")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model ProviderZone {
+  id         String   @id @default(uuid())
+  providerId String
+  provider   ServiceProvider @relation(fields: [providerId], references: [id])
+  zoneId     String
+  zone       Zone     @relation(fields: [zoneId], references: [id])
+  radiusKm   Float?   // Radio específico dentro de la zona
+  
+  @@unique([providerId, zoneId])
+}
+
+model ProviderAvailability {
+  id         String   @id @default(uuid())
+  providerId String
+  provider   ServiceProvider @relation(fields: [providerId], references: [id])
+  dayOfWeek  Int      // 0=Domingo, 1=Lunes, ..., 6=Sábado
+  startTime  String   // HH:mm
+  endTime    String   // HH:mm
+  isActive   Boolean  @default(true)
+  
+  @@unique([providerId, dayOfWeek])
+}
+
+model Conversation {
+  id           String   @id @default(uuid())
+  jobId        String?  @unique // Opcional, relacionado a un job
+  job          Job?     @relation("JobConversation", fields: [jobId], references: [id])
+  customerId   String   // User ID del cliente
+  customer     User     @relation(fields: [customerId], references: [id])
+  providerId   String   // ServiceProvider ID
+  provider     ServiceProvider @relation(fields: [providerId], references: [id])
+  status       String   @default("ACTIVE") // ACTIVE, ARCHIVED
+  lastMessageAt DateTime @default(now())
+  
+  messages     Message[]
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  
+  @@unique([customerId, providerId])
+}
+
+model Message {
+  id             String   @id @default(uuid())
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id])
+  senderId       String   // User ID (puede ser cliente o provider)
+  senderType     String   // CUSTOMER, PROVIDER
+  content        String
+  isRead         Boolean  @default(false)
+  metadata       String?  // JSON para adjuntos, ubicaciones, etc.
+  
+  createdAt      DateTime @default(now())
+}
+
+model Notification {
+  id         String   @id @default(uuid())
+  userId     String   // User ID del destinatario
+  type       String   // JOB_UPDATE, NEW_QUOTE, MESSAGE, PAYMENT, SYSTEM
+  title      String
+  body       String
+  data       String?  // JSON con datos adicionales
+  isRead     Boolean  @default(false)
+  
+  user       User     @relation(fields: [userId], references: [id])
+  
+  createdAt  DateTime @default(now())
+}
+
+model Invoice {
+  id            String   @id @default(uuid())
+  invoiceNumber String   @unique
+  type          String   // SUBSCRIPTION, JOB, REFUND
+  userId        String?  // Cliente (para jobs)
+  providerId    String?  // Proveedor (para suscripciones)
+  
+  subscriptionId String? // Si es de suscripción
+  jobId         String?  // Si es de un job
+  
+  subtotal      Float
+  tax          Float    @default(0)
+  total         Float
+  currency      String   @default("CLP")
+  
+  status        String   @default("PENDING") // PENDING, PAID, CANCELLED, REFUNDED
+  dueDate       DateTime?
+  paidAt        DateTime?
+  
+  items         String   // JSON array de items
+  notes         String?
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model JobLocation {
+  id          String   @id @default(uuid())
+  jobId       String   @unique
+  job         Job      @relation(fields: [jobId], references: [id])
+  
+  // Ubicación de origen (donde está el vehículo)
+  originLat   Float
+  originLng   Float
+  originAddress String?
+  originCommune String?
+  
+  // Ubicación de destino (para grúas - dónde llevar el vehículo)
+  destLat     Float?
+  destLng     Float?
+  destAddress String?
+  destCommune String?
+  
+  // Tracking en tiempo real
+  currentLat  Float?
+  currentLng  Float?
+  updatedAt   DateTime @updatedAt
+}
+
+model Job {
+  id          String   @id @default(uuid())
+  requestId   String   @unique
+  request     ServiceRequest @relation(fields: [requestId], references: [id])
+  customerId  String
+  customer    User     @relation(fields: [customerId], references: [id])
+  providerId  String
+  provider    ServiceProvider @relation(fields: [providerId], references: [id])
+  status      String   @default("SEARCHING") // SEARCHING, QUOTING, COMPARING_QUOTES, CONFIRMED, PROVIDER_EN_ROUTE, PROVIDER_ARRIVED, DIAGNOSING, IN_PROGRESS, WORK_COMPLETED, DELIVERED, REVIEWED, CLOSED, CANCELLED, DISPUTED, REFUNDED
+  startTime   DateTime?
+  endTime     DateTime?
+  etaMinutes  Int?
+  estimatedCost Float?
+
+  // Zona de cobertura
+  zoneId      String?
+  zone        Zone?    @relation("JobZone", fields: [zoneId], references: [id])
+  
+  // Ubicaciones
+  location    JobLocation?
+  
+  // Quoting info
+  quotedAt        DateTime?
+  quotes          Quote[]  @relation("JobQuotes")
+  selectedQuoteId String?  @unique
+  selectedQuote   Quote?   @relation("JobSelectedQuote", fields: [selectedQuoteId], references: [id])
+
+  // Payment info
+  paymentStatus String   @default("PENDING") // PENDING, HELD, RELEASED, REFUNDED
+  
+  // Lifecycle timestamps
+  confirmedAt DateTime?
+  startedAt   DateTime?
+  completedAt DateTime?
+  deliveredAt DateTime?
+  reviewedAt  DateTime?
+  closedAt    DateTime?
+  
+  // Feedback
+  rating      Float?
+  review      String?
+  wouldRecommend Boolean?
+
+  // Cancellation & Dispute
+  cancellationReason String?
+  cancelledBy        String?  // USER, PROVIDER, SYSTEM
+  cancelledAt        DateTime?
+  disputeReason      String?
+  disputeStatus      String?  // OPEN, MEDIATION, RESOLVED
+  refundAmount       Float?
+
+  // Chat
+  conversation   Conversation? @relation("JobConversation")
+  
+  // Reviews
+  reviews      Review[]
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  events      JobEvent[]
+}

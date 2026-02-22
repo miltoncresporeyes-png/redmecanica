@@ -1,0 +1,14 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    
+    # Enable proxy
+    RewriteProxy %{HTTP:Upgrade} websocket://[n FL,NE]
+    RewriteRule ^api/(.*)$ http://127.0.0.1:3010/api/$1 [L,P]
+    
+    # SPA routing
+    RewriteBase /
+    RewriteRule ^index\.html$ - [L]
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule . /index.html [L]
+</IfModule>

@@ -1,0 +1,18 @@
+{
+  "name": "@redmecanica/shared",
+  "version": "1.0.0",
+  "private": true,
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3",
+    "zod": "^3.25.76"
+  },
+  "peerDependencies": {
+    "zod": "^3.23.0"
+  }
+}

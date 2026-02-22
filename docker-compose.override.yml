@@ -1,0 +1,33 @@
+services:
+  postgres:
+    ports:
+      - "5433:5432"
+
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    ports:
+      - "3001:3001"
+    environment:
+      - DATABASE_URL="mysql://u807429923_appuser:Conv5ersationS@127.0.0.1:3306/u807429923_appdb"
+      - PORT=3001
+      - NODE_ENV=development
+    depends_on:
+      - postgres
+
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    volumes:
+      - ./frontend:/app/frontend
+      - ./shared:/app/shared
+      - /app/frontend/node_modules
+      - /app/shared/node_modules
+    ports:
+      - "3011:3011"
+    environment:
+      - VITE_API_URL=http://localhost:3001/api
+    depends_on:
+      - backend

@@ -1,0 +1,32 @@
+User-agent: *
+Allow: /
+
+# Private routes - Do not index
+Disallow: /admin/
+Disallow: /profile/
+Disallow: /provider-dashboard/
+Disallow: /onboarding/
+Disallow: /api/
+
+# Sitemap location
+Sitemap: https://redmecanica.cl/sitemap.xml
+
+# Crawl rate
+Crawl-delay: 10
+
+# Specific bots
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: AhrefsBot
+Allow: /
+
+# Block bad bots
+User-agent: MJ12bot
+Disallow: /
+
+User-agent: SemrushBot
+Disallow: /
