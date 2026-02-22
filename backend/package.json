@@ -8,6 +8,7 @@
   },
   "devDependencies": {
     "@prisma/client": "^5.22.0",
+    "@types/node": "^25.3.0",
     "mysql2": "^3.17.4",
     "prisma": "^5.18.0",
     "tsx": "^4.21.0",
