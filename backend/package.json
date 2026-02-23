@@ -5,7 +5,7 @@
     "start": "node dist/server.js",
     "migrate": "prisma migrate dev",
     "seed": "tsx prisma/seed.ts",
-    "prisma:generate": "prisma generate"
+    "prisma:generate": "prisma generate || true"
   },
   "devDependencies": {
     "@prisma/client": "^5.22.0",
