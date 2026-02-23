@@ -4,11 +4,13 @@ import { Job, ServiceRequest } from '../types';
 const resolveApiUrl = (): string => {
   const envApiUrl = (import.meta.env.VITE_API_URL || '').trim();
 
-  if (typeof window !== 'undefined' && window.location.hostname.endsWith('redmecanica.cl')) {
-    return '/api';
+  // Always use VITE_API_URL if set (works for both local and production)
+  if (envApiUrl) {
+    return envApiUrl;
   }
 
-  return envApiUrl || '/api';
+  // Fallback to relative /api
+  return '/api';
 };
 
 const API_URL = resolveApiUrl().replace(/\/$/, '');
