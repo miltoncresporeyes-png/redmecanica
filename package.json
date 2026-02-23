@@ -11,7 +11,7 @@
     "docker:down": "docker-compose down",
     "docker:build": "docker-compose up -d --build",
     "docker:logs": "docker-compose logs -f",
-    "build": "npm run install:all && npm run build --prefix shared && npm run build --prefix backend && npm run build --prefix frontend && npm run prisma:generate --prefix backend"
+    "build": "npm run install:all && npm run build --prefix shared && cd backend && npm run prisma:generate && npm run build && cd ../frontend && npm run build"
   },
   "devDependencies": {
     "concurrently": "^8.2.2"
