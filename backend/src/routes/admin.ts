@@ -1,6 +1,7 @@
 
 import { Router } from 'express';
 import { prisma } from '../db.js';
+import { Prisma } from '@prisma/client';
 import { requireAuth, requireRole } from '../middlewares/requireAuth.js';
 import { auditLog } from '../lib/audit.js';
 import { AuthRequest } from '../middlewares/requireAuth.js';
@@ -165,9 +166,9 @@ router.get('/users', async (req, res, next) => {
   try {
     const { search, role, page = '1', limit = '50' } = req.query;
 
-    const where: Record<string, unknown> = {};
+    const where: Prisma.UserWhereInput = {};
     if (role && role !== 'ALL') {
-      where.role = String(role);
+      where.role = { equals: String(role) };
     }
     if (search) {
       where.OR = [
@@ -197,14 +198,14 @@ router.get('/providers', async (req, res, next) => {
   try {
     const { status, type, search, page = '1', limit = '20' } = req.query;
     
-    const where: Record<string, unknown> = {};
+    const where: Prisma.ServiceProviderWhereInput = {};
     
     if (status && status !== 'ALL') {
-      where.status = status;
+      where.status = { equals: String(status) };
     }
     
     if (type) {
-      where.type = type;
+      where.type = { equals: String(type) };
     }
     
     if (search) {
@@ -248,7 +249,7 @@ router.get('/providers/:id', async (req, res, next) => {
     const { id } = req.params;
     
     const provider = await prisma.serviceProvider.findUnique({
-      where: { id },
+      where: { id: String(id) },
       include: {
         user: true,
         subscription: true,
@@ -280,7 +281,7 @@ router.patch('/providers/:id', async (req, res, next) => {
     const { status, trustScore, type, bio, commune, region } = req.body;
 
     const provider = await prisma.serviceProvider.update({
-      where: { id },
+      where: { id: String(id) },
       data: {
         ...(status && { status }),
         ...(trustScore !== undefined && { trustScore }),
@@ -296,7 +297,7 @@ router.patch('/providers/:id', async (req, res, next) => {
       userId: req.user?.id,
       action: 'UPDATE_PROVIDER',
       resource: 'ServiceProvider',
-      resourceId: id,
+      resourceId: String(id),
       newValue: JSON.stringify(req.body),
       ipAddress: req.ip,
       userAgent: String(req.headers['user-agent'] || 'unknown')
@@ -315,13 +316,13 @@ router.post('/providers/:id/suspend', async (req, res, next) => {
     const { reason } = req.body;
 
     const provider = await prisma.serviceProvider.update({
-      where: { id },
+      where: { id: String(id) },
       data: { status: 'SUSPENDED' }
     });
 
     await prisma.providerHistory.create({
       data: {
-        providerId: id,
+        providerId: String(id),
         action: 'SUSPENDED',
         description: reason || 'Suspendido por administrador',
         metadata: JSON.stringify({ adminId: req.user?.id })
@@ -332,8 +333,8 @@ router.post('/providers/:id/suspend', async (req, res, next) => {
       userId: req.user?.id,
       action: 'SUSPEND_PROVIDER',
       resource: 'ServiceProvider',
-      resourceId: id,
-      newValue: reason,
+      resourceId: String(id),
+      newValue: reason || 'Unknown reason',
       ipAddress: req.ip,
       userAgent: String(req.headers['user-agent'] || 'unknown')
     });
@@ -350,13 +351,13 @@ router.post('/providers/:id/reactivate', async (req, res, next) => {
     const { id } = req.params;
 
     const provider = await prisma.serviceProvider.update({
-      where: { id },
+      where: { id: String(id) },
       data: { status: 'APPROVED' }
     });
 
     await prisma.providerHistory.create({
       data: {
-        providerId: id,
+        providerId: String(id),
         action: 'REACTIVATED',
         description: 'Reactivado por administrador',
         metadata: JSON.stringify({ adminId: req.user?.id })
@@ -374,9 +375,9 @@ router.get('/subscriptions', async (req, res, next) => {
   try {
     const { status, plan, page = '1', limit = '20' } = req.query;
     
-    const where: Record<string, unknown> = {};
-    if (status && status !== 'ALL') where.status = status;
-    if (plan) where.plan = plan;
+    const where: Prisma.SubscriptionWhereInput = {};
+    if (status && status !== 'ALL') where.status = { equals: String(status) };
+    if (plan) where.plan = { equals: String(plan) };
 
     const [subscriptions, total] = await Promise.all([
       prisma.subscription.findMany({
@@ -441,10 +442,10 @@ router.get('/jobs', async (req, res, next) => {
   try {
     const { status, providerId, userId, page = '1', limit = '20' } = req.query;
     
-    const where: Record<string, unknown> = {};
-    if (status && status !== 'ALL') where.status = status;
-    if (providerId) where.providerId = String(providerId);
-    if (userId) where.request = { userId: String(userId) };
+    const where: Prisma.JobWhereInput = {};
+    if (status && status !== 'ALL') where.status = { equals: String(status) };
+    if (providerId) where.providerId = { equals: String(providerId) };
+    if (userId) where.request = { is: { userId: String(userId) } };
 
     const [jobs, total] = await Promise.all([
       prisma.job.findMany({
