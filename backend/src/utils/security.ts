@@ -108,7 +108,7 @@ export const providerUpdateSchema = z.object({
   specialties: z.string()
     .optional()
     .transform(val => val ? sanitizeString(val) : undefined)
-    .refine(val => !val || val.length <= 500, 'Especialidades muy largas'),
+    .refine((val: string | undefined) => !val || val.length <= 500, 'Especialidades muy largas'),
   vehicle: z.string()
     .optional()
     .max(100, 'Vehículo muy largo'),
