@@ -63,7 +63,7 @@ router.post('/', async (req, res) => {
     res.status(201).json(zone);
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return res.status(400).json({ errors: error.errors });
+      return res.status(400).json({ errors: (error as any).issues });
     }
     console.error('Error creating zone:', error);
     res.status(500).json({ error: 'Failed to create zone' });
@@ -82,7 +82,7 @@ router.patch('/:id', async (req, res) => {
     res.json(zone);
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return res.status(400).json({ errors: error.errors });
+      return res.status(400).json({ errors: (error as any).issues });
     }
     console.error('Error updating zone:', error);
     res.status(500).json({ error: 'Failed to update zone' });
@@ -113,7 +113,7 @@ router.post('/assign-provider', async (req, res) => {
     res.status(201).json(providerZone);
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return res.status(400).json({ errors: error.errors });
+      return res.status(400).json({ errors: (error as any).issues });
     }
     console.error('Error assigning provider to zone:', error);
     res.status(500).json({ error: 'Failed to assign provider to zone' });

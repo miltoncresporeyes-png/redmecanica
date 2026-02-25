@@ -10,6 +10,8 @@ export type ConversationDTO = z.infer<typeof conversationSchema>;
 
 export const messageSchema = z.object({
   conversationId: z.string().uuid('ID de conversación inválido'),
+  senderId: z.string().uuid('ID de remitente inválido'),
+  senderType: z.enum(['CUSTOMER', 'PROVIDER']),
   content: z.string().min(1, 'El mensaje no puede estar vacío').max(2000, 'Mensaje demasiado largo'),
   metadata: z.record(z.unknown()).optional(),
 });

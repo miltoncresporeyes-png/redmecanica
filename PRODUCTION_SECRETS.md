@@ -52,7 +52,7 @@ PORT=3010
 NODE_ENV=production
 
 # Database
-DATABASE_URL="postgresql://redmecanica_user:TuPasswordSeguro123@localhost:5432/redmecanica?schema=public"
+DATABASE_URL="postgresql://redmecanica:LLZMPV9yO9BoT1UwiLqy1qTVxR8y4Bhr@dpg-d6dq873h46gs73d5jq20-a/redmecanica"
 
 # JWT Secrets - REEMPLAZAR CON LOS GENERADOS
 ACCESS_TOKEN_SECRET="a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6q7r8s9t0u1v2w3x4y5z6a7b8c9d0e1f2"

@@ -96,7 +96,7 @@ VITE_GOOGLE_AI_API_KEY=tu_key_aqui
 ### Backend (`.env` en servidor)
 
 ```env
-DATABASE_URL="postgresql://user:pass@localhost:5432/redmecanica"
+DATABASE_URL=postgresql://redmecanica:LLZMPV9yO9BoT1UwiLqy1qTVxR8y4Bhr@dpg-d6dq873h46gs73d5jq20-a/redmecanica
 ACCESS_TOKEN_SECRET="secret_64_chars"
 REFRESH_TOKEN_SECRET="otro_secret_64_chars"
 FRONTEND_URL="https://tudominio.com"

@@ -119,6 +119,10 @@ model Vehicle {
   userId    String
   user      User     @relation(fields: [userId], references: [id])
   requests  ServiceRequest[]
+
+  // Campos de trazabilidad recomendados
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
 }
 
 // Registro de correos captados durante la preventa/lanzamiento del producto.

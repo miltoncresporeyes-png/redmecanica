@@ -1,0 +1,28 @@
+src/routes/admin.ts(297,19): error TS2339: Property 'user' does not exist on type 'Request<{ id: string; }, any, any, ParsedQs, Record<string, any>>'.
+src/routes/admin.ts(328,49): error TS2339: Property 'user' does not exist on type 'Request<{ id: string; }, any, any, ParsedQs, Record<string, any>>'.
+src/routes/admin.ts(333,19): error TS2339: Property 'user' does not exist on type 'Request<{ id: string; }, any, any, ParsedQs, Record<string, any>>'.
+src/routes/admin.ts(363,49): error TS2339: Property 'user' does not exist on type 'Request<{ id: string; }, any, any, ParsedQs, Record<string, any>>'.
+src/routes/availability.ts(33,51): error TS2339: Property 'errors' does not exist on type 'ZodError<unknown>'.
+src/routes/availability.ts(66,51): error TS2339: Property 'errors' does not exist on type 'ZodError<unknown>'.
+src/routes/availability.ts(85,51): error TS2339: Property 'errors' does not exist on type 'ZodError<unknown>'.
+src/routes/categories.ts(57,51): error TS2339: Property 'errors' does not exist on type 'ZodError<unknown>'.
+src/routes/categories.ts(76,51): error TS2339: Property 'errors' does not exist on type 'ZodError<unknown>'.
+src/routes/conversations.ts(81,51): error TS2339: Property 'errors' does not exist on type 'ZodError<unknown>'.
+src/routes/conversations.ts(119,24): error TS2339: Property 'senderId' does not exist on type '{ conversationId: string; content: string; metadata?: Record<string, unknown>; }'.
+src/routes/conversations.ts(120,26): error TS2339: Property 'senderType' does not exist on type '{ conversationId: string; content: string; metadata?: Record<string, unknown>; }'.
+src/routes/conversations.ts(156,51): error TS2339: Property 'errors' does not exist on type 'ZodError<unknown>'.
+src/routes/geolocation.ts(72,51): error TS2339: Property 'errors' does not exist on type 'ZodError<unknown>'.
+src/routes/jobs.ts(46,94): error TS2353: Object literal may only specify known properties, and 'createdAt' does not exist in type 'VehicleOrderByWithRelationInput | VehicleOrderByWithRelationInput[]'.
+src/routes/notifications.ts(68,51): error TS2339: Property 'errors' does not exist on type 'ZodError<unknown>'.
+src/routes/notifications.ts(87,51): error TS2339: Property 'errors' does not exist on type 'ZodError<unknown>'.
+src/routes/subscriptions.ts(159,51): error TS2339: Property 'errors' does not exist on type 'ZodError<unknown>'.
+src/routes/subscriptions.ts(171,59): error TS2345: Argument of type '{ where: { id: string; }; include: { provider: true; }; }' is not assignable to parameter of type '{ select?: SubscriptionSelect<DefaultArgs>; include?: SubscriptionInclude<DefaultArgs>; data: (Without<SubscriptionUpdateInput, SubscriptionUncheckedUpdateInput> & SubscriptionUncheckedUpdateInput) | (Without<...> & SubscriptionUpdateInput); where: SubscriptionWhereUniqueInput; }'.
+  Property 'data' is missing in type '{ where: { id: string; }; include: { provider: true; }; }' but required in type '{ select?: SubscriptionSelect<DefaultArgs>; include?: SubscriptionInclude<DefaultArgs>; data: (Without<SubscriptionUpdateInput, SubscriptionUncheckedUpdateInput> & SubscriptionUncheckedUpdateInput) | (Without<...> & SubscriptionUpdateInput); where: SubscriptionWhereUniqueInput; }'.
+src/routes/subscriptions.ts(235,51): error TS2339: Property 'errors' does not exist on type 'ZodError<unknown>'.
+src/routes/zones.ts(66,51): error TS2339: Property 'errors' does not exist on type 'ZodError<unknown>'.
+src/routes/zones.ts(85,51): error TS2339: Property 'errors' does not exist on type 'ZodError<unknown>'.
+src/routes/zones.ts(116,51): error TS2339: Property 'errors' does not exist on type 'ZodError<unknown>'.
+src/utils/security.ts(82,6): error TS2339: Property 'max' does not exist on type 'ZodOptional<ZodString>'.
+src/utils/security.ts(104,6): error TS2339: Property 'max' does not exist on type 'ZodOptional<ZodString>'.
+src/utils/security.ts(107,6): error TS2339: Property 'max' does not exist on type 'ZodOptional<ZodString>'.
+src/utils/security.ts(114,6): error TS2339: Property 'max' does not exist on type 'ZodOptional<ZodString>'.

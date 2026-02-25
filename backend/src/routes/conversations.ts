@@ -78,7 +78,7 @@ router.post('/', async (req, res) => {
     res.status(201).json(conversation);
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return res.status(400).json({ errors: error.errors });
+      return res.status(400).json({ errors: (error as any).issues });
     }
     console.error('Error creating conversation:', error);
     res.status(500).json({ error: 'Failed to create conversation' });
@@ -153,7 +153,7 @@ router.post('/:id/messages', async (req, res) => {
     res.status(201).json(message);
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return res.status(400).json({ errors: error.errors });
+      return res.status(400).json({ errors: (error as any).issues });
     }
     console.error('Error creating message:', error);
     res.status(500).json({ error: 'Failed to create message' });

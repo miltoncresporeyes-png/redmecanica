@@ -172,8 +172,8 @@ router.get('/users', async (req, res, next) => {
     }
     if (search) {
       where.OR = [
-        { name: { contains: String(search), mode: 'insensitive' } },
-        { email: { contains: String(search), mode: 'insensitive' } }
+        { name: { contains: String(search) } },
+        { email: { contains: String(search) } }
       ];
     }
 
@@ -210,10 +210,10 @@ router.get('/providers', async (req, res, next) => {
     
     if (search) {
       where.OR = [
-        { user: { name: { contains: String(search), mode: 'insensitive' } } },
-        { user: { email: { contains: String(search), mode: 'insensitive' } } },
-        { rut: { contains: String(search), mode: 'insensitive' } },
-        { commune: { contains: String(search), mode: 'insensitive' } }
+        { user: { name: { contains: String(search) } } },
+        { user: { email: { contains: String(search) } } },
+        { rut: { contains: String(search) } },
+        { commune: { contains: String(search) } }
       ];
     }
 

@@ -54,7 +54,7 @@ router.post('/', async (req, res) => {
     res.status(201).json(category);
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return res.status(400).json({ errors: error.errors });
+      return res.status(400).json({ errors: (error as any).issues });
     }
     console.error('Error creating category:', error);
     res.status(500).json({ error: 'Failed to create category' });
@@ -73,7 +73,7 @@ router.patch('/:id', async (req, res) => {
     res.json(category);
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return res.status(400).json({ errors: error.errors });
+      return res.status(400).json({ errors: (error as any).issues });
     }
     console.error('Error updating category:', error);
     res.status(500).json({ error: 'Failed to update category' });

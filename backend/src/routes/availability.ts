@@ -30,7 +30,7 @@ router.post('/', async (req, res) => {
     res.status(201).json(availability);
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return res.status(400).json({ errors: error.errors });
+      return res.status(400).json({ errors: (error as any).issues });
     }
     console.error('Error creating availability:', error);
     res.status(500).json({ error: 'Failed to create availability' });
@@ -63,7 +63,7 @@ router.post('/bulk', async (req, res) => {
     res.json(allAvailability);
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return res.status(400).json({ errors: error.errors });
+      return res.status(400).json({ errors: (error as any).issues });
     }
     console.error('Error creating bulk availability:', error);
     res.status(500).json({ error: 'Failed to create availability schedule' });
@@ -82,7 +82,7 @@ router.patch('/:id', async (req, res) => {
     res.json(availability);
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return res.status(400).json({ errors: error.errors });
+      return res.status(400).json({ errors: (error as any).issues });
     }
     console.error('Error updating availability:', error);
     res.status(500).json({ error: 'Failed to update availability' });

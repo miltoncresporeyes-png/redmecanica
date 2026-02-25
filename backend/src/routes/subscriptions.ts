@@ -156,7 +156,7 @@ router.post('/', async (req, res) => {
     });
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return res.status(400).json({ errors: error.errors });
+      return res.status(400).json({ errors: (error as any).issues });
     }
     console.error('Error creating subscription:', error);
     res.status(500).json({ error: 'Failed to create subscription' });
@@ -168,8 +168,8 @@ router.patch('/:id', async (req, res) => {
     const { id } = req.params;
     const data = updateSubscriptionSchema.parse(req.body);
 
-    const subscription = await prisma.subscription.update({
-      where: { id },
+    const subscription = await prisma.subscription.findUnique({
+      where: { id: String(id) },
       include: { provider: true }
     });
 
@@ -187,15 +187,20 @@ router.patch('/:id', async (req, res) => {
         newEndDate.setFullYear(newEndDate.getFullYear() + 1);
       }
 
-      await prisma.subscription.update({
-        where: { id },
-        data: {
-          plan: data.plan,
-          amount: planDetails.price,
-          endDate: newEndDate,
-          nextBillingDate: data.plan === 'MONTHLY' ? newEndDate : undefined,
-        }
-      });
+    const updatedSubscription = await prisma.subscription.update({
+      where: { id: id }, // Asegúrate de que 'id' esté definido
+      data: {
+        plan: data.plan,
+        amount: planDetails.price,
+        endDate: newEndDate,
+      // En Prisma, si quieres "limpiar" un campo opcional, usa null en lugar de undefined
+     nextBillingDate: data.plan === 'MONTHLY' ? newEndDate : null, 
+   },
+  // Agrega esto si necesitas los datos del proveedor en la respuesta
+      include: { 
+        provider: true 
+   }
+  });
 
       await prisma.providerHistory.create({
         data: {
@@ -232,7 +237,7 @@ router.patch('/:id', async (req, res) => {
     res.json(updated);
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return res.status(400).json({ errors: error.errors });
+      return res.status(400).json({ errors: (error as any).issues });
     }
     console.error('Error updating subscription:', error);
     res.status(500).json({ error: 'Failed to update subscription' });

@@ -20,7 +20,7 @@ PORT=3010
 NODE_ENV=development
 
 # Database (PostgreSQL) - UPDATE FOR PRODUCTION
-DATABASE_URL="postgresql://postgres:password@localhost:5432/redmecanica"
+DATABASE_URL="ppostgresql://redmecanica:LLZMPV9yO9BoT1UwiLqy1qTVxR8y4Bhr@dpg-d6dq873h46gs73d5jq20-a/redmecanica"
 
 # JWT Secrets - CHANGE FOR PRODUCTION
 ACCESS_TOKEN_SECRET="dev_access_secret_change_in_production"
@@ -47,7 +47,7 @@ PORT=3010
 NODE_ENV=development
 
 # Database (PostgreSQL) - UPDATE FOR PRODUCTION
-DATABASE_URL="postgresql://postgres:password@localhost:5432/redmecanica"
+DATABASE_URL="postgresql://redmecanica:LLZMPV9yO9BoT1UwiLqy1qTVxR8y4Bhr@dpg-d6dq873h46gs73d5jq20-a/redmecanica"
 
 # JWT Secrets - CHANGE FOR PRODUCTION
 ACCESS_TOKEN_SECRET="dev_access_secret_change_in_production"

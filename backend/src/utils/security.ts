@@ -78,8 +78,8 @@ export const quoteCreateSchema = z.object({
     .min(1, 'Duración mínima 1 minuto')
     .max(1440, 'Duración máxima 24 horas'),
   warranty: z.string()
-    .optional()
     .max(200, 'Garantía muy larga')
+    .optional()
     .transform(val => val ? sanitizeString(val) : undefined),
   serviceItems: z.array(z.object({
     descripcion: z.string().max(200),
@@ -101,17 +101,17 @@ export const providerUpdateSchema = z.object({
     .refine(val => !val || val.length <= 200, 'Dirección muy larga'),
   commune: z.string()
     .optional()
-    .max(100, 'Comuna muy larga'),
+    .refine(val => !val || val.length <= 100, 'Comuna muy larga'),
   region: z.string()
     .optional()
-    .max(100, 'Región muy larga'),
+    .refine(val => !val || val.length <= 100, 'Región muy larga'),
   specialties: z.string()
     .optional()
     .transform(val => val ? sanitizeString(val) : undefined)
     .refine((val: string | undefined) => !val || val.length <= 500, 'Especialidades muy largas'),
   vehicle: z.string()
     .optional()
-    .max(100, 'Vehículo muy largo'),
+    .refine(val => !val || val.length <= 100, 'Vehículo muy largo'),
   licensePlate: z.string()
     .optional()
     .transform(val => val ? val.toUpperCase().replace(/[^A-Z0-9]/g, '') : undefined)

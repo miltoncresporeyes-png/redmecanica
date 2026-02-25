@@ -24,7 +24,7 @@ router.get('/:id', async (req, res) => {
               }
             }
           },
-          orderBy: { createdAt: 'desc' }
+            orderBy: [{ createdAt: 'desc' }]
         }
       }
     });
@@ -57,7 +57,7 @@ router.put('/:id', async (req, res) => {
                 vehicle: true,
                 job: { include: { provider: { include: { user: true } } } }
             },
-            orderBy: { createdAt: 'desc' }
+              orderBy: [{ createdAt: 'desc' }]
         }
       }
     });

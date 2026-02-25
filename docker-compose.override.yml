@@ -10,7 +10,7 @@ services:
     ports:
       - "3001:3001"
     environment:
-      - DATABASE_URL="mysql://u807429923_appuser:Conv5ersationS@127.0.0.1:3306/u807429923_appdb"
+      - postgresql://redmecanica:LLZMPV9yO9BoT1UwiLqy1qTVxR8y4Bhr@dpg-d6dq873h46gs73d5jq20-a/redmecanica
       - PORT=3001
       - NODE_ENV=development
     depends_on:

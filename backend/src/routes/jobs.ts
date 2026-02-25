@@ -174,7 +174,7 @@ router.get('/:id', requireAuth, async (req: AuthRequest, res, next) => {
         request: { include: { service: true, vehicle: true } },
         provider: { include: { user: true } },
         // @ts-ignore
-        events: { orderBy: { createdAt: 'desc' } }
+        events: { orderBy: [{ createdAt: 'desc' }] }
       }
     });
     

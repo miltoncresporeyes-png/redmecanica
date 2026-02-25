@@ -17,7 +17,7 @@ export const validate = (schema: any, source: ValidationSource = 'body') => {
       next();
     } catch (error) {
       if (error instanceof ZodError) {
-        const message = error.issues.map((e) => `${e.path.join('.')}: ${e.message}`).join(', ');
+        const message = (error as any).issues.map((e: any) => `${e.path.join('.')}: ${e.message}`).join(', ');
         next(new BadRequestError(message));
       } else {
         next(error);

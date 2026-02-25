@@ -65,7 +65,7 @@ router.post('/', async (req, res) => {
     res.status(201).json(notification);
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return res.status(400).json({ errors: error.errors });
+      return res.status(400).json({ errors: (error as any).issues });
     }
     console.error('Error creating notification:', error);
     res.status(500).json({ error: 'Failed to create notification' });
@@ -84,7 +84,7 @@ router.post('/mark-read', async (req, res) => {
     res.json(notification);
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return res.status(400).json({ errors: error.errors });
+      return res.status(400).json({ errors: (error as any).issues });
     }
     console.error('Error marking notification as read:', error);
     res.status(500).json({ error: 'Failed to mark notification as read' });
