@@ -49,7 +49,6 @@ services:
   - type: web
     name: redmecanica-frontend
     runtime: static
-    region: oregon
     plan: free
     rootDir: .
     buildCommand: npm install && npm run build
