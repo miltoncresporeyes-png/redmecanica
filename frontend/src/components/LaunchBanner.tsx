@@ -10,8 +10,8 @@ const LaunchBanner: React.FC = () => {
   const showSuccess = useSuccessToast();
   const showError = useErrorToast();
 
-  // Fecha de lanzamiento: 24 de febrero de 2026 a las 10:43
-  const targetDate = new Date('2026-02-24T10:43:00').getTime();
+  // 2 días para el descuento desde ahora
+  const targetDate = new Date().getTime() + (2 * 24 * 60 * 60 * 1000);
   
   const [timeLeft, setTimeLeft] = useState({
     days: 0,
@@ -74,7 +74,7 @@ const LaunchBanner: React.FC = () => {
           
           {/* Lado izquierdo: Contador */}
           <div className="bg-gradient-to-br from-blue-600 to-indigo-700 p-8 text-white text-center md:w-1/3 flex flex-col justify-center min-h-[180px]">
-            <p className="text-xs font-black uppercase tracking-[0.2em] mb-4 opacity-80">Lanzamiento en</p>
+            <p className="text-xs font-black uppercase tracking-[0.2em] mb-4 opacity-80">Oferta válida en</p>
             <div className="flex justify-center gap-4">
               <div className="flex flex-col">
                 <span className="text-3xl font-black">{timeLeft.days}</span>
@@ -108,11 +108,11 @@ const LaunchBanner: React.FC = () => {
             </button>
 
             <div className="mb-6">
-              <h3 className="text-xl font-bold text-white mb-2 leading-tight">
-                ¡La revolución automotriz llega a Chile! 🇨🇱
+<h3 className="text-xl font-bold text-white mb-2 leading-tight">
+                ¡Últimos 2 días! 🇨🇱
               </h3>
               <p className="text-slate-400 text-sm leading-relaxed">
-                Estamos afinando los últimos detalles para brindarte el mejor servicio. 
+                ¡No te quedes fuera! 
                 <span className="text-blue-400 font-bold ml-1">Regístrate ahora</span> y obtén un <span className="text-white font-bold">40% de descuento</span> en tu primer servicio garantizado.
               </p>
             </div>
