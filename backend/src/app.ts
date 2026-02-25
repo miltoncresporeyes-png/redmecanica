@@ -67,6 +67,10 @@ app.get('/', (_req, res) => {
   res.send('RedMecanica Backend Running');
 });
 
+app.get('/api/health', (_req, res) => {
+  res.json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
 // Mount Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/jobs', jobsRoutes);

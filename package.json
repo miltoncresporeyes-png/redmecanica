@@ -7,9 +7,12 @@
     "frontend"
   ],
   "scripts": {
+    "build": "npm run build -w shared && npm run build -w frontend",
     "build:api": "npm run build -w shared && npm run prisma:generate -w backend && npm run build -w backend",
     "build:frontend": "npm run build -w shared && npm run build -w frontend",
+    "build:backend": "npm run build -w shared && npm run prisma:generate -w backend && npm run build -w backend",
     "install:all": "npm install",
-    "start": "npm start -w backend"
+    "start": "npm start -w backend",
+    "start:backend": "npm start -w backend"
   }
 }

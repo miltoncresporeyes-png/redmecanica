@@ -1,0 +1,71 @@
+services:
+  # ─────────────────────────────────────────────
+  # BACKEND — Web Service (Node.js + Express)
+  # ─────────────────────────────────────────────
+  - type: web
+    name: redmecanica-api
+    runtime: node
+    region: oregon
+    plan: free
+    rootDir: .
+    buildCommand: npm install && npm run build:backend
+    startCommand: npm run start:backend
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      # ⚠️ Configura estos en el Dashboard de Render (Environment → Secret Files)
+      - key: DATABASE_URL
+        sync: false # lo ingresas manualmente en el panel de Render
+      - key: ACCESS_TOKEN_SECRET
+        sync: false
+      - key: REFRESH_TOKEN_SECRET
+        sync: false
+      - key: FRONTEND_URL
+        value: https://redmecanica.cl,https://www.redmecanica.cl
+      # Opcional — Email / Webpay / Maps
+      - key: SMTP_HOST
+        sync: false
+      - key: SMTP_PORT
+        sync: false
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASS
+        sync: false
+      - key: WEBPAY_COMMERCE_CODE
+        sync: false
+      - key: WEBPAY_API_KEY
+        sync: false
+      - key: WEBPAY_ENV
+        value: production
+      - key: MAPS_API_KEY
+        sync: false
+
+  # ─────────────────────────────────────────────
+  # FRONTEND — Static Site (React + Vite)
+  # ─────────────────────────────────────────────
+  - type: web
+    name: redmecanica-frontend
+    runtime: static
+    region: oregon
+    plan: free
+    rootDir: .
+    buildCommand: npm install && npm run build
+    staticPublishPath: frontend/dist
+    headers:
+      - path: /*
+        name: Cache-Control
+        value: no-cache
+    routes:
+      # SPA fallback — todas las rutas van a index.html
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      - key: VITE_API_URL
+        # ⚠️ Cambia esta URL cuando tengas el URL del backend de Render
+        value: https://redmecanica-api.onrender.com/api
+      - key: VITE_GOOGLE_AI_API_KEY
+        sync: false
