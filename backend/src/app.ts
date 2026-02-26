@@ -33,6 +33,7 @@ const app = express();
 const allowedOrigins = new Set(config.cors.origin.map((origin) => origin.replace(/\/$/, '')));
 const corsOptions: CorsOptions = {
   origin: (origin, callback) => {
+    // Allow requests with no origin (like mobile apps or curl requests)
     if (!origin) {
       callback(null, true);
       return;
@@ -41,6 +42,12 @@ const corsOptions: CorsOptions = {
     const normalizedOrigin = origin.replace(/\/$/, '');
 
     if (allowedOrigins.has(normalizedOrigin)) {
+      callback(null, true);
+      return;
+    }
+
+    // In production, allow all for now to debug
+    if (process.env.NODE_ENV === 'production') {
       callback(null, true);
       return;
     }
