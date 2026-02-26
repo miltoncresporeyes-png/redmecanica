@@ -98,7 +98,7 @@ router.post('/create', async (req, res) => {
 
 router.post('/confirm', async (req, res) => {
   try {
-    const { jobId, token, paymentMethod } = req.body;
+    const { jobId, subscriptionId, token, paymentMethod } = req.body;
 
     if (paymentMethod === 'webpay' && token) {
       const commitResult = await webpayService.commitTransaction(token);
@@ -111,6 +111,66 @@ router.post('/confirm', async (req, res) => {
         });
       }
 
+      // 1. Caso Suscripción
+      if (subscriptionId) {
+        const subscription = await prisma.subscription.update({
+          where: { id: subscriptionId },
+          data: {
+            status: 'ACTIVE',
+            lastPaymentDate: new Date(),
+          }
+        });
+
+        await prisma.providerHistory.create({
+          data: {
+            providerId: subscription.providerId,
+            action: 'SUBSCRIPTION_ACTIVATED',
+            description: 'Suscripción activada por pago Webpay exitoso',
+          }
+        });
+
+        return res.json({
+          message: 'Suscripción pagada y activada',
+          subscription,
+          transaction: {
+            authorizationCode: commitResult.authorizationCode,
+            cardNumber: commitResult.cardDetail.card_number,
+            amount: commitResult.amount
+          }
+        });
+      }
+
+      // 2. Caso Job
+      if (jobId) {
+        const job = await prisma.job.update({
+          where: { id: jobId },
+          data: {
+            paymentStatus: 'HELD',
+            status: 'CONFIRMED'
+          }
+        });
+
+        return res.json({
+          message: 'Pago confirmado y retenido en escrow',
+          job,
+          transaction: {
+            authorizationCode: commitResult.authorizationCode,
+            cardNumber: commitResult.cardDetail.card_number,
+            amount: commitResult.amount
+          },
+          escrow: {
+            amount: commitResult.amount,
+            status: 'HELD',
+            releaseCondition: 'Cliente debe aprobar el trabajo completado'
+          }
+        });
+      }
+
+      return res.status(400).json({ error: 'Falta identificador (jobId o subscriptionId)' });
+    }
+
+    // Flujo normal sin Webpay (Solo Job por ahora para simplificar)
+    if (jobId) {
       const job = await prisma.job.update({
         where: { id: jobId },
         data: {
@@ -122,36 +182,14 @@ router.post('/confirm', async (req, res) => {
       return res.json({
         message: 'Pago confirmado y retenido en escrow',
         job,
-        transaction: {
-          authorizationCode: commitResult.authorizationCode,
-          cardNumber: commitResult.cardDetail.card_number,
-          amount: commitResult.amount
-        },
         escrow: {
-          amount: commitResult.amount,
+          amount: req.body.amount,
           status: 'HELD',
           releaseCondition: 'Cliente debe aprobar el trabajo completado'
         }
       });
     }
 
-    const job = await prisma.job.update({
-      where: { id: jobId },
-      data: {
-        paymentStatus: 'HELD',
-        status: 'CONFIRMED'
-      }
-    });
-
-    res.json({
-      message: 'Pago confirmado y retenido en escrow',
-      job,
-      escrow: {
-        amount: req.body.amount,
-        status: 'HELD',
-        releaseCondition: 'Cliente debe aprobar el trabajo completado'
-      }
-    });
   } catch (error) {
     console.error('Error confirming payment:', error);
     res.status(500).json({ error: 'Error al confirmar pago' });

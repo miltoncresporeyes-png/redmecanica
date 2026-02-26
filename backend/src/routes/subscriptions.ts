@@ -1,8 +1,12 @@
 import { Router } from 'express';
 import { prisma } from '../db.js';
 import { z } from 'zod';
+import { webpayService } from '../services/webpay.js';
 
 const router = Router();
+
+const WEBPAY_RETURN_URL = process.env.WEBPAY_RETURN_URL || 'https://redmecanica.cl/payment/return';
+const WEBPAY_FINAL_URL = process.env.WEBPAY_FINAL_URL || 'https://redmecanica.cl/payment/final';
 
 export const SUBSCRIPTION_PLANS = {
   MONTHLY: {
@@ -114,7 +118,13 @@ router.post('/', async (req, res) => {
     });
 
     if (existingSubscription) {
-      return res.status(400).json({ error: 'Provider already has a subscription' });
+      // If pending, they might be retrying payment. Delete and recreate or just fail? We will fail to keep it simple, or update it.
+      // For now we allow them to recreate if it's PENDING. We just delete the old one.
+      if (existingSubscription.status === 'PENDING') {
+         await prisma.subscription.delete({ where: { providerId: data.providerId } });
+      } else {
+         return res.status(400).json({ error: 'Provider already has an active subscription' });
+      }
     }
 
     const startDate = new Date();
@@ -149,10 +159,43 @@ router.post('/', async (req, res) => {
       }
     });
 
+    // WEBPAY INTEGRATION
+    if (data.paymentMethod === 'WEBPAY') {
+      try {
+        const sessionId = `sub_${subscription.id.substring(0, 10)}`;
+        const orderId = `sub_${Date.now()}`;
+        
+        const webpayData = await webpayService.createTransaction(
+          orderId,
+          sessionId,
+          planDetails.price,
+          `${WEBPAY_RETURN_URL}?subscriptionId=${subscription.id}`,
+          `${WEBPAY_FINAL_URL}?subscriptionId=${subscription.id}`
+        );
+        
+        return res.status(201).json({
+          subscription,
+          planDetails,
+          paymentRequired: true,
+          payment: {
+            method: 'WEBPAY',
+            token: webpayData.token,
+            url: webpayData.url
+          }
+        });
+      } catch (err) {
+        console.error('Webpay error creating subscription:', err);
+        return res.status(500).json({ error: 'Failed to initialize Webpay transaction' });
+      }
+    }
+
     res.status(201).json({
       subscription,
       planDetails,
-      paymentRequired: true,
+      paymentRequired: data.paymentMethod === 'TRANSFER',
+      payment: {
+        method: data.paymentMethod
+      }
     });
   } catch (error) {
     if (error instanceof z.ZodError) {
