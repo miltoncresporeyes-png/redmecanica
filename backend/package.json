@@ -4,27 +4,15 @@
     "dev": "tsx watch src/server.ts",
     "build": "npx prisma generate && tsc -p tsconfig.json --skipLibCheck",
     "postinstall": "npx prisma generate",
-    "start": "npx prisma db push && node dist/server.js",
+    "start": "node dist/server.js",
     "migrate": "npx prisma migrate dev",
     "seed": "tsx prisma/seed.ts",
     "prisma:generate": "npx prisma generate || true",
     "db:push": "npx prisma db push"
   },
-  "devDependencies": {
-    "@prisma/client": "^7.4.1",
-    "@types/bcrypt": "^6.0.0",
-    "@types/cookie-parser": "^1.4.10",
-    "@types/express": "^5.0.6",
-    "@types/jsonwebtoken": "^9.0.10",
-    "@types/node": "^25.3.0",
-    "@types/nodemailer": "^7.0.11",
-    "mysql2": "^3.17.4",
-    "prisma": "^7.4.1",
-    "tsx": "^4.21.0",
-    "typescript": "^5.9.3"
-  },
   "dependencies": {
     "@prisma/adapter-pg": "^7.4.1",
+    "@prisma/client": "^7.4.1",
     "@redmecanica/shared": "file:../shared",
     "axios": "^1.13.5",
     "bcrypt": "^6.0.0",
@@ -41,5 +29,17 @@
     "socket.io": "^4.8.3",
     "uuid": "^13.0.0",
     "zod": "3.25.76"
+  },
+  "devDependencies": {
+    "@types/bcrypt": "^6.0.0",
+    "@types/cookie-parser": "^1.4.10",
+    "@types/express": "^5.0.6",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/node": "^25.3.0",
+    "@types/nodemailer": "^7.0.11",
+    "mysql2": "^3.17.4",
+    "prisma": "^7.4.1",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3"
   }
 }
