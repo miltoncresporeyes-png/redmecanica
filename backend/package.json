@@ -24,6 +24,7 @@
     "typescript": "^5.9.3"
   },
   "dependencies": {
+    "@prisma/adapter-pg": "^7.4.1",
     "@redmecanica/shared": "file:../shared",
     "axios": "^1.13.5",
     "bcrypt": "^6.0.0",
@@ -35,6 +36,7 @@
     "express-rate-limit": "^8.2.1",
     "jsonwebtoken": "^9.0.3",
     "nodemailer": "^8.0.1",
+    "pg": "^8.19.0",
     "pino": "^10.3.1",
     "socket.io": "^4.8.3",
     "uuid": "^13.0.0",

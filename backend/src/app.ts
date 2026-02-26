@@ -1,9 +1,7 @@
 
 import express from 'express';
 import cors from 'cors';
-import type { CorsOptions } from 'cors';
 import cookieParser from 'cookie-parser';
-import { config } from './config/index.js';
 
 import authRoutes from './modules/auth/auth.routes.js';
 import { globalLimiter } from './middlewares/rateLimiter.js';
@@ -30,36 +28,12 @@ import { requestIdMiddleware } from './middlewares/securityHeaders.js';
 import { errorHandler } from './middlewares/errorHandler.js';
 
 const app = express();
-const allowedOrigins = new Set(config.cors.origin.map((origin) => origin.replace(/\/$/, '')));
-const corsOptions: CorsOptions = {
-  origin: (origin, callback) => {
-    // Allow requests with no origin (like mobile apps or curl requests)
-    if (!origin) {
-      callback(null, true);
-      return;
-    }
 
-    const normalizedOrigin = origin.replace(/\/$/, '');
-
-    if (allowedOrigins.has(normalizedOrigin)) {
-      callback(null, true);
-      return;
-    }
-
-    // In production, allow all for now to debug
-    if (process.env.NODE_ENV === 'production') {
-      callback(null, true);
-      return;
-    }
-
-    callback(new Error(`CORS blocked for origin: ${origin}`));
-  },
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
+const corsOptions = {
+  origin: ['https://redmecanica.cl'],
+  methods: ['GET', 'POST', 'OPTIONS'],
+  allowedHeaders: ['Content-Type'],
 };
-
-app.use(globalLimiter);
 
 app.use(cors(corsOptions));
 

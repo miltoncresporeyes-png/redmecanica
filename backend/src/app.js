@@ -62,23 +62,10 @@ var contact_js_1 = require("./routes/contact.js");
 var securityHeaders_js_1 = require("./middlewares/securityHeaders.js");
 var errorHandler_js_1 = require("./middlewares/errorHandler.js");
 var app = (0, express_1.default)();
-var allowedOrigins = new Set(index_js_1.config.cors.origin.map(function (origin) { return origin.replace(/\/$/, ''); }));
 var corsOptions = {
-    origin: function (origin, callback) {
-        if (!origin) {
-            callback(null, true);
-            return;
-        }
-        var normalizedOrigin = origin.replace(/\/$/, '');
-        if (allowedOrigins.has(normalizedOrigin)) {
-            callback(null, true);
-            return;
-        }
-        callback(new Error("CORS blocked for origin: ".concat(origin)));
-    },
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
+    origin: ['https://redmecanica.cl'],
+    methods: ['GET', 'POST', 'OPTIONS'],
+    allowedHeaders: ['Content-Type'],
 };
 app.use(rateLimiter_js_1.globalLimiter);
 app.use((0, cors_1.default)(corsOptions));

@@ -1,5 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.prisma = void 0;
-var client_1 = require("@prisma/client");
-exports.prisma = new client_1.PrismaClient();
+var adapter_pg_1 = require("@prisma/adapter-pg");
+var pg_1 = require("pg");
+var connectionString = process.env.DATABASE_URL || "postgresql://placeholder:placeholder@localhost:5432/placeholder";
+var pool = new pg_1.Pool({ connectionString: connectionString });
+var adapter = new adapter_pg_1.PrismaPg(pool);
+exports.prisma = new client_1.PrismaClient({ adapter: adapter });
