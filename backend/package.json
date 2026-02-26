@@ -1,5 +1,6 @@
 {
   "scripts": {
+    "prebuild": "cd ../shared && npm install && npm run build",
     "dev": "tsx watch src/server.ts",
     "build": "npx prisma generate && tsc -p tsconfig.json --skipLibCheck",
     "postinstall": "npx prisma generate",
