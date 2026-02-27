@@ -2,13 +2,12 @@
 import nodemailer from 'nodemailer';
 import { logger } from '../lib/logger.js';
 
-// Configuración del trasportador
-const createTransporter = () => {
-  const host = process.env.SMTP_HOST || 'smtp.gmail.com';
-  const port = parseInt(process.env.SMTP_PORT || '587');
-  const user = process.env.SMTP_USER;
-  const pass = process.env.SMTP_PASS;
+const host = process.env.SMTP_HOST || 'smtp.gmail.com';
+const configuredPort = parseInt(process.env.SMTP_PORT || '587');
+const user = process.env.SMTP_USER;
+const pass = process.env.SMTP_PASS;
 
+const createTransporter = (port: number) => {
   if (!user || !pass) {
     logger.warn('Email service: No SMTP credentials found. Emails will be logged to console but not sent.');
     return null;
@@ -28,7 +27,13 @@ const createTransporter = () => {
   });
 };
 
-const transporter = createTransporter();
+const primaryTransporter = createTransporter(configuredPort);
+
+const getFallbackPort = (port: number): number => {
+  if (port === 465) return 587;
+  if (port === 587) return 465;
+  return 587;
+};
 
 export const sendEmail = async (options: {
   to: string;
@@ -47,7 +52,7 @@ export const sendEmail = async (options: {
     html: options.html,
   };
 
-  if (!transporter) {
+  if (!primaryTransporter) {
     // if no SMTP credentials are configured we used to log and pretend the email
     // was sent. in production this hides configuration mistakes, so fail fast.
     logger.error('SMTP transporter not available – check SMTP_USER/SMTP_PASS environment variables');
@@ -55,12 +60,36 @@ export const sendEmail = async (options: {
   }
 
   try {
-    const info = await transporter.sendMail(mailOptions);
+    const info = await primaryTransporter.sendMail(mailOptions);
     logger.info(`Email sent: ${info.messageId}`);
     return info;
   } catch (error: any) {
-    logger.error({ error }, 'Error sending email');
-    throw error;
+    const errorCode = error?.code;
+    const retryable = errorCode === 'ETIMEDOUT' || errorCode === 'ECONNREFUSED' || errorCode === 'ESOCKET';
+
+    if (!retryable) {
+      logger.error({ error }, 'Error sending email');
+      throw error;
+    }
+
+    const fallbackPort = getFallbackPort(configuredPort);
+    const fallbackTransporter = createTransporter(fallbackPort);
+
+    if (!fallbackTransporter) {
+      logger.error({ error }, 'SMTP fallback unavailable');
+      throw error;
+    }
+
+    logger.warn({ errorCode, configuredPort, fallbackPort }, 'SMTP primary failed, retrying with fallback port');
+
+    try {
+      const fallbackInfo = await fallbackTransporter.sendMail(mailOptions);
+      logger.info(`Email sent with fallback port ${fallbackPort}: ${fallbackInfo.messageId}`);
+      return fallbackInfo;
+    } catch (fallbackError: any) {
+      logger.error({ error, fallbackError }, 'Error sending email with primary and fallback SMTP ports');
+      throw fallbackError;
+    }
   }
 };
 
