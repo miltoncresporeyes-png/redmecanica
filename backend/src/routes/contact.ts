@@ -50,13 +50,19 @@ router.post('/launch-lead', async (req, res) => {
       }
     }
 
-    // send notification to internal address
-    await sendLaunchLeadNotification(email);
+    try {
+      await sendLaunchLeadNotification(email);
+      await sendLaunchLeadConfirmation(email);
+    } catch (emailError: any) {
+      logger.warn({ email, emailError }, 'Lead registrado pero envio de correo fallido');
+      return res.status(200).json({
+        success: true,
+        message: 'Registro completado. Te contactaremos pronto.',
+        emailStatus: 'failed',
+      });
+    }
 
-    // send confirmation to the user as well
-    await sendLaunchLeadConfirmation(email);
-
-    return res.status(200).json({ success: true, message: 'Registro completado.' });
+    return res.status(200).json({ success: true, message: 'Registro completado.', emailStatus: 'sent' });
   } catch (error: any) {
     logger.error({ error }, 'Error en ruta de leads');
     const message = error?.message || 'Hubo un error al procesar el registro.';

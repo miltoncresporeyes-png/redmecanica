@@ -29,10 +29,35 @@ import { errorHandler } from './middlewares/errorHandler.js';
 
 const app = express();
 
+const defaultFrontendOrigins = [
+  'https://redmecanica.cl',
+  'https://www.redmecanica.cl',
+  'http://localhost:5173',
+  'http://localhost:3000',
+];
+
+const configuredOrigins = (process.env.FRONTEND_URL || '')
+  .split(',')
+  .map((origin) => origin.trim())
+  .filter(Boolean);
+
+const allowedOrigins = Array.from(
+  new Set([...defaultFrontendOrigins, ...configuredOrigins].map((origin) => origin.replace(/\/$/, '')))
+);
+
 const corsOptions = {
-  origin: ['https://redmecanica.cl'],
-  methods: ['GET', 'POST', 'OPTIONS'],
-  allowedHeaders: ['Content-Type'],
+  origin: (origin: string | undefined, callback: (error: Error | null, allow?: boolean) => void) => {
+    const normalizedOrigin = origin?.replace(/\/$/, '');
+    if (!normalizedOrigin || allowedOrigins.includes(normalizedOrigin)) {
+      callback(null, true);
+      return;
+    }
+
+    callback(new Error(`CORS blocked for origin: ${origin}`));
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
 };
 
 app.use(cors(corsOptions));
@@ -46,6 +71,10 @@ app.use(requestIdMiddleware);
 // Health Check
 app.get('/', (_req, res) => {
   res.send('RedMecanica Backend Running');
+});
+
+app.get('/api', (_req, res) => {
+  res.json({ status: 'ok', service: 'api', timestamp: new Date().toISOString() });
 });
 
 app.get('/api/health', (_req, res) => {
