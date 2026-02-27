@@ -1,7 +1,6 @@
 {
   "scripts": {
     "dev:api": "node api/dev.js",
-    "prebuild": "cd ../shared && npm install && npm run build",
     "dev": "tsx watch src/server.ts",
     "build": "npx prisma generate && tsc -p tsconfig.json --skipLibCheck",
     "postinstall": "npx prisma generate",
@@ -14,7 +13,6 @@
   "dependencies": {
     "@prisma/adapter-pg": "^7.4.1",
     "@prisma/client": "^7.4.1",
-    "@redmecanica/shared": "file:../shared",
     "axios": "^1.13.5",
     "bcrypt": "^6.0.0",
     "bcryptjs": "^3.0.3",

@@ -1,1 +1,1 @@
-export { loginSchema, registerSchema, refreshTokenSchema } from '@redmecanica/shared';
+export { loginSchema, registerSchema, refreshTokenSchema } from '../../schemas/shared.schemas.js';

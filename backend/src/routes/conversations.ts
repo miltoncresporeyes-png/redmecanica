@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { prisma } from '../db.js';
 import { z } from 'zod';
-import { conversationSchema, messageSchema } from '@redmecanica/shared';
+import { conversationSchema, messageSchema } from '../schemas/shared.schemas.js';
 
 const router = Router();
 

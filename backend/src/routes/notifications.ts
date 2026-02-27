@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { prisma } from '../db.js';
 import { z } from 'zod';
-import { notificationSchema, markNotificationReadSchema, getNotificationsSchema } from '@redmecanica/shared';
+import { notificationSchema, markNotificationReadSchema, getNotificationsSchema } from '../schemas/shared.schemas.js';
 
 const router = Router();
 

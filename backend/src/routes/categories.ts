@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { prisma } from '../db.js';
 import { z } from 'zod';
-import { serviceCategorySchema, updateServiceCategorySchema } from '@redmecanica/shared';
+import { serviceCategorySchema, updateServiceCategorySchema } from '../schemas/shared.schemas.js';
 
 const router = Router();
 

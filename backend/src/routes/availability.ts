@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { prisma } from '../db.js';
 import { z } from 'zod';
-import { providerAvailabilitySchema, providerAvailabilityBulkSchema } from '@redmecanica/shared';
+import { providerAvailabilitySchema, providerAvailabilityBulkSchema } from '../schemas/shared.schemas.js';
 
 const router = Router();
 

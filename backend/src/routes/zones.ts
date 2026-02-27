@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { prisma } from '../db.js';
 import { z } from 'zod';
-import { zoneSchema, updateZoneSchema, providerZoneSchema } from '@redmecanica/shared';
+import { zoneSchema, updateZoneSchema, providerZoneSchema } from '../schemas/shared.schemas.js';
 
 const router = Router();
 
