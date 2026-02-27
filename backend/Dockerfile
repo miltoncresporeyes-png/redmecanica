@@ -8,10 +8,10 @@ ENV PRISMA_SCHEMA_DISABLE_ADVISORY_LOCK=1
 
 COPY . .
 
-RUN npm install --legacy-peer-deps --include=dev && npx prisma generate && (npx tsc -p tsconfig.json --skipLibCheck || true)
+RUN npm install --legacy-peer-deps --include=dev && npx prisma generate
 
 ENV NODE_ENV=production
 
 EXPOSE 3010
 
-CMD ["npm", "run", "start"]
+CMD ["npm", "run", "start:ts"]
