@@ -18,6 +18,9 @@ const createTransporter = () => {
     host,
     port,
     secure: port === 465,
+    connectionTimeout: 10000,
+    greetingTimeout: 10000,
+    socketTimeout: 15000,
     auth: {
       user,
       pass,
