@@ -51,7 +51,7 @@ echo %GREEN%🎉 Build complete!%NC%
 echo.
 echo Next steps:
 echo 1. Push code to GitHub
-echo 2. Connect to Vercel (frontend) and Render (backend)
+echo 2. Connect frontend to your static host and backend to Railway
 echo 3. Configure environment variables
 echo 4. Run database migrations
 goto end
@@ -69,9 +69,9 @@ cd ..
 echo %GREEN%✓ Frontend built%NC%
 
 echo.
-echo To deploy to Vercel:
+echo To deploy frontend:
 echo 1. Push code to GitHub
-echo 2. Import project in Vercel
+echo 2. Import project in your hosting provider
 echo 3. Configure VITE_API_URL
 echo 4. Deploy
 goto end
@@ -89,10 +89,10 @@ cd ..
 echo %GREEN%✓ Backend built%NC%
 
 echo.
-echo To deploy to Render:
+echo To deploy to Railway:
 echo 1. Push code to GitHub
-echo 2. Create PostgreSQL in Render
-echo 3. Create Web Service in Render
+echo 2. Create PostgreSQL in Railway
+echo 3. Create backend service in Railway
 echo 4. Configure environment variables:
 echo    - DATABASE_URL
 echo    - ACCESS_TOKEN_SECRET

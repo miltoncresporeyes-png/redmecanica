@@ -66,31 +66,26 @@ build_backend() {
     cd ..
 }
 
-# Deploy frontend to Vercel
+# Deploy frontend (manual)
 deploy_frontend() {
-    echo -e "${YELLOW}Deploying frontend to Vercel...${NC}"
-    
-    if ! command -v vercel &> /dev/null; then
-        echo "Installing Vercel CLI..."
-        npm install -g vercel
-    fi
-    
-    cd frontend
-    vercel --prod --yes
-    cd ..
-    
-    echo -e "${GREEN}✓ Frontend deployed to Vercel${NC}"
+    echo -e "${YELLOW}Frontend deploy is manual on your static host.${NC}"
+    echo "1. Push to GitHub"
+    echo "2. Connect repository in your frontend host"
+    echo "3. Set VITE_API_URL to your Railway API URL"
+    echo "4. Trigger deploy"
+    echo -e "${GREEN}✓ Frontend deployment instructions provided${NC}"
 }
 
-# Deploy backend to Render
+# Deploy backend to Railway
 deploy_backend() {
-    echo -e "${YELLOW}Deploying backend to Render...${NC}"
-    
-    echo "Note: Manual deployment to Render required"
+    echo -e "${YELLOW}Deploying backend to Railway...${NC}"
+
+    echo "Note: Manual deployment to Railway required"
     echo "1. Push to GitHub"
-    echo "2. Connect repository in Render dashboard"
+    echo "2. Connect repository in Railway"
     echo "3. Configure environment variables"
-    echo "4. Deploy from Render UI"
+    echo "4. Set build/start commands"
+    echo "5. Deploy service"
     
     echo -e "${GREEN}✓ Backend deployment initiated${NC}"
 }
@@ -100,7 +95,7 @@ deploy_database() {
     echo -e "${YELLOW}Setting up database...${NC}"
     
     echo "Database setup requires:"
-    echo "1. Create PostgreSQL in Render"
+    echo "1. Create PostgreSQL in Railway"
     echo "2. Set DATABASE_URL"
     echo "3. Run: cd backend && npx prisma migrate deploy"
     echo "4. Run: cd backend && npx tsx prisma/seed.ts"
@@ -125,7 +120,7 @@ deploy_all() {
     echo -e "${GREEN}🎉 Deploy complete!${NC}"
     echo ""
     echo "Next steps:"
-    echo "1. Configure environment variables in Render"
+    echo "1. Configure environment variables in Railway"
     echo "2. Run database migrations"
     echo "3. Test the application"
 }

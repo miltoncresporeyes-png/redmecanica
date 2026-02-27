@@ -11,7 +11,7 @@ echo [1/3] Verificando .env.production...
 if not exist .env.production (
     echo ERROR: No existe .env.production
     echo Por favor crea el archivo frontend\.env.production con:
-    echo   VITE_API_URL=https://api.tudominio.com/api
+    echo   VITE_API_URL=backend-production-f294e.up.railway.app
     echo   VITE_GOOGLE_AI_API_KEY=tu_key
     pause
     exit /b 1

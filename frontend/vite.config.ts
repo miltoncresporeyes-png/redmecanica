@@ -36,7 +36,7 @@ export default defineConfig(({ mode }) => {
         
         // Optimize chunk size
         target: 'esnext',
-        minify: 'terser',
+        minify: false,
         cssMinify: true,
         
         // Code splitting configuration
@@ -46,24 +46,9 @@ export default defineConfig(({ mode }) => {
             manualChunks: {
               // React and core libraries
               'vendor-react': ['react', 'react-dom', 'react-router-dom'],
-              // UI and styling
-              'vendor-ui': ['tailwindcss'],
               // HTTP client and utilities
-              'vendor-utils': ['axios'],
-              // Admin panel (large chunk, loaded on demand)
-              'admin': [
-                './src/layouts/AdminLayout.tsx',
-                './src/pages/admin/AdminDashboard.tsx',
-                './src/pages/admin/UserManagement.tsx',
-                './src/pages/admin/ProviderReview.tsx',
-                './src/pages/admin/Jobs.tsx',
-                './src/pages/admin/AuditLogs.tsx',
-                './src/pages/admin/Monitoring.tsx',
-                './src/pages/admin/Subscriptions.tsx'
-              ]
+              'vendor-utils': ['axios', 'recharts'],
             },
-            // Ensure chunks are not too small
-            experimentalMinChunkSize: 10000,
           }
         },
         
@@ -83,7 +68,6 @@ export default defineConfig(({ mode }) => {
       // Optimize dependencies
       optimizeDeps: {
         include: ['react', 'react-dom', 'react-router-dom', 'axios'],
-        exclude: []
       },
       
       // CSS configuration

@@ -31,7 +31,7 @@ openssl rand -hex 64
 
 ### Opción 4: Generador Online
 
-Visita: https://generate-secret.vercel.app/64
+Usa cualquier generador de secrets confiable con 64+ caracteres.
 
 ⚠️ **IMPORTANTE**:
 

@@ -1,7 +1,7 @@
 // Service Worker for RedMecánica PWA
 // Cache strategies for offline support
 
-const CACHE_NAME = 'redmecanica-v1';
+const CACHE_NAME = 'redmecanica-v2';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
@@ -12,7 +12,7 @@ const STATIC_ASSETS = [
 ];
 
 // API cache configuration
-const API_CACHE_NAME = 'redmecanica-api-v1';
+const API_CACHE_NAME = 'redmecanica-api-v2';
 const API_ROUTES = ['/api/services', '/api/providers'];
 
 // Install event - cache static assets

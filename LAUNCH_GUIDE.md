@@ -27,21 +27,21 @@
 
 ### 2. Configurar Producción
 
-**Backend (Render):**
+**Backend (Railway):**
 
 ```
-1. Crear cuenta en render.com
-2. New → PostgreSQL
-3. New → Web Service (Node.js)
+1. Crear proyecto en Railway
+2. Provisionar PostgreSQL en el mismo proyecto
+3. Conectar repositorio y seleccionar backend
 4. Configurar variables de entorno
-5. npm run build && npm run start
+5. Build: npm run build | Start: npm run start
 ```
 
-**Frontend (Vercel):**
+**Frontend (Hosting estático):**
 
 ```
-1. Crear cuenta en vercel.com
-2. Importar repositorio
+1. Elegir proveedor (Cloudflare Pages, Netlify, Hostinger, etc.)
+2. Conectar repositorio
 3. Configurar VITE_API_URL
 4. Deploy automático
 ```

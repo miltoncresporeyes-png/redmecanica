@@ -9,7 +9,6 @@ const defaultFrontendOrigins = [
   'http://localhost:3000',
   'https://redmecanica.cl',
   'https://www.redmecanica.cl',
-  'https://redmecanica-backend.vercel.app',
 ];
 
 const configuredOrigins = (process.env.FRONTEND_URL || '')

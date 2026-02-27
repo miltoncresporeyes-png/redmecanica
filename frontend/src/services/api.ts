@@ -3,13 +3,10 @@ import { Job, ServiceRequest } from '../types';
 
 const resolveApiUrl = (): string => {
   const envApiUrl = (import.meta.env.VITE_API_URL || '').trim();
-
-  // Always use VITE_API_URL if set (works for both local and production)
   if (envApiUrl) {
     return envApiUrl;
   }
 
-  // Fallback to relative /api
   return '/api';
 };
 

@@ -26,7 +26,7 @@ var configuredOrigins = (process.env.FRONTEND_URL || '')
     .filter(Boolean);
 var corsOrigins = Array.from(new Set(__spreadArray(__spreadArray([], defaultFrontendOrigins, true), configuredOrigins, true).map(function (origin) { return origin.replace(/\/$/, ''); })));
 exports.config = {
-    port: process.env.PORT || 3010,
+    port: process.env.PORT || 3001,
     env: process.env.NODE_ENV || 'development',
     jwt: {
         accessSecret: process.env.ACCESS_TOKEN_SECRET || 'access_secret_123',
