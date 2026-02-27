@@ -14,8 +14,6 @@ RUN npm install --legacy-peer-deps
 
 COPY . .
 
-RUN npx prisma generate
-
 EXPOSE 3010
 
 CMD ["npm", "run", "start"]
