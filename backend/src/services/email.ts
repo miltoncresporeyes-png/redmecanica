@@ -1,51 +1,32 @@
-
 import nodemailer from 'nodemailer';
 import { logger } from '../lib/logger.js';
 
-// Resolvemos DNS manualmente para evitar problemas mixtos con ipv6 de Hostinger y Railway
-import dns from 'node:dns/promises';
-
-const originalHost = process.env.SMTP_HOST || 'smtp.gmail.com';
+const host = process.env.SMTP_HOST || 'smtp.gmail.com';
 const configuredPort = parseInt(process.env.SMTP_PORT || '587');
 const user = process.env.SMTP_USER;
 const pass = process.env.SMTP_PASS;
 
-let resolvedIp: string | null = null;
-const resolveHost = async (): Promise<string> => {
-  if (resolvedIp) return resolvedIp;
-  try {
-    const lookup = await dns.lookup(originalHost, { family: 4 });
-    resolvedIp = lookup.address;
-    return resolvedIp;
-  } catch (err) {
-    logger.warn({ err }, 'Can not resolve SMTP host via IPv4, fallback to originalHost');
-    return originalHost;
-  }
-};
-
-const createTransporter = async (port: number) => {
+const createTransporter = (port: number) => {
   if (!user || !pass) {
     logger.warn('Email service: No SMTP credentials found. Emails will be logged to console but not sent.');
     return null;
   }
 
-  const hostIp = await resolveHost();
-
   return nodemailer.createTransport({
-    host: hostIp,
+    host,
     port,
     secure: port === 465,
     logger: true,
     debug: true,
-    connectionTimeout: 10000,
-    greetingTimeout: 10000,
-    socketTimeout: 15000,
+    connectionTimeout: 15000,
+    greetingTimeout: 15000,
+    socketTimeout: 30000,
     auth: {
       user,
       pass,
     },
     tls: {
-      servername: originalHost, // Fundamental para que SSL reconozca el domino tras la IP
+      // no rechazar certificados invalidos para evitar ETIMEDOUT si TLS expira 
       rejectUnauthorized: false
     }
   });
@@ -74,7 +55,7 @@ export const sendEmail = async (options: {
     html: options.html,
   };
 
-  const primaryTransporter = await createTransporter(configuredPort);
+  const primaryTransporter = createTransporter(configuredPort);
 
   if (!primaryTransporter) {
     // if no SMTP credentials are configured we used to log and pretend the email
@@ -97,7 +78,7 @@ export const sendEmail = async (options: {
     }
 
     const fallbackPort = getFallbackPort(configuredPort);
-    const fallbackTransporter = await createTransporter(fallbackPort);
+    const fallbackTransporter = createTransporter(fallbackPort);
 
     if (!fallbackTransporter) {
       logger.error({ error }, 'SMTP fallback unavailable');
