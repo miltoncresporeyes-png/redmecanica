@@ -39,7 +39,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var express_1 = require("express");
 var db_js_1 = require("../db.js");
 var auth_js_1 = require("../middleware/auth.js");
-var router = express_1.default.Router();
+var router = express_1.Router();
 // Aplicar middleware de autenticación a todas las rutas
 router.use(auth_js_1.authenticateToken);
 // POST /api/quotes - Crear una nueva cotización (Solo Prestadores)

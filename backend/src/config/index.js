@@ -10,8 +10,8 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.config = void 0;
-var dotenv_1 = require("dotenv");
-dotenv_1.default.config();
+var dotenv = require("dotenv");
+dotenv.config();
 var defaultFrontendOrigins = [
     'http://localhost:5173',
     'http://localhost:3011',

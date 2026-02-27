@@ -49,7 +49,7 @@ var createTransporter = function () {
         logger_js_1.logger.warn('Email service: No SMTP credentials found. Emails will be logged to console but not sent.');
         return null;
     }
-    return nodemailer_1.default.createTransport({
+    return nodemailer_1.createTransport({
         host: host,
         port: port,
         secure: port === 465,
