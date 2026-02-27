@@ -57,7 +57,7 @@ router.post('/', async (req, res) => {
     const data = zoneSchema.parse(req.body);
     
     const zone = await prisma.zone.create({
-      data,
+      data: data as any,
     });
     
     res.status(201).json(zone);
@@ -107,7 +107,7 @@ router.post('/assign-provider', async (req, res) => {
     const data = providerZoneSchema.parse(req.body);
     
     const providerZone = await prisma.providerZone.create({
-      data,
+      data: data as any,
     });
     
     res.status(201).json(providerZone);

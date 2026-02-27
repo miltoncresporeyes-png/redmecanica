@@ -72,7 +72,7 @@ router.post('/', async (req, res) => {
     }
     
     const conversation = await prisma.conversation.create({
-      data,
+      data: data as any,
     });
     
     res.status(201).json(conversation);

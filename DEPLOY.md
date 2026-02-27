@@ -2,12 +2,12 @@
 
 ## Servicios Recomendados
 
-| Servicio | Uso |
-|----------|-----|
+| Servicio | Uso                                                           |
+| -------- | ------------------------------------------------------------- |
 | Frontend | Hosting estatico (Cloudflare Pages, Netlify, Hostinger, etc.) |
-| Backend | Railway |
-| Database | Railway PostgreSQL |
-| Dominio | .cl (NIC Chile) |
+| Backend  | Railway                                                       |
+| Database | Railway PostgreSQL                                            |
+| Dominio  | .cl (NIC Chile)                                               |
 
 ---
 
@@ -37,6 +37,20 @@ WEBPAY_FINAL_URL=https://tu-dominio.com/payment/final
 6. Ejecutar migraciones y seed desde shell del servicio:
    - `npx prisma migrate deploy`
    - `npx tsx prisma/seed.ts`
+
+---
+
+## Configuración de Correo (SMTP en Railway)
+
+Para usar correos externos (ej. Hostinger o Gmail) en Railway, se deben configurar las siguientes variables de entorno:
+
+- `SMTP_HOST`: ej. `smtp.hostinger.com`
+- `SMTP_PORT`: Ej. `465` (SSL) o `587` (TLS)
+- `SMTP_USER`: `tu_correo@tudominio.cl`
+- `SMTP_PASS`: `tu_contraseña`
+
+**Nota sobre fallos de conexión a Hostinger/Railway (Error -101 ESOCKET)**:
+Railway puede presentar problemas de timeout en conexiones DNS para servidores que resuelvan direcciones IPv6 (como Hostinger usando Cloudflare) si el contenedor no tiene correctamente enrutada la salida a internet a través de IPv6. El backend ya está parcheado a nivel de código (`node:dns -> ipv4first`) para mitigar este comportamiento al forzar conexiones vía IPv4.
 
 ---
 

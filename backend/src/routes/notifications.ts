@@ -59,7 +59,7 @@ router.post('/', async (req, res) => {
       data: {
         ...data,
         data: data.data ? JSON.stringify(data.data) : null,
-      },
+      } as any,
     });
     
     res.status(201).json(notification);

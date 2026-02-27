@@ -48,7 +48,7 @@ router.post('/', async (req, res) => {
     const data = serviceCategorySchema.parse(req.body);
     
     const category = await prisma.serviceCategory.create({
-      data,
+      data: data as any,
     });
     
     res.status(201).json(category);

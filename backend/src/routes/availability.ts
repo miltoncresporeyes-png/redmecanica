@@ -24,7 +24,7 @@ router.post('/', async (req, res) => {
     const data = providerAvailabilitySchema.parse(req.body);
     
     const availability = await prisma.providerAvailability.create({
-      data,
+      data: data as any,
     });
     
     res.status(201).json(availability);
