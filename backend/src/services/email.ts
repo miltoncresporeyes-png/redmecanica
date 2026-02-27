@@ -24,6 +24,8 @@ const createTransporter = (port: number) => {
     host,
     port,
     secure: port === 465,
+    logger: true, // Imprimir más información en consola
+    debug: true,  // Permitir la traza de SMTP
     connectionTimeout: 10000,
     greetingTimeout: 10000,
     socketTimeout: 15000,
@@ -31,6 +33,10 @@ const createTransporter = (port: number) => {
       user,
       pass,
     },
+    tls: {
+      // no rechazar servidores con certificados no autorizados
+      rejectUnauthorized: false
+    }
   });
 };
 
