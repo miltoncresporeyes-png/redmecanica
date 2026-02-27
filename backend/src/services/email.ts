@@ -3,11 +3,10 @@ import nodemailer from 'nodemailer';
 import dns from 'node:dns';
 import { logger } from '../lib/logger.js';
 
-// Fuerza a Node.js a preferir IPv4 sobre IPv6 durante la resolución DNS.
-// Esto soluciona problemas de conexión SMTP (como el error ESOCKET connect -101) 
-// en entornos como Railway cuando intentan conectarse a servidores (como Hostinger) 
-// que resuelven a IPv6 pero donde la red del contenedor no tiene salida IPv6 configurada.
-dns.setDefaultResultOrder('ipv4first');
+// Aunque setDefaultResultOrder intenta forzar IPv4, a veces Node.js 18+ o el hoster
+// ignora la directiva dns cuando usamos SMTP. 
+// Para el error -101 de conectividad IPv6 en Railway / Hostinger usaremos un truco:
+import net from 'node:net';
 
 const host = process.env.SMTP_HOST || 'smtp.gmail.com';
 const configuredPort = parseInt(process.env.SMTP_PORT || '587');
@@ -24,6 +23,12 @@ const createTransporter = (port: number) => {
     host,
     port,
     secure: port === 465,
+    // Override connection creation to force IPv4
+    socket: net.connect({
+      host,
+      port,
+      family: 4 // FORZAR IPv4 nativamente a nivel de socket en capa baja
+    }),
     logger: true, // Imprimir más información en consola
     debug: true,  // Permitir la traza de SMTP
     connectionTimeout: 10000,

@@ -7,12 +7,15 @@ const LaunchBanner: React.FC = () => {
   const [isVisible, setIsVisible] = useState(true);
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
+  const [isRegistered, setIsRegistered] = useState(false);
+  const [registeredEmail, setRegisteredEmail] = useState('');
+  const [targetDate, setTargetDate] = useState<number | null>(null);
   const showSuccess = useSuccessToast();
   const showError = useErrorToast();
 
-  // 2 días para el descuento desde ahora
-  const targetDate = new Date().getTime() + (2 * 24 * 60 * 60 * 1000);
-  
+  const LEAD_STORAGE_KEY = 'launch_lead_registered_email';
+  const LEAD_COUNTDOWN_KEY = 'launch_lead_countdown_target';
+
   const [timeLeft, setTimeLeft] = useState({
     days: 0,
     hours: 0,
@@ -21,12 +24,32 @@ const LaunchBanner: React.FC = () => {
   });
 
   useEffect(() => {
+    const storedTarget = localStorage.getItem(LEAD_COUNTDOWN_KEY);
+    const now = Date.now();
+
+    if (storedTarget) {
+      const parsedTarget = Number(storedTarget);
+      if (!Number.isNaN(parsedTarget) && parsedTarget > now) {
+        setTargetDate(parsedTarget);
+        return;
+      }
+    }
+
+    const newTarget = now + (2 * 24 * 60 * 60 * 1000);
+    localStorage.setItem(LEAD_COUNTDOWN_KEY, String(newTarget));
+    setTargetDate(newTarget);
+  }, []);
+
+  useEffect(() => {
+    if (!targetDate) return;
+
     const timer = setInterval(() => {
       const now = new Date().getTime();
       const distance = targetDate - now;
 
       if (distance < 0) {
         setIsVisible(false);
+        localStorage.removeItem(LEAD_COUNTDOWN_KEY);
         clearInterval(timer);
         return;
       }
@@ -40,6 +63,14 @@ const LaunchBanner: React.FC = () => {
     }, 1000);
 
     return () => clearInterval(timer);
+  }, [targetDate]);
+
+  useEffect(() => {
+    const storedEmail = localStorage.getItem(LEAD_STORAGE_KEY);
+    if (storedEmail) {
+      setIsRegistered(true);
+      setRegisteredEmail(storedEmail);
+    }
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -51,6 +82,9 @@ const LaunchBanner: React.FC = () => {
       const result = await registerLaunchLead(email);
       // use server message when available
       showSuccess(result.message || '¡Excelente! Te avisaremos apenas estemos operativos. ¡Bienvenido a la comunidad!');
+      localStorage.setItem(LEAD_STORAGE_KEY, email);
+      setRegisteredEmail(email);
+      setIsRegistered(true);
       setEmail('');
     } catch (err: any) {
       console.error('Error al registrar lead:', err);
@@ -117,23 +151,43 @@ const LaunchBanner: React.FC = () => {
               </p>
             </div>
 
-            <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3">
-              <input
-                type="email"
-                placeholder="Ingresa tu correo aquí..."
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                className="flex-1 bg-slate-800/50 border border-slate-700 text-white px-5 py-3 rounded-2xl focus:ring-2 focus:ring-blue-500 outline-none transition-all placeholder:text-slate-600 font-medium"
-              />
-              <button 
-                type="submit"
-                disabled={loading}
-                className="bg-blue-600 hover:bg-blue-500 text-white px-8 py-3 rounded-2xl font-black transition-all shadow-lg shadow-blue-900/40 active:scale-95 disabled:opacity-50 whitespace-nowrap"
-              >
-                {loading ? 'Procesando...' : '¡Quiero mi descuento!'}
-              </button>
-            </form>
+            {isRegistered ? (
+              <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-4">
+                <p className="text-emerald-300 font-bold">Listo, ya quedaste registrado.</p>
+                <p className="text-emerald-100/80 text-sm mt-1">
+                  Te contactaremos a <span className="font-semibold">{registeredEmail}</span> cuando lancemos.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => {
+                    localStorage.removeItem(LEAD_STORAGE_KEY);
+                    setRegisteredEmail('');
+                    setIsRegistered(false);
+                  }}
+                  className="mt-3 text-xs font-semibold text-emerald-200 hover:text-white underline underline-offset-4"
+                >
+                  Cambiar correo
+                </button>
+              </div>
+            ) : (
+              <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3">
+                <input
+                  type="email"
+                  placeholder="Ingresa tu correo aquí..."
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  className="flex-1 bg-slate-800/50 border border-slate-700 text-white px-5 py-3 rounded-2xl focus:ring-2 focus:ring-blue-500 outline-none transition-all placeholder:text-slate-600 font-medium"
+                />
+                <button 
+                  type="submit"
+                  disabled={loading}
+                  className="bg-blue-600 hover:bg-blue-500 text-white px-8 py-3 rounded-2xl font-black transition-all shadow-lg shadow-blue-900/40 active:scale-95 disabled:opacity-50 whitespace-nowrap"
+                >
+                  {loading ? 'Procesando...' : '¡Quiero mi descuento!'}
+                </button>
+              </form>
+            )}
           </div>
         </div>
       </div>
