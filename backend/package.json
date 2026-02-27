@@ -1,5 +1,6 @@
 {
   "scripts": {
+    "dev:api": "node api/dev.js",
     "prebuild": "cd ../shared && npm install && npm run build",
     "dev": "tsx watch src/server.ts",
     "build": "npx prisma generate && tsc -p tsconfig.json --skipLibCheck",
@@ -31,6 +32,7 @@
     "zod": "3.25.76"
   },
   "devDependencies": {
+    "@prisma/config": "^7.4.1",
     "@types/bcrypt": "^6.0.0",
     "@types/cookie-parser": "^1.4.10",
     "@types/express": "^5.0.6",
