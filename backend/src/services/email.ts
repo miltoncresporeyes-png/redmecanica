@@ -1,12 +1,33 @@
 import nodemailer from 'nodemailer';
 import { logger } from '../lib/logger.js';
 
-const host = process.env.SMTP_HOST || 'smtp.gmail.com';
-const configuredPort = parseInt(process.env.SMTP_PORT || '587');
-const user = process.env.SMTP_USER;
-const pass = process.env.SMTP_PASS;
+const getSmtpConfig = () => ({
+  host: process.env.SMTP_HOST || 'smtp.gmail.com',
+  configuredPort: parseInt(process.env.SMTP_PORT || '587'),
+  user: process.env.SMTP_USER,
+  pass: process.env.SMTP_PASS,
+  debugEnabled: process.env.SMTP_DEBUG === 'true',
+});
 
-const createTransporter = (port: number) => {
+/** Extrae los campos más relevantes de un error de nodemailer para logging. */
+const extractSmtpError = (error: any) => ({
+  code: error?.code,
+  message: error?.message,
+  response: error?.response,
+  responseCode: error?.responseCode,
+  command: error?.command,
+});
+
+/** Escapa caracteres especiales HTML para prevenir XSS en contenido de correos. */
+const escapeHtml = (str: string): string =>
+  str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+
+const createTransporter = (host: string, port: number, user?: string, pass?: string, debugEnabled = false) => {
   if (!user || !pass) {
     logger.warn('Email service: No SMTP credentials found. Emails will be logged to console but not sent.');
     return null;
@@ -16,8 +37,10 @@ const createTransporter = (port: number) => {
     host,
     port,
     secure: port === 465,
-    logger: true,
-    debug: true,
+    // Para port 587 (STARTTLS), forzar el upgrade TLS
+    ...(port !== 465 && { requireTLS: true }),
+    logger: debugEnabled,
+    debug: debugEnabled,
     connectionTimeout: 15000,
     greetingTimeout: 15000,
     socketTimeout: 30000,
@@ -26,9 +49,9 @@ const createTransporter = (port: number) => {
       pass,
     },
     tls: {
-      // no rechazar certificados invalidos para evitar ETIMEDOUT si TLS expira 
-      rejectUnauthorized: false
-    }
+      // no rechazar certificados invalidos para evitar ETIMEDOUT si TLS expira
+      rejectUnauthorized: false,
+    },
   });
 };
 
@@ -45,6 +68,7 @@ export const sendEmail = async (options: {
   html?: string;
   from?: string;
 }) => {
+  const { host, configuredPort, user, pass, debugEnabled } = getSmtpConfig();
   const from = options.from || `"RedMecánica" <${process.env.SMTP_USER || 'no-reply@redmecanica.cl'}>`;
   
   const mailOptions = {
@@ -55,7 +79,7 @@ export const sendEmail = async (options: {
     html: options.html,
   };
 
-  const primaryTransporter = createTransporter(configuredPort);
+  const primaryTransporter = createTransporter(host, configuredPort, user, pass, debugEnabled);
 
   if (!primaryTransporter) {
     // if no SMTP credentials are configured we used to log and pretend the email
@@ -73,26 +97,41 @@ export const sendEmail = async (options: {
     const retryable = errorCode === 'ETIMEDOUT' || errorCode === 'ECONNREFUSED' || errorCode === 'ESOCKET';
 
     if (!retryable) {
-      logger.error({ error }, 'Error sending email');
+      logger.error(
+        { smtp: extractSmtpError(error), host, port: configuredPort },
+        'Error sending email (non-retryable)',
+      );
       throw error;
     }
 
     const fallbackPort = getFallbackPort(configuredPort);
-    const fallbackTransporter = createTransporter(fallbackPort);
+    const fallbackTransporter = createTransporter(host, fallbackPort, user, pass, debugEnabled);
 
     if (!fallbackTransporter) {
-      logger.error({ error }, 'SMTP fallback unavailable');
+      logger.error({ smtp: extractSmtpError(error) }, 'SMTP fallback unavailable');
       throw error;
     }
 
-    logger.warn({ errorCode, configuredPort, fallbackPort }, 'SMTP primary failed, retrying with fallback port');
+    logger.warn(
+      { errorCode, host, configuredPort, fallbackPort },
+      'SMTP primary failed, retrying with fallback port',
+    );
 
     try {
       const fallbackInfo = await fallbackTransporter.sendMail(mailOptions);
       logger.info(`Email sent with fallback port ${fallbackPort}: ${fallbackInfo.messageId}`);
       return fallbackInfo;
     } catch (fallbackError: any) {
-      logger.error({ error, fallbackError }, 'Error sending email with primary and fallback SMTP ports');
+      logger.error(
+        {
+          primary: extractSmtpError(error),
+          fallback: extractSmtpError(fallbackError),
+          host,
+          configuredPort,
+          fallbackPort,
+        },
+        'Error sending email with primary and fallback SMTP ports',
+      );
       throw fallbackError;
     }
   }
@@ -109,11 +148,11 @@ export const sendContactNotification = async (contactData: {
   
   const html = `
     <h2>Nuevo mensaje de contacto - RedMecánica</h2>
-    <p><strong>De:</strong> ${contactData.name} <${contactData.email}></p>
-    <p><strong>Teléfono:</strong> ${contactData.phone || 'No proporcionado'}</p>
-    <p><strong>Asunto:</strong> ${contactData.subject}</p>
+    <p><strong>De:</strong> ${escapeHtml(contactData.name)} &lt;${escapeHtml(contactData.email)}&gt;</p>
+    <p><strong>Teléfono:</strong> ${escapeHtml(contactData.phone || 'No proporcionado')}</p>
+    <p><strong>Asunto:</strong> ${escapeHtml(contactData.subject)}</p>
     <p><strong>Mensaje:</strong></p>
-    <p>${contactData.message.replace(/\n/g, '<br>')}</p>
+    <p>${escapeHtml(contactData.message).replace(/\n/g, '<br>')}</p>
   `;
 
   return sendEmail({

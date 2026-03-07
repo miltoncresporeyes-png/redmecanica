@@ -45,10 +45,12 @@ const allowedOrigins = Array.from(
   new Set([...defaultFrontendOrigins, ...configuredOrigins].map((origin) => origin.replace(/\/$/, '')))
 );
 
+const isAllowedLocalOrigin = (origin: string) => /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin);
+
 const corsOptions = {
   origin: (origin: string | undefined, callback: (error: Error | null, allow?: boolean) => void) => {
     const normalizedOrigin = origin?.replace(/\/$/, '');
-    if (!normalizedOrigin || allowedOrigins.includes(normalizedOrigin)) {
+    if (!normalizedOrigin || allowedOrigins.includes(normalizedOrigin) || isAllowedLocalOrigin(normalizedOrigin)) {
       callback(null, true);
       return;
     }

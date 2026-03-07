@@ -14,7 +14,9 @@ const LaunchBanner: React.FC = () => {
   const showError = useErrorToast();
 
   const LEAD_STORAGE_KEY = 'launch_lead_registered_email';
-  const LEAD_COUNTDOWN_KEY = 'launch_lead_countdown_target';
+
+  const CAMPAIGN_START_DATE = new Date(2026, 2, 7, 0, 0, 0, 0); // 07/03/2026 local time
+  const CAMPAIGN_DURATION_DAYS = 3;
 
   const [timeLeft, setTimeLeft] = useState({
     days: 0,
@@ -24,20 +26,8 @@ const LaunchBanner: React.FC = () => {
   });
 
   useEffect(() => {
-    const storedTarget = localStorage.getItem(LEAD_COUNTDOWN_KEY);
-    const now = Date.now();
-
-    if (storedTarget) {
-      const parsedTarget = Number(storedTarget);
-      if (!Number.isNaN(parsedTarget) && parsedTarget > now) {
-        setTargetDate(parsedTarget);
-        return;
-      }
-    }
-
-    const newTarget = now + (2 * 24 * 60 * 60 * 1000);
-    localStorage.setItem(LEAD_COUNTDOWN_KEY, String(newTarget));
-    setTargetDate(newTarget);
+    const campaignEndsAt = CAMPAIGN_START_DATE.getTime() + (CAMPAIGN_DURATION_DAYS * 24 * 60 * 60 * 1000);
+    setTargetDate(campaignEndsAt);
   }, []);
 
   useEffect(() => {
@@ -49,7 +39,6 @@ const LaunchBanner: React.FC = () => {
 
       if (distance < 0) {
         setIsVisible(false);
-        localStorage.removeItem(LEAD_COUNTDOWN_KEY);
         clearInterval(timer);
         return;
       }
@@ -143,7 +132,7 @@ const LaunchBanner: React.FC = () => {
 
             <div className="mb-6">
 <h3 className="text-xl font-bold text-white mb-2 leading-tight">
-                ¡Últimos 2 días! 🇨🇱
+                ¡Últimos 3 días! 🇨🇱
               </h3>
               <p className="text-slate-400 text-sm leading-relaxed">
                 ¡No te quedes fuera! 

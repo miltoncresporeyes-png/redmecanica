@@ -1,139 +1,179 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
+
+const nodemailer = require('nodemailer');
+const { logger } = require('../lib/logger.js');
+
+const getSmtpConfig = () => ({
+  host: process.env.SMTP_HOST || 'smtp.gmail.com',
+  configuredPort: parseInt(process.env.SMTP_PORT || '587', 10),
+  user: process.env.SMTP_USER,
+  pass: process.env.SMTP_PASS,
+  debugEnabled: process.env.SMTP_DEBUG === 'true',
+});
+
+const extractSmtpError = (error) => ({
+  code: error?.code,
+  message: error?.message,
+  response: error?.response,
+  responseCode: error?.responseCode,
+  command: error?.command,
+});
+
+const escapeHtml = (str) =>
+  String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+
+const createTransporter = (host, port, user, pass, debugEnabled = false) => {
+  if (!user || !pass) {
+    logger.warn('Email service: No SMTP credentials found. Emails will be logged to console but not sent.');
+    return null;
+  }
+
+  return nodemailer.createTransport({
+    host,
+    port,
+    secure: port === 465,
+    ...(port !== 465 && { requireTLS: true }),
+    logger: debugEnabled,
+    debug: debugEnabled,
+    connectionTimeout: 15000,
+    greetingTimeout: 15000,
+    socketTimeout: 30000,
+    auth: { user, pass },
+    tls: { rejectUnauthorized: false },
+  });
 };
-var __generator = (this && this.__generator) || function (thisArg, body) {
-    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g = Object.create((typeof Iterator === "function" ? Iterator : Object).prototype);
-    return g.next = verb(0), g["throw"] = verb(1), g["return"] = verb(2), typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
-    function verb(n) { return function (v) { return step([n, v]); }; }
-    function step(op) {
-        if (f) throw new TypeError("Generator is already executing.");
-        while (g && (g = 0, op[0] && (_ = 0)), _) try {
-            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
-            if (y = 0, t) op = [op[0] & 2, t.value];
-            switch (op[0]) {
-                case 0: case 1: t = op; break;
-                case 4: _.label++; return { value: op[1], done: false };
-                case 5: _.label++; y = op[1]; op = [0]; continue;
-                case 7: op = _.ops.pop(); _.trys.pop(); continue;
-                default:
-                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
-                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
-                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
-                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
-                    if (t[2]) _.ops.pop();
-                    _.trys.pop(); continue;
-            }
-            op = body.call(thisArg, _);
-        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
-        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
-    }
+
+const getFallbackPort = (port) => {
+  if (port === 465) return 587;
+  if (port === 587) return 465;
+  return 587;
 };
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.sendLaunchLeadConfirmation = exports.sendLaunchLeadNotification = exports.sendContactNotification = exports.sendEmail = void 0;
-var nodemailer_1 = require("nodemailer");
-var logger_js_1 = require("../lib/logger.js");
-// Configuración del trasportador
-var createTransporter = function () {
-    var host = process.env.SMTP_HOST || 'smtp.gmail.com';
-    var port = parseInt(process.env.SMTP_PORT || '587');
-    var user = process.env.SMTP_USER;
-    var pass = process.env.SMTP_PASS;
-    if (!user || !pass) {
-        logger_js_1.logger.warn('Email service: No SMTP credentials found. Emails will be logged to console but not sent.');
-        return null;
+
+const sendEmail = async (options) => {
+  const { host, configuredPort, user, pass, debugEnabled } = getSmtpConfig();
+  const from = options.from || `"RedMecánica" <${user || 'no-reply@redmecanica.cl'}>`;
+
+  const mailOptions = {
+    from,
+    to: options.to,
+    subject: options.subject,
+    text: options.text,
+    html: options.html,
+  };
+
+  const primaryTransporter = createTransporter(host, configuredPort, user, pass, debugEnabled);
+
+  if (!primaryTransporter) {
+    logger.error('SMTP transporter not available - check SMTP_USER/SMTP_PASS environment variables');
+    throw new Error('SMTP not configured');
+  }
+
+  try {
+    const info = await primaryTransporter.sendMail(mailOptions);
+    logger.info(`Email sent: ${info.messageId}`);
+    return info;
+  } catch (error) {
+    const errorCode = error?.code;
+    const retryable = errorCode === 'ETIMEDOUT' || errorCode === 'ECONNREFUSED' || errorCode === 'ESOCKET';
+
+    if (!retryable) {
+      logger.error(
+        { smtp: extractSmtpError(error), host, port: configuredPort },
+        'Error sending email (non-retryable)',
+      );
+      throw error;
     }
-    return nodemailer_1.createTransport({
-        host: host,
-        port: port,
-        secure: port === 465,
-        auth: {
-            user: user,
-            pass: pass,
+
+    const fallbackPort = getFallbackPort(configuredPort);
+    const fallbackTransporter = createTransporter(host, fallbackPort, user, pass, debugEnabled);
+
+    if (!fallbackTransporter) {
+      logger.error({ smtp: extractSmtpError(error) }, 'SMTP fallback unavailable');
+      throw error;
+    }
+
+    logger.warn(
+      { errorCode, host, configuredPort, fallbackPort },
+      'SMTP primary failed, retrying with fallback port',
+    );
+
+    try {
+      const fallbackInfo = await fallbackTransporter.sendMail(mailOptions);
+      logger.info(`Email sent with fallback port ${fallbackPort}: ${fallbackInfo.messageId}`);
+      return fallbackInfo;
+    } catch (fallbackError) {
+      logger.error(
+        {
+          primary: extractSmtpError(error),
+          fallback: extractSmtpError(fallbackError),
+          host,
+          configuredPort,
+          fallbackPort,
         },
-    });
+        'Error sending email with primary and fallback SMTP ports',
+      );
+      throw fallbackError;
+    }
+  }
 };
-var transporter = createTransporter();
-var sendEmail = function (options) { return __awaiter(void 0, void 0, void 0, function () {
-    var from, mailOptions, info, error_1;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0:
-                from = options.from || "\"RedMec\u00E1nica\" <".concat(process.env.SMTP_USER || 'no-reply@redmecanica.cl', ">");
-                mailOptions = {
-                    from: from,
-                    to: options.to,
-                    subject: options.subject,
-                    text: options.text,
-                    html: options.html,
-                };
-                if (!transporter) {
-                    // if no SMTP credentials are configured we used to log and pretend the email
-                    // was sent. in production this hides configuration mistakes, so fail fast.
-                    logger_js_1.logger.error('SMTP transporter not available – check SMTP_USER/SMTP_PASS environment variables');
-                    throw new Error('SMTP not configured');
-                }
-                _a.label = 1;
-            case 1:
-                _a.trys.push([1, 3, , 4]);
-                return [4 /*yield*/, transporter.sendMail(mailOptions)];
-            case 2:
-                info = _a.sent();
-                logger_js_1.logger.info("Email sent: ".concat(info.messageId));
-                return [2 /*return*/, info];
-            case 3:
-                error_1 = _a.sent();
-                logger_js_1.logger.error({ error: error_1 }, 'Error sending email');
-                throw error_1;
-            case 4: return [2 /*return*/];
-        }
-    });
-}); };
+
+const sendContactNotification = async (contactData) => {
+  const adminEmail = 'contacto@redmecanica.cl';
+
+  const html = `
+    <h2>Nuevo mensaje de contacto - RedMecánica</h2>
+    <p><strong>De:</strong> ${escapeHtml(contactData.name)} &lt;${escapeHtml(contactData.email)}&gt;</p>
+    <p><strong>Teléfono:</strong> ${escapeHtml(contactData.phone || 'No proporcionado')}</p>
+    <p><strong>Asunto:</strong> ${escapeHtml(contactData.subject)}</p>
+    <p><strong>Mensaje:</strong></p>
+    <p>${escapeHtml(contactData.message).replace(/\n/g, '<br>')}</p>
+  `;
+
+  return sendEmail({
+    to: adminEmail,
+    subject: `[Contacto Web] ${contactData.subject}: ${contactData.name}`,
+    html,
+    text: `Nuevo mensaje de ${contactData.name} (${contactData.email})\nAsunto: ${contactData.subject}\n\nMensaje:\n${contactData.message}`,
+  });
+};
+
+const sendLaunchLeadNotification = async (email) => {
+  const adminEmail = 'contacto@redmecanica.cl';
+
+  const html = `
+    <h2>Nuevo registro de preventa - RedMecánica</h2>
+    <p>Email: ${escapeHtml(email)}</p>
+  `;
+
+  return sendEmail({
+    to: adminEmail,
+    subject: `Nuevo Lead Lanzamiento: ${email}`,
+    html,
+    text: `Nuevo registro de preventa: ${email}`,
+  });
+};
+
+const sendLaunchLeadConfirmation = async (userEmail) => {
+  const html = `
+    <h2>Gracias por registrarte en RedMecánica</h2>
+    <p>Estamos preparando la plataforma! Te avisaremos por este correo cuando estemos en línea.</p>
+    <p>Mientras tanto puedes seguirnos en nuestras redes sociales o contactarnos si tienes preguntas.</p>
+  `;
+
+  return sendEmail({
+    to: userEmail,
+    subject: 'Gracias por tu interés! - RedMecánica',
+    html,
+    text: 'Gracias por registrarte en RedMecánica. Te avisaremos cuando el servicio esté disponible.',
+  });
+};
+
 exports.sendEmail = sendEmail;
-var sendContactNotification = function (contactData) { return __awaiter(void 0, void 0, void 0, function () {
-    var adminEmail, html;
-    return __generator(this, function (_a) {
-        adminEmail = 'contacto@redmecanica.cl';
-        html = "\n    <h2>Nuevo mensaje de contacto - RedMec\u00E1nica</h2>\n    <p><strong>De:</strong> ".concat(contactData.name, " <").concat(contactData.email, "></p>\n    <p><strong>Tel\u00E9fono:</strong> ").concat(contactData.phone || 'No proporcionado', "</p>\n    <p><strong>Asunto:</strong> ").concat(contactData.subject, "</p>\n    <p><strong>Mensaje:</strong></p>\n    <p>").concat(contactData.message.replace(/\n/g, '<br>'), "</p>\n  ");
-        return [2 /*return*/, (0, exports.sendEmail)({
-                to: adminEmail,
-                subject: "[Contacto Web] ".concat(contactData.subject, ": ").concat(contactData.name),
-                html: html,
-                text: "Nuevo mensaje de ".concat(contactData.name, " (").concat(contactData.email, ")\nAsunto: ").concat(contactData.subject, "\n\nMensaje:\n").concat(contactData.message)
-            })];
-    });
-}); };
 exports.sendContactNotification = sendContactNotification;
-var sendLaunchLeadNotification = function (email) { return __awaiter(void 0, void 0, void 0, function () {
-    var adminEmail, html;
-    return __generator(this, function (_a) {
-        adminEmail = 'contacto@redmecanica.cl';
-        html = "\n    <h2>Nuevo registro de preventa - RedMec\u00E1nica</h2>\n    <p>Email: ".concat(email, "</p>\n  ");
-        return [2 /*return*/, (0, exports.sendEmail)({
-                to: adminEmail,
-                subject: "\uD83D\uDE80 Nuevo Lead Lanzamiento: ".concat(email),
-                html: html,
-                text: "Nuevo registro de preventa: ".concat(email)
-            })];
-    });
-}); };
 exports.sendLaunchLeadNotification = sendLaunchLeadNotification;
-var sendLaunchLeadConfirmation = function (userEmail) { return __awaiter(void 0, void 0, void 0, function () {
-    var html;
-    return __generator(this, function (_a) {
-        html = "\n    <h2>Gracias por registrarte en RedMec\u00E1nica</h2>\n    <p>\u00A1Estamos preparando la plataforma! Te avisaremos por este correo cuando estemos en l\u00EDnea.</p>\n    <p>Mientras tanto puedes seguirnos en nuestras redes sociales o contactarnos si tienes preguntas.</p>\n  ";
-        return [2 /*return*/, (0, exports.sendEmail)({
-                to: userEmail,
-                subject: '¡Gracias por tu interés! - RedMecánica',
-                html: html,
-                text: "Gracias por registrarte en RedMec\u00E1nica. Te avisaremos cuando el servicio est\u00E9 disponible."
-            })];
-    });
-}); };
 exports.sendLaunchLeadConfirmation = sendLaunchLeadConfirmation;

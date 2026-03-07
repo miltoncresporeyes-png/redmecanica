@@ -8,6 +8,8 @@
     "start": "tsx src/server.ts",
     "migrate": "npx prisma migrate dev",
     "seed": "tsx prisma/seed.ts",
+    "reprocess:launch-leads": "tsx scripts/reprocess-launch-leads.ts",
+    "reprocess:launch-confirmations": "tsx scripts/resend-launch-confirmations.ts",
     "prisma:generate": "npx prisma generate || true",
     "db:push": "npx prisma db push"
   },

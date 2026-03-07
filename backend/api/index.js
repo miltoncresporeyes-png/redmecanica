@@ -1,3 +1,4 @@
+require('dotenv').config({ path: require('path').join(__dirname, '..', '.env') });
 const express = require('express');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
@@ -9,9 +10,13 @@ const allowedOrigins = (process.env.FRONTEND_URL || 'https://redmecanica.cl,http
   .map((origin) => origin.trim())
   .filter(Boolean);
 
+const isAllowedLocalOrigin = (origin) => /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin);
+
 app.use(cors({
   origin(origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
+    const normalizedOrigin = origin ? origin.replace(/\/$/, '') : origin;
+
+    if (!normalizedOrigin || allowedOrigins.includes(normalizedOrigin) || isAllowedLocalOrigin(normalizedOrigin)) {
       callback(null, true);
       return;
     }
