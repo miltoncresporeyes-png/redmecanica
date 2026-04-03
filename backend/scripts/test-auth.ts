@@ -2,7 +2,7 @@
 // import fetch from 'node-fetch'; // Using global fetch
 
 
-const BASE_URL = 'http://localhost:3010/api/auth';
+const BASE_URL = 'http://localhost:3011/api/auth';
 
 async function testAuth() {
   console.log('🧪 Testing Auth Flow...');

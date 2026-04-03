@@ -18,7 +18,7 @@ export function useSocket(options: UseSocketOptions) {
 
   useEffect(() => {
     // Derivar la URL del socket de VITE_API_URL (removiendo /api si existe)
-    const socketUrl = (import.meta.env.VITE_API_URL || 'http://localhost:3010').replace(/\/api$/, '');
+    const socketUrl = (import.meta.env.VITE_API_URL || 'http://localhost:3011').replace(/\/api$/, '');
     
     const socket = io(socketUrl, {
       auth: {

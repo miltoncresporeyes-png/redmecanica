@@ -12,6 +12,6 @@ RUN npm install --legacy-peer-deps --include=dev && npx prisma generate
 
 ENV NODE_ENV=production
 
-EXPOSE 3010
+EXPOSE 3011
 
 CMD ["npm", "run", "start:ts"]

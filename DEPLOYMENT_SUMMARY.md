@@ -107,7 +107,7 @@ VITE_GOOGLE_AI_API_KEY=tu_key_opcional
 
 ```env
 # Básicas (OBLIGATORIAS)
-PORT=3010
+PORT=3011
 NODE_ENV=production
 DATABASE_URL="postgresql://..."
 ACCESS_TOKEN_SECRET="generar_64_chars"

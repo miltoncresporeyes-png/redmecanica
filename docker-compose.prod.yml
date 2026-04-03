@@ -25,13 +25,13 @@ services:
     container_name: redmecanica-backend
     environment:
       - NODE_ENV=production
-      - PORT=3010
+      - PORT=3011
       - DATABASE_URL=postgresql://redmecanica:LLZMPV9yO9BoT1UwiLqy1qTVxR8y4Bhr@dpg-d6dq873h46gs73d5jq20-a/redmecanica
       - ACCESS_TOKEN_SECRET=${ACCESS_TOKEN_SECRET}
       - REFRESH_TOKEN_SECRET=${REFRESH_TOKEN_SECRET}
       - FRONTEND_URL=http://localhost:5173
     ports:
-      - "3010:3010"
+      - "3011:3011"
     depends_on:
       postgres:
         condition: service_healthy
@@ -43,7 +43,7 @@ services:
       dockerfile: Dockerfile
     container_name: redmecanica-frontend
     environment:
-      - VITE_API_URL=http://localhost:3010/api
+      - VITE_API_URL=http://localhost:3011/api
     ports:
       - "5173:80"
     depends_on:

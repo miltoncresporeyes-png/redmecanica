@@ -4,15 +4,38 @@ import react from '@vitejs/plugin-react';
 
 export default defineConfig(({ mode }) => {
     const env = loadEnv(mode, '.', '');
+    const devPort = Number(env.VITE_DEV_PORT || 5173);
+
+    const resolveProxyTarget = () => {
+      const rawApiUrl = (env.VITE_API_URL || '').trim();
+      if (!rawApiUrl) {
+        return 'http://localhost:3011';
+      }
+
+      try {
+        const parsed = new URL(rawApiUrl);
+        return parsed.origin;
+      } catch {
+        return 'http://localhost:3011';
+      }
+    };
+
     return {
       server: {
-        port: 3011,
+        port: devPort,
+        strictPort: true,
         host: '0.0.0.0',
+        hmr: {
+          host: env.VITE_HMR_HOST || 'localhost',
+          protocol: env.VITE_HMR_PROTOCOL === 'wss' ? 'wss' : 'ws',
+          port: devPort,
+          clientPort: devPort,
+        },
         // during development proxy API requests to the backend server so
         // the frontend can call '/api/...' without CORS or manual env setup.
         proxy: {
           '/api': {
-            target: env.VITE_API_URL || 'http://localhost:3010',
+            target: resolveProxyTarget(),
             changeOrigin: true,
             secure: false,
             // keep path as-is
@@ -80,7 +103,7 @@ export default defineConfig(({ mode }) => {
       
       // Performance hints
       preview: {
-        port: 3012,
+        port: devPort + 1,
         host: '0.0.0.0'
       }
     };

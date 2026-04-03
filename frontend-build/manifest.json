@@ -1,0 +1,44 @@
+{
+  "name": "RedMecánica - Mecánicos a Domicilio",
+  "short_name": "RedMecánica",
+  "description": "Conectamos conductores con mecánicos certificados, talleres y grúas en Chile",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#2563eb",
+  "orientation": "portrait",
+  "scope": "/",
+  "lang": "es",
+  "dir": "ltr",
+  "categories": ["automotive", "utilities", "business"],
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Solicitar Servicio",
+      "short_name": "Solicitar",
+      "description": "Solicita un servicio mecánico rápidamente",
+      "url": "/solicitar"
+    },
+    {
+      "name": "Buscar Prestadores",
+      "short_name": "Buscar",
+      "description": "Encuentra mecánicos cerca de ti",
+      "url": "/search"
+    },
+    {
+      "name": "Diagnóstico",
+      "short_name": "Diagnóstico",
+      "description": "Obtén un diagnóstico de tu vehículo",
+      "url": "/triage"
+    }
+  ],
+  "related_applications": [],
+  "prefer_related_applications": false
+}

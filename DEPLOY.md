@@ -19,7 +19,7 @@
 4. Configurar variables de entorno:
 
 ```env
-PORT=3010
+PORT=3011
 DATABASE_URL=postgres://...
 ACCESS_TOKEN_SECRET=generar_string_aleatorio
 REFRESH_TOKEN_SECRET=generar_string_aleatorio

@@ -16,7 +16,7 @@ if [ -f "backend/.env" ]; then
     else
         cat > backend/.env << 'EOF'
 # Server
-PORT=3010
+PORT=3011
 NODE_ENV=development
 
 # Database (PostgreSQL) - UPDATE FOR PRODUCTION
@@ -43,7 +43,7 @@ EOF
 else
     cat > backend/.env << 'EOF'
 # Server
-PORT=3010
+PORT=3011
 NODE_ENV=development
 
 # Database (PostgreSQL) - UPDATE FOR PRODUCTION
@@ -77,14 +77,14 @@ if [ -f "frontend/.env.local" ]; then
         echo "Skipped frontend/.env.local"
     else
         cat > frontend/.env.local << 'EOF'
-VITE_API_URL=http://localhost:3010/api
+VITE_API_URL=http://localhost:3011/api
 GEMINI_API_KEY=
 EOF
         echo "✓ frontend/.env.local created"
     fi
 else
     cat > frontend/.env.local << 'EOF'
-VITE_API_URL=http://localhost:3010/api
+VITE_API_URL=http://localhost:3011/api
 GEMINI_API_KEY=
 EOF
     echo "✓ frontend/.env.local created"

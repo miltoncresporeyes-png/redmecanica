@@ -220,7 +220,7 @@ Verificar `backend/tsconfig.json`:
 
 ```env
 # Server
-PORT=3010
+PORT=3011
 NODE_ENV=production
 
 # Database (PostgreSQL)
@@ -370,7 +370,7 @@ module.exports = {
       max_memory_restart: "1G",
       env: {
         NODE_ENV: "production",
-        PORT: 3010,
+        PORT: 3011,
       },
       error_file: "./logs/err.log",
       out_file: "./logs/out.log",
@@ -430,7 +430,7 @@ server {
 
     # API Backend (Node.js)
     location /api {
-        proxy_pass http://localhost:3010;
+        proxy_pass http://localhost:3011;
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection 'upgrade';
@@ -443,7 +443,7 @@ server {
 
     # Socket.io (WebSockets)
     location /socket.io {
-        proxy_pass http://localhost:3010;
+        proxy_pass http://localhost:3011;
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection "upgrade";

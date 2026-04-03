@@ -2,7 +2,7 @@ import axios, { AxiosInstance } from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import cacheService from './cache';
 
-const API_URL = 'http://192.168.1.100:3010/api';
+const API_URL = 'http://192.168.1.100:3011/api';
 
 const CACHE_KEYS = {
   CATEGORIES: 'categories',

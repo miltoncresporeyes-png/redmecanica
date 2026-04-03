@@ -46,7 +46,7 @@ var __filename = (0, url_1.fileURLToPath)(import.meta.url);
 var __dirname = path_1.default.dirname(__filename);
 dotenv_1.default.config({ path: path_1.default.resolve(__dirname, '../../.env') });
 var prisma = new client_1.PrismaClient();
-var API_URL = process.env.API_URL || 'http://localhost:3010/api';
+var API_URL = process.env.API_URL || 'http://localhost:3011/api';
 function testAdminAccess() {
     return __awaiter(this, void 0, void 0, function () {
         var userEmail, adminEmail, e_1, e_2, userLogin, userToken, error_1, adminLogin, adminToken, stats, error_2, users, error_3, error_4;

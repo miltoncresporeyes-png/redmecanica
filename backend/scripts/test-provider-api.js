@@ -1,7 +1,7 @@
 const startTime = Date.now();
 
 async function test() {
-  const baseUrl = 'http://localhost:3010/api/providers';
+  const baseUrl = 'http://localhost:3011/api/providers';
 
   console.log('1. Fetching seeded provider (mech-1)...');
   try {

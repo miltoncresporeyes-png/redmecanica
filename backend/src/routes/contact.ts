@@ -20,6 +20,17 @@ const persistLaunchLeadFallback = async (email: string, reason: string) => {
   );
 };
 
+const buildLeadTicket = (lead: { id: string; createdAt: Date }) => {
+  const createdAt = new Date(lead.createdAt);
+  const yyyy = createdAt.getFullYear();
+  const mm = String(createdAt.getMonth() + 1).padStart(2, '0');
+  const dd = String(createdAt.getDate()).padStart(2, '0');
+  const token = lead.id.replace(/-/g, '').slice(0, 8).toUpperCase();
+  return `RM-LEAD-${yyyy}${mm}${dd}-${token}`;
+};
+
+const buildTemporaryTicket = () => `RM-LEAD-TMP-${Date.now().toString(36).toUpperCase()}`;
+
 router.post('/message', async (req, res) => {
   try {
     const { name, email, phone, subject, message } = req.body;
@@ -39,7 +50,8 @@ router.post('/message', async (req, res) => {
 
 router.post('/launch-lead', async (req, res) => {
   try {
-    const { email } = req.body;
+    const rawEmail = req.body?.email as string | undefined;
+    const email = rawEmail?.trim().toLowerCase();
 
     if (!email) {
       return res.status(400).json({ error: 'El email es obligatorio.' });
@@ -51,16 +63,34 @@ router.post('/launch-lead', async (req, res) => {
       return res.status(400).json({ error: 'El email no tiene un formato válido.' });
     }
 
+    const existingLead = await prisma.launchLead.findUnique({ where: { email } });
+
+    if (existingLead) {
+      return res.status(200).json({
+        success: true,
+        duplicate: true,
+        ticket: buildLeadTicket(existingLead),
+        message: 'Este correo ya se encuentra registrado en nuestra lista de lanzamiento.'
+      });
+    }
+
     let queuedInFallback = false;
+    let createdLead: { id: string; email: string; createdAt: Date } | null = null;
 
     // store lead in database, ignore duplicate constraint
     try {
-      await prisma.launchLead.create({ data: { email } });
+      createdLead = await prisma.launchLead.create({ data: { email } });
     } catch (prismaError: any) {
       // P2002 = unique constraint failed
       if (prismaError.code === 'P2002') {
-        // already exists, we can continue but inform client
-        logger.info({ email }, 'Lead already registered');
+        const duplicatedLead = await prisma.launchLead.findUnique({ where: { email } });
+        const duplicatedTicket = duplicatedLead ? buildLeadTicket(duplicatedLead) : buildTemporaryTicket();
+        return res.status(200).json({
+          success: true,
+          duplicate: true,
+          ticket: duplicatedTicket,
+          message: 'Este correo ya se encuentra registrado en nuestra lista de lanzamiento.'
+        });
       } else {
         logger.error({ email, prismaError }, 'Failed to save launch lead in database');
 
@@ -75,12 +105,14 @@ router.post('/launch-lead', async (req, res) => {
       }
     }
 
+    const ticket = createdLead ? buildLeadTicket(createdLead) : buildTemporaryTicket();
+
     void (async () => {
       try {
-        await sendLaunchLeadNotification(email);
-        await sendLaunchLeadConfirmation(email);
+        await sendLaunchLeadNotification(email, ticket);
+        await sendLaunchLeadConfirmation(email, ticket);
       } catch (emailError: any) {
-        logger.warn({ email, emailError }, 'Lead registrado pero envio de correo fallido');
+        logger.warn({ email, ticket, emailError }, 'Lead registrado pero envio de correo fallido');
       }
     })();
 
@@ -88,11 +120,12 @@ router.post('/launch-lead', async (req, res) => {
       return res.status(202).json({
         success: true,
         queued: true,
+        ticket,
         message: 'Registro recibido y en cola temporal. Lo sincronizaremos en breve.'
       });
     }
 
-    return res.status(200).json({ success: true, message: 'Registro completado.' });
+    return res.status(200).json({ success: true, ticket, message: `Registro completado. Tu número de ticket es ${ticket}.` });
   } catch (error: any) {
     logger.error({ error }, 'Error en ruta de leads');
     const message = error?.message || 'Hubo un error al procesar el registro.';

@@ -11,7 +11,7 @@ const __dirname = path.dirname(__filename);
 dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 
 const prisma = new PrismaClient();
-const API_URL = process.env.API_URL || 'http://localhost:3010/api';
+const API_URL = process.env.API_URL || 'http://localhost:3011/api';
 
 async function testAdminAccess() {
   console.log('🚀 Starting Admin Access Test...');

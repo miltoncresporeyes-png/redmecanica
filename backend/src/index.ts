@@ -8,7 +8,7 @@ import cookieParser from "cookie-parser";
 dotenv.config();
 
 const app = express();
-const port = process.env.PORT || 3010;
+const port = process.env.PORT || 3011;
 
 // Prisma client moved to db.ts
 // export const prisma = new PrismaClient();

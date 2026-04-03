@@ -21,7 +21,7 @@ const corsOrigins = Array.from(
 );
 
 export const config = {
-  port: process.env.PORT || 3010,
+  port: process.env.PORT || 3011,
   env: process.env.NODE_ENV || 'development',
   jwt: {
     accessSecret: process.env.ACCESS_TOKEN_SECRET || 'access_secret_123',

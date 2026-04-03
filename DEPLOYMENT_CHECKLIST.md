@@ -185,7 +185,7 @@ df -h
 sudo -u postgres psql -d redmecanica -c "SELECT COUNT(*) FROM \"User\";"
 
 # Ver procesos escuchando en puertos
-sudo netstat -tlnp | grep -E ':(80|443|3010)'
+sudo netstat -tlnp | grep -E ':(80|443|3011)'
 
 # Verificar certificado SSL
 sudo certbot certificates
@@ -207,11 +207,11 @@ curl -o /dev/null -s -w "Time: %{time_total}s\n" https://tudominio.com
 
 ## 📝 Notas
 
-Fecha de deployment: ******\_\_\_******
-Versión desplegada: ******\_\_\_******
-Personas que hicieron el deploy: ******\_\_\_******
-Issues encontrados: ******\_\_\_******
-Tiempo total de deployment: ******\_\_\_******
+Fecha de deployment: **\*\***\_\_\_**\*\***
+Versión desplegada: **\*\***\_\_\_**\*\***
+Personas que hicieron el deploy: **\*\***\_\_\_**\*\***
+Issues encontrados: **\*\***\_\_\_**\*\***
+Tiempo total de deployment: **\*\***\_\_\_**\*\***
 
 ---
 

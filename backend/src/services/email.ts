@@ -163,26 +163,28 @@ export const sendContactNotification = async (contactData: {
   });
 };
 
-export const sendLaunchLeadNotification = async (email: string) => {
+export const sendLaunchLeadNotification = async (email: string, ticket: string) => {
   const adminEmail = 'contacto@redmecanica.cl';
   
   const html = `
     <h2>Nuevo registro de preventa - RedMecánica</h2>
-    <p>Email: ${email}</p>
+    <p><strong>Email:</strong> ${escapeHtml(email)}</p>
+    <p><strong>Ticket:</strong> ${escapeHtml(ticket)}</p>
   `;
 
   return sendEmail({
     to: adminEmail,
-    subject: `🚀 Nuevo Lead Lanzamiento: ${email}`,
+    subject: `🚀 Nuevo Lead Lanzamiento [${ticket}]`,
     html,
-    text: `Nuevo registro de preventa: ${email}`
+    text: `Nuevo registro de preventa\nEmail: ${email}\nTicket: ${ticket}`
   });
 };
 
-export const sendLaunchLeadConfirmation = async (userEmail: string) => {
+export const sendLaunchLeadConfirmation = async (userEmail: string, ticket: string) => {
   const html = `
     <h2>Gracias por registrarte en RedMecánica</h2>
     <p>¡Estamos preparando la plataforma! Te avisaremos por este correo cuando estemos en línea.</p>
+    <p><strong>Número de ticket:</strong> ${escapeHtml(ticket)}</p>
     <p>Mientras tanto puedes seguirnos en nuestras redes sociales o contactarnos si tienes preguntas.</p>
   `;
 
@@ -190,6 +192,6 @@ export const sendLaunchLeadConfirmation = async (userEmail: string) => {
     to: userEmail,
     subject: '¡Gracias por tu interés! - RedMecánica',
     html,
-    text: `Gracias por registrarte en RedMecánica. Te avisaremos cuando el servicio esté disponible.`
+    text: `Gracias por registrarte en RedMecánica. Te avisaremos cuando el servicio esté disponible. Tu ticket es: ${ticket}.`
   });
 };

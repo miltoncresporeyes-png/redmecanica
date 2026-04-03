@@ -48,7 +48,7 @@ Aquí hay un ejemplo de cómo debería verse tu `.env` de producción:
 
 ```env
 # Server
-PORT=3010
+PORT=3011
 NODE_ENV=production
 
 # Database
