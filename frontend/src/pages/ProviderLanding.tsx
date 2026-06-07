@@ -106,8 +106,8 @@ const ProviderLanding: React.FC<ProviderLandingProps> = ({ onClose }) => {
             <div className="inline-block bg-yellow-400 text-yellow-900 px-4 py-2 rounded-full font-black text-xs mb-8 shadow-xl shadow-yellow-400/30 animate-bounce-subtle">
               🚀 LANZAMIENTO - Primeros 50 prestadores sin comisión
             </div>
-            <h1 className="text-5xl lg:text-7xl font-black mb-8 leading-[1.05] tracking-tighter drop-shadow-2xl">
-              Convierte tu taller en una<br/>
+            <h1 className="text-3xl sm:text-5xl lg:text-7xl font-black mb-8 leading-[1.05] tracking-tighter drop-shadow-2xl">
+              Convierte tu taller en una<br className="hidden sm:block"/>
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-yellow-500">máquina de clientes</span>
             </h1>
             <p className="text-xl opacity-90 mb-12 max-w-lg leading-relaxed font-medium">
@@ -172,7 +172,7 @@ const ProviderLanding: React.FC<ProviderLandingProps> = ({ onClose }) => {
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-bold text-gray-700 mb-1">Teléfono</label>
                   <input
@@ -199,7 +199,7 @@ const ProviderLanding: React.FC<ProviderLandingProps> = ({ onClose }) => {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-bold text-gray-700 mb-1">Tipo de servicio</label>
                   <select

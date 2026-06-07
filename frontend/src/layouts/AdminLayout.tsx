@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useLocation, Outlet, useNavigate } from 'react-router-dom';
 import { 
   LayoutDashboard, 
@@ -33,16 +33,125 @@ const navItems = [
 
 const AdminLayout: React.FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const location = useLocation();
   const { logout, user } = useAuth();
   const navigate = useNavigate();
 
+  // Close mobile sidebar on route change
+  useEffect(() => {
+    setIsMobileSidebarOpen(false);
+  }, [location.pathname]);
+
+  // Prevent body scroll when mobile sidebar is open
+  useEffect(() => {
+    if (isMobileSidebarOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => { document.body.style.overflow = ''; };
+  }, [isMobileSidebarOpen]);
+
+  const sidebarCollapsed = !isSidebarOpen;
+
   return (
     <div className="min-h-screen bg-[#F8FAFC] flex font-sans">
+      {/* Mobile Sidebar Overlay */}
+      {isMobileSidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+          onClick={() => setIsMobileSidebarOpen(false)}
+        />
+      )}
+
       {/* Sidebar */}
-      <aside 
+      <aside
         className={cn(
           "bg-[#0F172A] text-white transition-all duration-300 ease-in-out fixed inset-y-0 z-50",
+          // Desktop: toggle width
+          "hidden lg:block",
+          isSidebarOpen ? "w-64" : "w-20",
+          // Mobile: always full width, slide in/out
+          "lg:hidden",
+          isMobileSidebarOpen ? "w-64 translate-x-0" : "-translate-x-full"
+        )}
+      >
+        <div className="p-6 flex items-center justify-between border-b border-gray-800">
+          <div className={cn("overflow-hidden transition-all duration-300 whitespace-nowrap", isSidebarOpen ? "w-auto opacity-100" : "w-0 opacity-0")}>
+            <span className="text-xl font-bold bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">
+              RedMecánica
+            </span>
+          </div>
+          <button onClick={() => setIsSidebarOpen(!isSidebarOpen)} className="p-1 hover:bg-gray-800 rounded-lg transition-colors">
+            {isSidebarOpen ? <X size={20} /> : <Menu size={20} />}
+          </button>
+        </div>
+
+        <nav className="p-4 space-y-2 mt-4">
+          {navItems.map((item) => {
+            const isActive = location.pathname === item.path || (item.path === '/admin' && location.pathname === '/admin/');
+            const Icon = item.icon;
+            
+            return (
+              <Link
+                key={item.path}
+                to={item.path}
+                className={cn(
+                  "flex items-center p-3 rounded-xl transition-all duration-200 group relative",
+                  isActive 
+                    ? "bg-blue-600/10 text-blue-400 shadow-[inset_0_0_0_1px_rgba(59,130,246,0.1)]" 
+                    : "text-gray-400 hover:bg-gray-800 hover:text-white"
+                )}
+              >
+                <Icon size={20} className={cn("shrink-0", isActive && "text-blue-400")} />
+                <span className={cn(
+                  "ml-3 transition-all duration-300 overflow-hidden whitespace-nowrap font-medium",
+                  isSidebarOpen ? "w-auto opacity-100" : "w-0 opacity-0"
+                )}>
+                  {item.label}
+                </span>
+                {!isSidebarOpen && (
+                  <div className="absolute left-full ml-4 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all whitespace-nowrap z-50 shadow-xl border border-gray-800">
+                    {item.label}
+                  </div>
+                )}
+                {isActive && isSidebarOpen && (
+                  <motion.div 
+                    layoutId="active-pill"
+                    className="absolute right-2 w-1.5 h-1.5 bg-blue-400 rounded-full"
+                  />
+                )}
+              </Link>
+            );
+          })}
+        </nav>
+
+        <div className="absolute bottom-6 left-4 right-4 space-y-2">
+           <Link to="/" className="w-full flex items-center p-3 text-gray-400 hover:bg-gray-800 hover:text-white rounded-xl transition-all duration-200 group">
+             <ExternalLink size={20} />
+             <span className={cn(
+                "ml-3 transition-all duration-300 whitespace-nowrap overflow-hidden",
+                isSidebarOpen ? "w-auto opacity-100" : "w-0 opacity-0"
+              )}>Ir al Sitio</span>
+           </Link>
+           <button 
+             onClick={() => { logout(); navigate('/'); }}
+             className="w-full flex items-center p-3 text-gray-400 hover:bg-red-500/10 hover:text-red-400 rounded-xl transition-all duration-200 group"
+           >
+             <LogOut size={20} />
+             <span className={cn(
+               "ml-3 transition-all duration-300 whitespace-nowrap overflow-hidden",
+               isSidebarOpen ? "w-auto opacity-100" : "w-0 opacity-0"
+             )}>Salir</span>
+           </button>
+        </div>
+      </aside>
+
+      {/* Desktop Sidebar (separate for lg+) */}
+      <aside
+        className={cn(
+          "bg-[#0F172A] text-white transition-all duration-300 ease-in-out fixed inset-y-0 z-50 hidden lg:block",
           isSidebarOpen ? "w-64" : "w-20"
         )}
       >
@@ -102,7 +211,7 @@ const AdminLayout: React.FC = () => {
              <span className={cn(
                 "ml-3 transition-all duration-300 whitespace-nowrap overflow-hidden",
                 isSidebarOpen ? "w-auto opacity-100" : "w-0 opacity-0"
-             )}>Ir al Sitio</span>
+              )}>Ir al Sitio</span>
            </Link>
            <button 
              onClick={() => { logout(); navigate('/'); }}
@@ -110,51 +219,95 @@ const AdminLayout: React.FC = () => {
            >
              <LogOut size={20} />
              <span className={cn(
-                "ml-3 transition-all duration-300 whitespace-nowrap overflow-hidden",
-                isSidebarOpen ? "w-auto opacity-100" : "w-0 opacity-0"
+               "ml-3 transition-all duration-300 whitespace-nowrap overflow-hidden",
+               isSidebarOpen ? "w-auto opacity-100" : "w-0 opacity-0"
              )}>Salir</span>
            </button>
         </div>
       </aside>
 
       {/* Main Content */}
-      <main 
+      <main
         className={cn(
           "flex-1 transition-all duration-300 min-h-screen flex flex-col",
+          // Desktop: respect sidebar width
+          "hidden lg:flex",
           isSidebarOpen ? "ml-64" : "ml-20"
         )}
       >
         {/* Header */}
-        <header className="h-20 bg-white/80 backdrop-blur-md border-b border-gray-100 sticky top-0 z-40 px-8 flex items-center justify-between">
-          <div className="flex items-center gap-4 bg-gray-50 px-4 py-2 rounded-xl border border-gray-100 min-w-[300px]">
+        <header className="h-16 lg:h-20 bg-white/80 backdrop-blur-md border-b border-gray-100 sticky top-0 z-40 px-4 lg:px-8 flex items-center justify-between">
+          {/* Mobile: hamburger button */}
+          <button
+            onClick={() => setIsMobileSidebarOpen(true)}
+            className="lg:hidden p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+            aria-label="Abrir menú"
+          >
+            <Menu size={24} />
+          </button>
+
+          <div className="hidden sm:flex items-center gap-4 bg-gray-50 px-4 py-2 rounded-xl border border-gray-100 flex-1 max-w-md ml-4">
             <Search size={18} className="text-gray-400" />
             <input 
               type="text" 
-              placeholder="Buscar rastro digital..." 
+              placeholder="Buscar..." 
               className="bg-transparent border-none focus:outline-none text-sm w-full font-medium"
             />
           </div>
 
-          <div className="flex items-center gap-6">
+          <div className="flex items-center gap-3 lg:gap-6">
             <button className="relative p-2 text-gray-500 hover:bg-gray-100 rounded-lg transition-all">
               <Bell size={20} />
               <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
             </button>
-            <div className="h-8 w-[1px] bg-gray-200"></div>
-            <div className="flex items-center gap-3 bg-gray-50 pr-4 pl-1 py-1 rounded-full border border-gray-100 border-dashed">
-              <div className="w-8 h-8 rounded-full bg-linear-to-tr from-blue-600 to-indigo-600 flex items-center justify-center font-bold text-white text-xs shadow-lg">
+            <div className="hidden sm:block h-8 w-[1px] bg-gray-200"></div>
+            <div className="flex items-center gap-2 lg:gap-3 bg-gray-50 pr-2 lg:pr-4 pl-1 py-1 rounded-full border border-gray-100 border-dashed">
+              <div className="w-7 h-7 lg:w-8 lg:h-8 rounded-full bg-linear-to-tr from-blue-600 to-indigo-600 flex items-center justify-center font-bold text-white text-[10px] lg:text-xs shadow-lg">
                 {user?.email?.substring(0,2).toUpperCase() || 'AD'}
               </div>
-              <div className="text-left">
-                <p className="text-xs font-bold text-gray-900 leading-none">{user?.name || 'Admin Central'}</p>
-                <p className="text-[9px] text-gray-400 font-bold tracking-widest uppercase mt-0.5">{user?.role || 'SUPER ADMIN'}</p>
+              <div className="text-left hidden sm:block">
+                <p className="text-[10px] lg:text-xs font-bold text-gray-900 leading-none">{user?.name || 'Admin Central'}</p>
+                <p className="text-[8px] lg:text-[9px] text-gray-400 font-bold tracking-widest uppercase mt-0.5">{user?.role || 'SUPER ADMIN'}</p>
               </div>
             </div>
           </div>
         </header>
 
         {/* Content Area */}
-        <div className="p-8 max-w-[1600px] w-full mx-auto flex-1">
+        <div className="p-4 lg:p-8 max-w-[1600px] w-full mx-auto flex-1">
+          <Outlet />
+        </div>
+      </main>
+
+      {/* Mobile Main Content (separate for <lg) */}
+      <main className="flex-1 transition-all duration-300 min-h-screen flex flex-col lg:hidden">
+        {/* Mobile Header */}
+        <header className="h-14 bg-white/80 backdrop-blur-md border-b border-gray-100 sticky top-0 z-40 px-4 flex items-center justify-between">
+          <button
+            onClick={() => setIsMobileSidebarOpen(true)}
+            className="p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+            aria-label="Abrir menú"
+          >
+            <Menu size={22} />
+          </button>
+
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-bold text-gray-800">Admin</span>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <button className="relative p-2 text-gray-500 hover:bg-gray-100 rounded-lg transition-all">
+              <Bell size={18} />
+              <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
+            </button>
+            <div className="w-7 h-7 rounded-full bg-linear-to-tr from-blue-600 to-indigo-600 flex items-center justify-center font-bold text-white text-[10px] shadow-lg">
+              {user?.email?.substring(0,2).toUpperCase() || 'AD'}
+            </div>
+          </div>
+        </header>
+
+        {/* Mobile Content Area */}
+        <div className="p-4 max-w-[1600px] w-full mx-auto flex-1">
           <Outlet />
         </div>
       </main>
