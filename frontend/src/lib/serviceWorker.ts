@@ -1,6 +1,6 @@
 // Service Worker Registration
 // Handles PWA installation and updates
-
+import React from 'react';
 export function registerSW() {
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
@@ -8,6 +8,9 @@ export function registerSW() {
         .register('/sw.js')
         .then((registration) => {
           console.log('[SW] Service Worker registered:', registration.scope);
+          registration.update().catch(() => {
+            // No-op: update check is best-effort.
+          });
           
           // Handle updates
           registration.addEventListener('updatefound', () => {
@@ -21,6 +24,15 @@ export function registerSW() {
                 }
               });
             }
+          });
+
+          navigator.serviceWorker.addEventListener('controllerchange', () => {
+            if (sessionStorage.getItem('rm_sw_reloaded') === '1') {
+              return;
+            }
+
+            sessionStorage.setItem('rm_sw_reloaded', '1');
+            window.location.reload();
           });
         })
         .catch((error) => {

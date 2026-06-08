@@ -2,11 +2,15 @@ import { Router } from 'express';
 import { prisma } from '../db.js';
 import { z } from 'zod';
 import { webpayService } from '../services/webpay.js';
+import { mercadoPagoService } from '../services/mercadopago.js';
 
 const router = Router();
 
 const WEBPAY_RETURN_URL = process.env.WEBPAY_RETURN_URL || 'https://redmecanica.cl/payment/return';
 const WEBPAY_FINAL_URL = process.env.WEBPAY_FINAL_URL || 'https://redmecanica.cl/payment/final';
+const MERCADOPAGO_RETURN_URL = process.env.MERCADOPAGO_RETURN_URL || 'https://redmecanica.cl/payment/return';
+const MERCADOPAGO_FINAL_URL = process.env.MERCADOPAGO_FINAL_URL || 'https://redmecanica.cl/payment/final';
+const MERCADOPAGO_NOTIFICATION_URL = process.env.MERCADOPAGO_NOTIFICATION_URL || '';
 
 export const SUBSCRIPTION_PLANS = {
   MONTHLY: {
@@ -57,7 +61,7 @@ export const SUBSCRIPTION_PLANS = {
 const createSubscriptionSchema = z.object({
   providerId: z.string().uuid('ID de proveedor inválido'),
   plan: z.enum(['MONTHLY', 'YEARLY', 'PROFESSIONAL']),
-  paymentMethod: z.enum(['WEBPAY', 'TRANSFER']).default('WEBPAY'),
+  paymentMethod: z.enum(['WEBPAY', 'MERCADOPAGO', 'TRANSFER']).default('WEBPAY'),
   autoRenew: z.boolean().optional().default(true),
 });
 
@@ -105,6 +109,35 @@ router.get('/provider/:providerId', async (req, res) => {
   } catch (error) {
     console.error('Error fetching subscription:', error);
     res.status(500).json({ error: 'Failed to fetch subscription' });
+  }
+});
+
+router.get('/:id/status', async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const subscription = await prisma.subscription.findUnique({
+      where: { id: String(id) },
+      select: {
+        id: true,
+        status: true,
+        amount: true,
+        plan: true,
+        providerId: true,
+        lastPaymentDate: true,
+        endDate: true,
+        autoRenew: true,
+      },
+    });
+
+    if (!subscription) {
+      return res.status(404).json({ error: 'Subscription not found' });
+    }
+
+    return res.json(subscription);
+  } catch (error) {
+    console.error('Error getting subscription status:', error);
+    return res.status(500).json({ error: 'Failed to get subscription status' });
   }
 });
 
@@ -186,6 +219,49 @@ router.post('/', async (req, res) => {
       } catch (err) {
         console.error('Webpay error creating subscription:', err);
         return res.status(500).json({ error: 'Failed to initialize Webpay transaction' });
+      }
+    }
+
+    if (data.paymentMethod === 'MERCADOPAGO') {
+      if (!mercadoPagoService.isConfigured()) {
+        return res.status(503).json({
+          error: 'Mercado Pago no está configurado',
+          hint: 'Define MERCADOPAGO_ACCESS_TOKEN, MERCADOPAGO_PUBLIC_KEY y las URLs de retorno en el backend'
+        });
+      }
+
+      try {
+        const preference = await mercadoPagoService.createPreference({
+          externalReference: `subscription-${subscription.id}`,
+          title: planDetails.name,
+          description: `Suscripción ${planDetails.name}`,
+          amount: planDetails.price,
+          successUrl: `${MERCADOPAGO_RETURN_URL}?subscriptionId=${subscription.id}`,
+          failureUrl: `${MERCADOPAGO_FINAL_URL}?subscriptionId=${subscription.id}&status=failure`,
+          pendingUrl: `${MERCADOPAGO_FINAL_URL}?subscriptionId=${subscription.id}&status=pending`,
+          notificationUrl: MERCADOPAGO_NOTIFICATION_URL || undefined,
+          metadata: {
+            subscriptionId: subscription.id,
+            providerId: data.providerId,
+            plan: data.plan,
+          },
+        });
+
+        return res.status(201).json({
+          subscription,
+          planDetails,
+          paymentRequired: true,
+          payment: {
+            method: 'MERCADOPAGO',
+            preferenceId: preference.id,
+            initPoint: preference.init_point,
+            sandboxInitPoint: preference.sandbox_init_point,
+            publicKey: mercadoPagoService.getPublicKey(),
+          }
+        });
+      } catch (err) {
+        console.error('Mercado Pago error creating subscription:', err);
+        return res.status(500).json({ error: 'Failed to initialize Mercado Pago transaction' });
       }
     }
 
@@ -293,7 +369,14 @@ router.post('/:id/activate', async (req, res) => {
 
     const subscription = await prisma.subscription.update({
       where: { id },
-      data: { status: 'ACTIVE' },
+      data: { 
+        status: 'ACTIVE',
+        provider: {
+          update: {
+            status: 'ACTIVE'
+          }
+        }
+      },
       include: { provider: true }
     });
 
@@ -319,7 +402,7 @@ router.post('/:id/cancel', async (req, res) => {
     const subscription = await prisma.subscription.update({
       where: { id },
       data: { 
-        status: 'CANCELLED',
+        // Keep status as ACTIVE so they do not lose visibility until the end of paid period
         autoRenew: false 
       },
       include: { provider: true }
@@ -366,6 +449,11 @@ router.post('/:id/renew', async (req, res) => {
         endDate: newEndDate,
         lastPaymentDate: new Date(),
         nextBillingDate: current.plan === 'MONTHLY' ? newEndDate : undefined,
+        provider: {
+          update: {
+            status: 'ACTIVE'
+          }
+        }
       },
       include: { provider: true }
     });

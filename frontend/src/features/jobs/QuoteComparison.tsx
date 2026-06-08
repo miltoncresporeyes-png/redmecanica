@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Check, X, Clock, Star, Shield, Wrench, Car } from 'lucide-react';
 import { getQuotesByJob, acceptQuote, rejectQuote } from '../../services/api';
-import { useToast } from '../../contexts/ToastContext';
+import { useSuccessToast, useErrorToast } from '../../contexts/ToastContext';
 
 interface Quote {
   id: string;
@@ -35,8 +35,8 @@ const QuoteComparison: React.FC<QuoteComparisonProps> = ({ jobId, onQuoteAccepte
   const [quotes, setQuotes] = useState<Quote[]>([]);
   const [loading, setLoading] = useState(true);
   const [acceptingId, setAcceptingId] = useState<string | null>(null);
-  const { showSuccess, showError } = useToast();
-
+  const showSuccess = useSuccessToast();
+  const showError = useErrorToast();
   useEffect(() => {
     loadQuotes();
   }, [jobId]);

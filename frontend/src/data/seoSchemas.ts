@@ -32,9 +32,8 @@ export const localBusinessSchema = {
   priceRange: '$$',
   address: {
     '@type': 'PostalAddress',
+    addressLocality: 'Santiago y Regiones',
     addressCountry: 'CL',
-    addressRegion: 'RM',
-    addressLocality: 'Santiago',
   },
   geo: {
     '@type': 'GeoCoordinates',

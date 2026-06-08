@@ -4,22 +4,55 @@ import { registerProvider } from '../../services/api';
 import AutocompleteInput from '../../components/common/AutocompleteInput';
 import { COMUNAS_POR_REGION, CALLES_COMUNES, REGIONES } from '../../data/autocompleteData';
 import { validarRUT, formatearRUT } from '../../utils/rutValidator';
+import { useAuth } from '../../app/providers';
+import LoginModal from '../auth/LoginModal';
 
 interface ProviderOnboardingProps {
   onComplete: () => void;
   onCancel: () => void;
 }
 
+const VEHICLE_BRANDS = [
+  'Chevrolet',
+  'Ford',
+  'Toyota',
+  'Hyundai',
+  'Kia',
+  'Nissan',
+  'Suzuki',
+  'Mazda',
+  'Honda',
+  'Volkswagen',
+  'Mitsubishi',
+  'Jeep',
+  'Renault',
+  'Fiat',
+  'Peugeot',
+  'Citroën',
+  'Subaru',
+  'BMW',
+  'Mercedes-Benz',
+  'Audi',
+  'Volvo',
+  'Isuzu',
+  'Hino',
+  'Scania',
+  'Mercedes-Benz (Camiones)',
+  'Otro'
+];
+
 const ProviderOnboarding: React.FC<ProviderOnboardingProps> = ({ onComplete, onCancel }) => {
+  const { user, updateUser } = useAuth();
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState<any>({
-    userId: 'user-1', 
-    type: 'MECHANIC',
+    userId: '', 
     businessName: '', 
     rut: '', 
     experience: '', 
     specialties: [], 
     bio: '',
+    vehicleBrand: '',
+    customVehicleBrand: '',
     vehicle: '',
     licensePlate: '',
     latitude: -33.4489, 
@@ -36,6 +69,8 @@ const ProviderOnboarding: React.FC<ProviderOnboardingProps> = ({ onComplete, onC
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const [pendingSubmit, setPendingSubmit] = useState(false);
 
   const specialtyOptions = [
     { id: 'MECHANIC', label: 'Mecánica General' },
@@ -89,9 +124,19 @@ const ProviderOnboarding: React.FC<ProviderOnboardingProps> = ({ onComplete, onC
         setError('La presentación debe tener al menos 20 caracteres.');
         return false;
       }
-      if ((formData.type === 'MECHANIC' || formData.type === 'TOWING') && (!formData.vehicle.trim() || !formData.licensePlate.trim())) {
-        setError('Los datos del vehículo (Marca/Patente) son obligatorios para este servicio.');
-        return false;
+      if ((formData.type === 'MECHANIC' || formData.type === 'TOWING')) {
+        if (!formData.vehicleBrand) {
+          setError('Debes seleccionar la marca del vehículo.');
+          return false;
+        }
+        if (formData.vehicleBrand === 'Otro' && !formData.customVehicleBrand.trim()) {
+          setError('Debes ingresar la marca y modelo del vehículo.');
+          return false;
+        }
+        if (!formData.licensePlate.trim()) {
+          setError('La patente del vehículo es obligatoria.');
+          return false;
+        }
       }
     } else if (step === 3) {
       if (!formData.commune.trim()) {
@@ -148,13 +193,32 @@ const ProviderOnboarding: React.FC<ProviderOnboardingProps> = ({ onComplete, onC
 
   const handleSubmit = async () => {
     if (!validateStep()) return;
+    
+    // Si no está autenticado, mostrar modal de login
+    if (!user?.id) {
+      setPendingSubmit(true);
+      setShowLoginModal(true);
+      return;
+    }
+
+    await submitRegistration(user.id);
+  };
+
+  const submitRegistration = async (userId: string) => {
     setLoading(true);
     setError(null);
     try {
+      // Construir el nombre completo del vehículo
+      const vehicleValue = formData.vehicleBrand === 'Otro' 
+        ? formData.customVehicleBrand 
+        : formData.vehicleBrand;
+
       // Convertir specialties array a string separado por comas para el API si es necesario
       const payload = {
         ...formData,
-        specialties: formData.specialties.join(',')
+        userId: userId,
+        specialties: formData.specialties.join(','),
+        vehicle: vehicleValue
       };
       await registerProvider(payload);
       
@@ -176,6 +240,17 @@ const ProviderOnboarding: React.FC<ProviderOnboardingProps> = ({ onComplete, onC
       setError(err.response?.data?.error || "Error al registrar prestador.");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleLoginSuccess = async (loggedInUser: any) => {
+    updateUser(loggedInUser);
+    setShowLoginModal(false);
+    // Si había un pendiente de envío, continuar con el registro
+    if (pendingSubmit) {
+      setPendingSubmit(false);
+      // Usar el ID del usuario directamente del parámetro
+      await submitRegistration(loggedInUser.id);
     }
   };
 
@@ -306,25 +381,43 @@ const ProviderOnboarding: React.FC<ProviderOnboardingProps> = ({ onComplete, onC
             <h4 className="text-sm font-black mb-3 flex items-center gap-2">
               <span>🚗</span> Datos del Vehículo Operativo
             </h4>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Marca / Modelo</label>
-                <input
-                  type="text"
-                  value={formData.vehicle}
-                  onChange={(e) => setFormData({ ...formData, vehicle: e.target.value })}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="sm:col-span-2">
+                <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Marca del Vehículo</label>
+                <select
+                  value={formData.vehicleBrand}
+                  onChange={(e) => setFormData({ ...formData, vehicleBrand: e.target.value, customVehicleBrand: '' })}
                   className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg focus:ring-2 focus:ring-blue-400 outline-none text-sm"
-                  placeholder="Ej: Ford Transit"
-                />
+                >
+                  <option value="" className="text-slate-800">Seleccionar marca...</option>
+                  {VEHICLE_BRANDS.map((brand) => (
+                    <option key={brand} value={brand} className="text-slate-800">{brand}</option>
+                  ))}
+                </select>
               </div>
-              <div>
+
+              {formData.vehicleBrand === 'Otro' && (
+                <div className="sm:col-span-2">
+                  <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Marca / Modelo</label>
+                  <input
+                    type="text"
+                    value={formData.customVehicleBrand}
+                    onChange={(e) => setFormData({ ...formData, customVehicleBrand: e.target.value })}
+                    className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg focus:ring-2 focus:ring-blue-400 outline-none text-sm"
+                    placeholder="Ej: BYD Song Plus, Changan CS55..."
+                  />
+                </div>
+              )}
+
+              <div className="sm:col-span-2">
                 <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Patente</label>
                 <input
                   type="text"
                   value={formData.licensePlate}
                   onChange={(e) => setFormData({ ...formData, licensePlate: e.target.value })}
-                  className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg focus:ring-2 focus:ring-blue-400 outline-none text-sm"
+                  className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg focus:ring-2 focus:ring-blue-400 outline-none text-sm uppercase"
                   placeholder="AB-CD-11"
+                  maxLength={8}
                 />
               </div>
             </div>
@@ -490,6 +583,17 @@ const ProviderOnboarding: React.FC<ProviderOnboardingProps> = ({ onComplete, onC
         .animate-fadeIn { animation: fadeIn 0.4s ease-out; }
         .animate-slideDown { animation: slideDown 0.3s ease-out; }
       `}} />
+
+      <LoginModal
+        isOpen={showLoginModal}
+        onClose={() => {
+          setShowLoginModal(false);
+          setPendingSubmit(false);
+        }}
+        onLoginSuccess={handleLoginSuccess}
+        defaultMode="register"
+        defaultRole="provider"
+      />
     </Card>
   );
 };

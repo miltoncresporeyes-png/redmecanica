@@ -209,7 +209,7 @@ export const FormField: React.FC<FormFieldProps> = ({
         {required && <span className="text-red-500 ml-1" aria-hidden="true">*</span>}
         {required && <VisuallyHidden>(requerido)</VisuallyHidden>}
       </label>
-      {React.cloneElement(children, {
+      {React.cloneElement(children as React.ReactElement<any>, {
         id,
         'aria-invalid': !!error,
         'aria-describedby': errorId,

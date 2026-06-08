@@ -263,7 +263,7 @@ const Contact: React.FC<ContactProps> = ({ onClose }) => {
             <h3 className="text-lg font-bold text-gray-900 mb-4">Síguenos en redes sociales</h3>
             <div className="flex space-x-4">
               <a
-                href="#"
+                href="https://facebook.com/redmecanicacl" target="_blank" rel="noopener noreferrer"
                 className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center text-white hover:bg-blue-700 transition-colors"
                 aria-label="Facebook"
               >
@@ -272,7 +272,7 @@ const Contact: React.FC<ContactProps> = ({ onClose }) => {
                 </svg>
               </a>
               <a
-                href="#"
+                href="https://twitter.com/redmecanicacl" target="_blank" rel="noopener noreferrer"
                 className="w-12 h-12 bg-blue-400 rounded-full flex items-center justify-center text-white hover:bg-blue-500 transition-colors"
                 aria-label="Twitter"
               >
@@ -281,7 +281,7 @@ const Contact: React.FC<ContactProps> = ({ onClose }) => {
                 </svg>
               </a>
               <a
-                href="#"
+                href="https://instagram.com/redmecanicacl" target="_blank" rel="noopener noreferrer"
                 className="w-12 h-12 bg-gradient-to-tr from-purple-600 to-pink-600 rounded-full flex items-center justify-center text-white hover:shadow-lg transition-shadow"
                 aria-label="Instagram"
               >
@@ -290,7 +290,7 @@ const Contact: React.FC<ContactProps> = ({ onClose }) => {
                 </svg>
               </a>
               <a
-                href="#"
+                href="https://youtube.com/redmecanicacl" target="_blank" rel="noopener noreferrer"
                 className="w-12 h-12 bg-red-600 rounded-full flex items-center justify-center text-white hover:bg-red-700 transition-colors"
                 aria-label="YouTube"
               >

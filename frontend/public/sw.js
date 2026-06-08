@@ -1,7 +1,7 @@
 // Service Worker Premium para RedMecánica PWA
 // Optimizado para rendimiento UX/UI premium y experiencia offline fluida
 
-const VERSION = 'v3.2';
+const VERSION = 'v3.3';
 const CACHE_NAME = `redmecanica-${VERSION}`;
 const API_CACHE_NAME = `redmecanica-api-${VERSION}`;
 
@@ -305,6 +305,11 @@ self.addEventListener('fetch', (event) => {
   // Skip chrome-extension requests
   if (url.protocol === 'chrome-extension:') return;
   
+  // Bypasear peticiones del entorno de desarrollo (Vite, HMR, código fuente)
+  if (url.searchParams.has('t') || url.pathname.startsWith('/@') || url.pathname.includes('node_modules') || url.pathname.startsWith('/src/')) {
+    return;
+  }
+  
   // Rutas API - Estrategia optimizada
   if (url.pathname.startsWith('/api/')) {
     event.respondWith(apiStrategy(request, event));
@@ -395,7 +400,7 @@ async function networkWithCacheFallback(request, event) {
       return cached;
     }
     trackMetric('cacheMiss');
-    throw error;
+    return new Response('Service Unavailable', { status: 503, statusText: 'Service Unavailable' });
   }
 }
 
@@ -488,7 +493,7 @@ async function fontStrategy(request, event) {
 }
 
 // Estrategia optimizada para APIs
-async function apiStrategy(request) {
+async function apiStrategy(request, event) {
   const url = new URL(request.url);
   const cache = await caches.open(API_CACHE_NAME);
   const cached = await cache.match(request);
@@ -523,7 +528,7 @@ async function apiStrategy(request) {
   }
   
   // Otras APIs: usar stale-while-revalidate con expiración de 5 minutos
-  return staleWhileRevalidate(request, API_CACHE_NAME, CACHE_EXPIRY.API);
+  return staleWhileRevalidate(request, API_CACHE_NAME, CACHE_EXPIRY.API, event);
 }
 
 // Estrategia de navegación con offline HTML premium

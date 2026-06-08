@@ -193,7 +193,7 @@ const Monitoring: React.FC = () => {
 
 const HealthCard: React.FC<{name: string, status: string, icon: any, details: string}> = ({ name, status, icon: Icon, details }) => (
   <motion.div 
-    whileHover={{ y: -8, shadow: '0 25px 50px -12px rgba(0, 0, 0, 0.05)' }}
+    whileHover={{ y: -8, boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.05)' }}
     className="bg-white p-7 rounded-[32px] shadow-sm border border-gray-100 transition-all group"
   >
     <div className="flex items-center justify-between mb-6">

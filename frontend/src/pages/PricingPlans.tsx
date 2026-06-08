@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
-import { Check, X, Wrench, Settings, Gauge, Warehouse, HelpCircle } from 'lucide-react';
-import Card from '../components/common/Card';
+import { Check, X, Wrench, Settings, Gauge, Warehouse, HelpCircle, CreditCard, ArrowLeft, Loader2, Shield } from 'lucide-react';
 import SEO from '../components/SEO';
+import { useAuth } from '../app/providers';
+import { createSubscription } from '../services/api';
+import LoginModal from '../features/auth/LoginModal';
 
 interface PricingPlansProps {
   onClose?: () => void;
@@ -10,11 +12,14 @@ interface PricingPlansProps {
 }
 
 const PricingPlans: React.FC<PricingPlansProps> = ({ onClose, onSelectPlan, onNavigateToOnboarding }) => {
+  const { user } = useAuth();
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'annual'>('monthly');
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [selectedPlanForPayment, setSelectedPlanForPayment] = useState<any>(null);
-  
-  const [isProviderRegistered] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState<'MERCADOPAGO' | 'WEBPAY'>('MERCADOPAGO');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [showLoginModal, setShowLoginModal] = useState(false);
 
   const plans = [
     {
@@ -23,6 +28,7 @@ const PricingPlans: React.FC<PricingPlansProps> = ({ onClose, onSelectPlan, onNa
       subtitle: 'Para comenzar',
       price: 0,
       priceAnnual: 0,
+      backendPlan: null,
       color: 'slate',
       icon: <Wrench className="w-8 h-8" />,
       popular: false,
@@ -42,7 +48,9 @@ const PricingPlans: React.FC<PricingPlansProps> = ({ onClose, onSelectPlan, onNa
       name: 'Profesional',
       subtitle: 'Recomendado',
       price: 14900,
-      priceAnnual: 149000, 
+      priceAnnual: 149000,
+      backendPlan: 'MONTHLY',
+      backendPlanAnnual: 'YEARLY',
       color: 'blue',
       icon: <Settings className="w-8 h-8" />,
       popular: true,
@@ -62,7 +70,9 @@ const PricingPlans: React.FC<PricingPlansProps> = ({ onClose, onSelectPlan, onNa
       name: 'Premium',
       subtitle: 'Para talleres',
       price: 29900,
-      priceAnnual: 299000, 
+      priceAnnual: 299000,
+      backendPlan: 'PROFESSIONAL',
+      backendPlanAnnual: 'PROFESSIONAL',
       color: 'indigo',
       icon: <Gauge className="w-8 h-8" />,
       popular: false,
@@ -83,6 +93,7 @@ const PricingPlans: React.FC<PricingPlansProps> = ({ onClose, onSelectPlan, onNa
       subtitle: 'Cadenas y Flotas',
       price: null,
       priceAnnual: null,
+      backendPlan: null,
       color: 'emerald',
       icon: <Warehouse className="w-8 h-8" />,
       popular: false,
@@ -101,26 +112,89 @@ const PricingPlans: React.FC<PricingPlansProps> = ({ onClose, onSelectPlan, onNa
 
   const handleSelectPlan = (planId: string) => {
     const plan = plans.find(p => p.id === planId);
-    
+
     if (planId === 'enterprise') {
       window.open('mailto:ventas@redmecanica.cl?subject=Consulta Plan Empresarial', '_blank');
-      return;
-    }
-
-    if (!isProviderRegistered) {
-      localStorage.setItem('selectedPlan', JSON.stringify({ planId, billingCycle }));
-      if (onNavigateToOnboarding) {
-        onNavigateToOnboarding();
-      }
       return;
     }
 
     if (planId === 'free') {
       alert('¡Genial! Tu plan Básico está activo.');
       onSelectPlan?.(planId);
-    } else {
-      setSelectedPlanForPayment({ ...plan, billingCycle });
-      setShowPaymentModal(true);
+      return;
+    }
+
+    // Si no está logueado, mostrar login
+    if (!user?.id) {
+      setShowLoginModal(true);
+      return;
+    }
+
+    // Abrir modal de pago
+    setSelectedPlanForPayment({ ...plan, billingCycle });
+    setPaymentMethod('MERCADOPAGO');
+    setError(null);
+    setShowPaymentModal(true);
+  };
+
+  const handleProcessPayment = async () => {
+    if (!selectedPlanForPayment || !user?.id) return;
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      // Obtener providerId del usuario
+      const userData = user as any;
+      const providerId = userData.serviceProvider?.id;
+      if (!providerId) {
+        setError('No se encontró tu perfil de prestador. Completa el registro primero.');
+        setLoading(false);
+        return;
+      }
+
+      // Mapear plan del frontend al plan del backend
+      const backendPlan = selectedPlanForPayment.billingCycle === 'annual'
+        ? selectedPlanForPayment.backendPlanAnnual
+        : selectedPlanForPayment.backendPlan;
+
+      if (!backendPlan) {
+        setError('Plan no válido para pago en línea.');
+        setLoading(false);
+        return;
+      }
+
+      const result = await createSubscription({
+        providerId,
+        plan: backendPlan,
+        paymentMethod: paymentMethod,
+        autoRenew: true,
+      });
+
+      // Redirigir según el método de pago
+      if (result.paymentRequired && result.payment) {
+        if (paymentMethod === 'MERCADOPAGO' && result.payment.initPoint) {
+          // Redirigir a checkout de MercadoPago
+          window.location.href = result.payment.initPoint;
+        } else if (paymentMethod === 'WEBPAY' && result.payment.url) {
+          // Redirigir a Webpay
+          window.location.href = result.payment.url;
+        } else {
+          setError('No se pudo generar el enlace de pago. Intenta nuevamente.');
+          setLoading(false);
+        }
+      } else {
+        // Pago por transferencia o sin pago requerido
+        alert('¡Suscripción creada! Revisa tu email para instrucciones de pago.');
+        setShowPaymentModal(false);
+        onSelectPlan?.(selectedPlanForPayment.id);
+      }
+    } catch (err: any) {
+      console.error('Payment error:', err);
+      const msg = err.response?.data?.error || 'Error al procesar el pago. Intenta nuevamente.';
+      setError(msg);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -143,7 +217,7 @@ const PricingPlans: React.FC<PricingPlansProps> = ({ onClose, onSelectPlan, onNa
 
           <div className="mt-10 flex items-center justify-center gap-4">
             <span className={`text-sm font-bold ${billingCycle === 'monthly' ? 'text-blue-600' : 'text-slate-400'}`}>Mensual</span>
-            <button 
+            <button
               onClick={() => setBillingCycle(billingCycle === 'monthly' ? 'annual' : 'monthly')}
               className="relative w-14 h-7 bg-slate-200 rounded-full transition-colors focus:outline-none"
             >
@@ -161,9 +235,9 @@ const PricingPlans: React.FC<PricingPlansProps> = ({ onClose, onSelectPlan, onNa
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {plans.map((plan) => {
             const displayPrice = billingCycle === 'annual' ? plan.priceAnnual : plan.price;
-            
+
             return (
-              <div 
+              <div
                 key={plan.id}
                 className={`relative group bg-white rounded-[2rem] p-1 transition-all duration-300 hover:-translate-y-2 ${
                   plan.popular ? 'ring-2 ring-blue-500 shadow-2xl scale-105 z-10' : 'shadow-xl'
@@ -174,7 +248,7 @@ const PricingPlans: React.FC<PricingPlansProps> = ({ onClose, onSelectPlan, onNa
                     Recomendado
                   </div>
                 )}
-                
+
                 <div className="bg-white rounded-[1.9rem] p-7 flex flex-col h-full">
                   <div className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-6 transition-transform group-hover:scale-110 duration-300 ${
                     plan.color === 'slate' ? 'bg-slate-100 text-slate-600' :
@@ -224,8 +298,8 @@ const PricingPlans: React.FC<PricingPlansProps> = ({ onClose, onSelectPlan, onNa
                   <button
                     onClick={() => handleSelectPlan(plan.id)}
                     className={`w-full py-3.5 rounded-xl font-black text-sm transition-all active:scale-95 ${
-                      plan.popular 
-                        ? 'bg-blue-600 text-white hover:bg-blue-700 shadow-lg shadow-blue-200' 
+                      plan.popular
+                        ? 'bg-blue-600 text-white hover:bg-blue-700 shadow-lg shadow-blue-200'
                         : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
                     }`}
                   >
@@ -260,18 +334,20 @@ const PricingPlans: React.FC<PricingPlansProps> = ({ onClose, onSelectPlan, onNa
         </div>
       </div>
 
+      {/* Modal de Pago */}
       {showPaymentModal && selectedPlanForPayment && (
         <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-[100] p-4 animate-in fade-in duration-300">
           <div className="bg-white rounded-[2.5rem] shadow-2xl max-w-md w-full p-8 relative overflow-hidden">
             <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-blue-600 to-indigo-600" />
-            <button 
-              onClick={() => setShowPaymentModal(false)}
+            <button
+              onClick={() => { setShowPaymentModal(false); setError(null); }}
               className="absolute top-6 right-6 text-slate-400 hover:text-slate-600 transition-colors"
             >
               <X className="w-6 h-6" />
             </button>
 
-            <div className="text-center mb-8">
+            {/* Header */}
+            <div className="text-center mb-6">
               <div className="w-16 h-16 bg-blue-100 text-blue-600 rounded-3xl flex items-center justify-center mx-auto mb-4">
                 {selectedPlanForPayment.icon}
               </div>
@@ -281,34 +357,93 @@ const PricingPlans: React.FC<PricingPlansProps> = ({ onClose, onSelectPlan, onNa
               </p>
             </div>
 
-            <div className="bg-slate-50 rounded-2xl p-6 mb-8 text-center border border-slate-100">
+            {/* Monto */}
+            <div className="bg-slate-50 rounded-2xl p-5 mb-6 text-center border border-slate-100">
               <p className="text-xs uppercase font-black text-slate-400 tracking-wider mb-1">Monto a procesar</p>
               <p className="text-4xl font-black text-slate-900">
                 ${(selectedPlanForPayment.billingCycle === 'annual' ? selectedPlanForPayment.priceAnnual : selectedPlanForPayment.price).toLocaleString('es-CL')}
               </p>
+              <p className="text-xs text-slate-400 mt-1">
+                {selectedPlanForPayment.billingCycle === 'annual' ? 'Cobro anual único' : 'Cobro mensual recurrente'}
+              </p>
             </div>
 
+            {/* Métodos de Pago */}
+            <div className="mb-6">
+              <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Método de pago</p>
+              <div className="grid grid-cols-2 gap-3">
+                <button
+                  onClick={() => setPaymentMethod('MERCADOPAGO')}
+                  className={`p-4 rounded-xl border-2 transition-all text-center ${
+                    paymentMethod === 'MERCADOPAGO'
+                      ? 'border-blue-500 bg-blue-50 shadow-md'
+                      : 'border-slate-200 hover:border-slate-300 bg-white'
+                  }`}
+                >
+                  <div className="text-2xl mb-1">💙</div>
+                  <p className="text-xs font-black text-slate-700">Mercado Pago</p>
+                  <p className="text-[10px] text-slate-400 mt-0.5">Tarjeta, transferencia</p>
+                </button>
+                <button
+                  onClick={() => setPaymentMethod('WEBPAY')}
+                  className={`p-4 rounded-xl border-2 transition-all text-center ${
+                    paymentMethod === 'WEBPAY'
+                      ? 'border-blue-500 bg-blue-50 shadow-md'
+                      : 'border-slate-200 hover:border-slate-300 bg-white'
+                  }`}
+                >
+                  <div className="text-2xl mb-1">💳</div>
+                  <p className="text-xs font-black text-slate-700">Webpay</p>
+                  <p className="text-[10px] text-slate-400 mt-0.5">Tarjeta de crédito</p>
+                </button>
+              </div>
+            </div>
+
+            {/* Error */}
+            {error && (
+              <div className="bg-red-50 text-red-700 p-3 rounded-xl mb-4 text-sm font-bold border border-red-100">
+                ⚠️ {error}
+              </div>
+            )}
+
+            {/* Botón Pagar */}
             <button
-              onClick={() => {
-                const price = selectedPlanForPayment.billingCycle === 'annual' ? selectedPlanForPayment.priceAnnual : selectedPlanForPayment.price;
-                if (confirm(`Serás redirigido a Webpay para procesar $${price.toLocaleString('es-CL')}. ¿Continuar?`)) {
-                  setTimeout(() => {
-                    alert('¡Suscripción activada con éxito!');
-                    setShowPaymentModal(false);
-                    onSelectPlan?.(selectedPlanForPayment.id);
-                  }, 1500);
-                }
-              }}
-              className="w-full bg-blue-600 text-white py-4 rounded-2xl font-black hover:bg-blue-700 shadow-xl shadow-blue-200 transition-all active:scale-95 mb-3"
+              onClick={handleProcessPayment}
+              disabled={loading}
+              className="w-full bg-blue-600 text-white py-4 rounded-2xl font-black hover:bg-blue-700 shadow-xl shadow-blue-200 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mb-3"
             >
-              Ir a Pagar
+              {loading ? (
+                <>
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  Procesando...
+                </>
+              ) : (
+                <>
+                  <CreditCard className="w-5 h-5" />
+                  Pagar ${((selectedPlanForPayment.billingCycle === 'annual' ? selectedPlanForPayment.priceAnnual : selectedPlanForPayment.price)).toLocaleString('es-CL')}
+                </>
+              )}
             </button>
-            <p className="text-[10px] text-center text-slate-400 font-bold uppercase tracking-tight">
-              💳 Procesado de forma segura vía Webpay Plus
-            </p>
+
+            <div className="flex items-center justify-center gap-2 text-[10px] text-slate-400 font-bold uppercase tracking-tight">
+              <Shield className="w-3 h-3" />
+              <span>Pago seguro y encriptado</span>
+            </div>
           </div>
         </div>
       )}
+
+      {/* Login Modal */}
+      <LoginModal
+        isOpen={showLoginModal}
+        onClose={() => setShowLoginModal(false)}
+        onLoginSuccess={() => {
+          setShowLoginModal(false);
+          // El usuario ahora está logueado, puede proceder al pago
+        }}
+        defaultMode="register"
+        defaultRole="provider"
+      />
     </div>
   );
 };

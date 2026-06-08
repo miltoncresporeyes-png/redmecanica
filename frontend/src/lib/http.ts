@@ -43,8 +43,10 @@ api.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
-    const isAuthEndpoint = originalRequest.url?.includes('/auth/');
-    if (error.response?.status === 401 && !originalRequest._retry && !isAuthEndpoint) {
+    const url = originalRequest.url || '';
+    // Solo saltar refresh en endpoints de auth que NO son /me
+    const isLoginOrRegister = url.includes('/auth/login') || url.includes('/auth/register') || url.includes('/auth/refresh');
+    if (error.response?.status === 401 && !originalRequest._retry && !isLoginOrRegister) {
       originalRequest._retry = true;
       try {
         const { data } = await api.post('/auth/refresh');

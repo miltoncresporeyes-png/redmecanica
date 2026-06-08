@@ -15,8 +15,8 @@ const LaunchBanner: React.FC = () => {
 
   const LEAD_STORAGE_KEY = 'launch_lead_registered_email';
 
-  const CAMPAIGN_START_DATE = new Date(2026, 2, 7, 0, 0, 0, 0); // 07/03/2026 local time
-  const CAMPAIGN_DURATION_DAYS = 3;
+  const CAMPAIGN_START_DATE = new Date(2026, 4, 24, 20, 0, 0, 0); // 24/05/2026 20:00 hrs local time
+  const CAMPAIGN_DURATION_DAYS = 7;
 
   const [timeLeft, setTimeLeft] = useState({
     days: 0,
@@ -132,7 +132,7 @@ const LaunchBanner: React.FC = () => {
 
             <div className="mb-6">
 <h3 className="text-xl font-bold text-white mb-2 leading-tight">
-                ¡Últimos 3 días! 🇨🇱
+                ¡Últimos 7 días! 🇨🇱
               </h3>
               <p className="text-slate-400 text-sm leading-relaxed">
                 ¡No te quedes fuera! 

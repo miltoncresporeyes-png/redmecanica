@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../lib/http';
+import SubscriptionPaymentModal from './SubscriptionPaymentModal';
 
 interface ProviderDashboardProps {
   onClose: () => void;
@@ -20,21 +21,25 @@ const ProviderDashboard: React.FC<ProviderDashboardProps> = ({ onClose }) => {
   const [data, setData] = useState<any>(null);
   const [jobs, setJobs] = useState<any[]>([]);
   const [quotes, setQuotes] = useState<any[]>([]);
+  const [invoices, setInvoices] = useState<any[]>([]);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [showNotifications, setShowNotifications] = useState(false);
 
   const fetchData = async () => {
     try {
       setLoading(true);
-      const [dashRes, jobsRes, quotesRes] = await Promise.all([
+      const [dashRes, jobsRes, quotesRes, invoicesRes] = await Promise.all([
         api.get('/providers/me/dashboard').catch(() => ({ data: null })),
         api.get('/providers/me/jobs').catch(() => ({ data: [] })),
-        api.get('/providers/me/quotes').catch(() => ({ data: [] }))
+        api.get('/providers/me/quotes').catch(() => ({ data: [] })),
+        api.get('/providers/me/invoices').catch(() => ({ data: [] }))
       ]);
       
       setData(dashRes.data);
       setJobs(jobsRes.data || []);
       setQuotes(quotesRes.data || []);
+      setInvoices(invoicesRes.data || []);
       
       // Simulated notifications (in production, fetch from API)
       setNotifications([
@@ -221,7 +226,7 @@ const ProviderDashboard: React.FC<ProviderDashboardProps> = ({ onClose }) => {
           { id: 'dashboard', label: 'Panel', icon: '📊' },
           { id: 'quotes', label: 'Cotizaciones', icon: '📝', badge: pendingQuotes.length },
           { id: 'jobs', label: 'Trabajos', icon: '🔧', badge: pendingJobs.length },
-          { id: 'earnings', label: 'Ingresos', icon: '💵' },
+          { id: 'earnings', label: 'Finanzas', icon: '💵' },
           { id: 'profile', label: 'Perfil', icon: '👤' }
         ].map(tab => (
           <button
@@ -409,25 +414,136 @@ const ProviderDashboard: React.FC<ProviderDashboardProps> = ({ onClose }) => {
         </div>
       )}
 
-      {activeTab === 'earnings' && (
-        <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
-          <h3 className="text-xl font-bold mb-6">Resumen de Ingresos</h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-green-50 p-4 rounded-xl">
-              <p className="text-gray-600 text-sm">Total ganado</p>
-              <p className="text-3xl font-black text-green-600">${(stats.totalEarnings || 1250000).toLocaleString('es-CL')}</p>
+      {activeTab === 'earnings' && (() => {
+        const escrowFunds = jobs
+          .filter(j => j.paymentStatus === 'HELD')
+          .reduce((sum, j) => sum + (j.estimatedCost || 0), 0);
+
+        const commissionPaid = jobs
+          .filter(j => j.paymentStatus === 'RELEASED')
+          .reduce((sum, j) => sum + ((j.estimatedCost || 0) * 0.12), 0);
+
+        const netEarnings = jobs
+          .filter(j => j.paymentStatus === 'RELEASED')
+          .reduce((sum, j) => sum + ((j.estimatedCost || 0) * 0.88), 0);
+
+        return (
+          <div className="space-y-6">
+            {/* Tarjeta de Suscripción */}
+            <div className="relative bg-zinc-950 border border-zinc-800 rounded-3xl p-6 md:p-8 overflow-hidden shadow-xl text-white">
+              <div className="absolute top-0 right-0 w-64 h-64 bg-green-500/5 rounded-full blur-3xl"></div>
+              
+              <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+                <div>
+                  <div className="flex items-center gap-3 mb-2">
+                    <h3 className="text-xl font-black tracking-widest text-zinc-100">SUSCRIPCIÓN REDMECÁNICA SaaS</h3>
+                    <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider animate-pulse ${
+                      provider?.status === 'ACTIVE' 
+                        ? 'bg-green-500/20 text-green-400 border border-green-500/40' 
+                        : 'bg-red-500/20 text-red-400 border border-red-500/40'
+                    }`}>
+                      {provider?.status === 'ACTIVE' ? 'Activa' : 'Suspendida / Morosa'}
+                    </span>
+                  </div>
+                  {provider?.subscription ? (
+                    <div className="space-y-1.5 text-zinc-400 text-sm">
+                      <p>Plan actual: <span className="font-bold text-white uppercase">{provider.subscription.plan}</span></p>
+                      <p>Período de validez: <span>{new Date(provider.subscription.startDate).toLocaleDateString('es-CL')}</span> al <span className="font-bold text-white">{new Date(provider.subscription.endDate).toLocaleDateString('es-CL')}</span></p>
+                      <p>Monto de renovación: <span className="font-bold text-green-400">${provider.subscription.amount?.toLocaleString('es-CL')} CLP</span></p>
+                      <p>Renovación automática: <span className="text-zinc-300 font-bold">{provider.subscription.autoRenew ? 'SÍ' : 'NO'}</span></p>
+                    </div>
+                  ) : (
+                    <div className="text-zinc-500 text-sm">
+                      <p>No tienes una suscripción activa. Suscríbete para reactivar la visibilidad en el mapa y sitemaps.</p>
+                    </div>
+                  )}
+                </div>
+                <button
+                  onClick={() => setShowPaymentModal(true)}
+                  className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-400 hover:to-emerald-500 text-black py-3 px-6 rounded-2xl font-black transition-all hover:scale-[1.02] shadow-[0_0_20px_rgba(34,197,94,0.2)] flex items-center gap-2"
+                >
+                  <span>💳</span> {provider?.subscription ? 'Pagar / Renovar Plan' : 'Suscribirse al Directorio'}
+                </button>
+              </div>
             </div>
-            <div className="bg-blue-50 p-4 rounded-xl">
-              <p className="text-gray-600 text-sm">Este mes</p>
-              <p className="text-3xl font-black text-blue-600">${(stats.monthEarnings || 250000).toLocaleString('es-CL')}</p>
+
+            {/* Métricas del Wallet / Escrow */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="bg-zinc-950 border border-zinc-800 rounded-3xl p-6 text-white shadow-xl relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-24 h-24 bg-green-500/5 rounded-full blur-2xl"></div>
+                <p className="text-zinc-400 text-sm font-bold tracking-wider uppercase mb-2">Ganancias Netas (88%)</p>
+                <p className="text-3xl font-black text-green-400">${netEarnings.toLocaleString('es-CL')}</p>
+                <p className="text-zinc-500 text-xs mt-2">Monto neto liberado en tu cuenta</p>
+              </div>
+
+              <div className="bg-zinc-950 border border-zinc-800 rounded-3xl p-6 text-white shadow-xl relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-24 h-24 bg-blue-500/5 rounded-full blur-2xl"></div>
+                <p className="text-zinc-400 text-sm font-bold tracking-wider uppercase mb-2">Fondos en Escrow (Custodia)</p>
+                <p className="text-3xl font-black text-blue-400">${escrowFunds.toLocaleString('es-CL')}</p>
+                <p className="text-zinc-500 text-xs mt-2">Fondos retenidos hasta finalización del servicio</p>
+              </div>
+
+              <div className="bg-zinc-950 border border-zinc-800 rounded-3xl p-6 text-white shadow-xl relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-24 h-24 bg-purple-500/5 rounded-full blur-2xl"></div>
+                <p className="text-zinc-400 text-sm font-bold tracking-wider uppercase mb-2">Comisiones Retenidas (12%)</p>
+                <p className="text-3xl font-black text-purple-400">${commissionPaid.toLocaleString('es-CL')}</p>
+                <p className="text-zinc-500 text-xs mt-2">Retención de take-rate de RedMecánica</p>
+              </div>
             </div>
-            <div className="bg-purple-50 p-4 rounded-xl">
-              <p className="text-gray-600 text-sm">Pendiente</p>
-              <p className="text-3xl font-black text-purple-600">$0</p>
+
+            {/* Historial de Facturación */}
+            <div className="bg-zinc-950 border border-zinc-800 rounded-3xl p-6 md:p-8 shadow-xl text-white">
+              <h3 className="text-lg font-black tracking-widest text-zinc-100 mb-6 uppercase flex items-center gap-2">
+                <span>🧾</span> Historial de Facturas Emitidas
+              </h3>
+              
+              {invoices.length > 0 ? (
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-sm border-collapse">
+                    <thead>
+                      <tr className="border-b border-zinc-800 text-zinc-500 font-bold uppercase tracking-wider text-xs">
+                        <th className="py-3 px-4">N° Factura</th>
+                        <th className="py-3 px-4">Concepto</th>
+                        <th className="py-3 px-4">Fecha Emisión</th>
+                        <th className="py-3 px-4">Total</th>
+                        <th className="py-3 px-4">Estado</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-zinc-900">
+                      {invoices.map((inv) => (
+                        <tr key={inv.id} className="hover:bg-zinc-900/40 transition-colors text-zinc-300">
+                          <td className="py-4 px-4 font-mono font-bold text-green-400">{inv.invoiceNumber}</td>
+                          <td className="py-4 px-4">
+                            <span className="font-semibold text-white">
+                              {inv.type === 'SUBSCRIPTION' ? 'Suscripción Mensual SaaS' : 'Comisión de Servicio (12% Take-Rate)'}
+                            </span>
+                          </td>
+                          <td className="py-4 px-4">{new Date(inv.createdAt).toLocaleDateString('es-CL')}</td>
+                          <td className="py-4 px-4 font-black">${inv.total?.toLocaleString('es-CL')} CLP</td>
+                          <td className="py-4 px-4">
+                            <span className={`px-2.5 py-0.5 rounded-full text-xs font-bold uppercase ${
+                              inv.status === 'PAID' 
+                                ? 'bg-green-500/10 text-green-400 border border-green-500/20' 
+                                : 'bg-yellow-500/10 text-yellow-400 border border-yellow-500/20'
+                            }`}>
+                              {inv.status === 'PAID' ? 'PAGADO' : 'PENDIENTE'}
+                            </span>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              ) : (
+                <div className="py-12 text-center text-zinc-500 bg-zinc-900/10 border border-dashed border-zinc-800 rounded-2xl flex flex-col items-center gap-3">
+                  <span className="text-4xl">📄</span>
+                  <p>Aún no se han emitido facturas para esta cuenta.</p>
+                </div>
+              )}
             </div>
           </div>
-        </div>
-      )}
+        );
+      })()}
 
       {activeTab === 'profile' && (
         <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
@@ -463,6 +579,14 @@ const ProviderDashboard: React.FC<ProviderDashboardProps> = ({ onClose }) => {
             </button>
           </div>
         </div>
+      )}
+
+      {showPaymentModal && provider && (
+        <SubscriptionPaymentModal 
+          providerId={provider.id} 
+          onClose={() => setShowPaymentModal(false)} 
+          onSuccess={fetchData} 
+        />
       )}
     </div>
   );

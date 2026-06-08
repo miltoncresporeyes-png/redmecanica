@@ -13,8 +13,8 @@ interface SEOProps {
 }
 
 const SEO: React.FC<SEOProps> = ({
-  title = 'RedMecánica - Mecánicos a Domicilio en Chile',
-  description = 'Conectamos conductores con mecánicos certificados, talleres y grúas. Servicios automotrices a domicilio en Chile.',
+  title = 'Mecánicos en Santiago y Regiones | Encuentra Talleres y Grúas Cerca de Ti',
+  description = 'Encuentra mecánicos, talleres y grúas en Santiago y Regiones. Compara servicios, precios y disponibilidad en minutos.',
   keywords = 'mecánico a domicilio, taller mecánico Chile, servicios automotrices',
   ogImage = 'https://redmecanica.cl/og-image.jpg',
   ogUrl,

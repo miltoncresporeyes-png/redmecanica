@@ -389,7 +389,7 @@ export const getProviderSubscription = async (providerId: string): Promise<any> 
 export const createSubscription = async (data: {
   providerId: string;
   plan: 'MONTHLY' | 'YEARLY' | 'PROFESSIONAL';
-  paymentMethod?: 'WEBPAY' | 'TRANSFER';
+  paymentMethod?: 'WEBPAY' | 'MERCADOPAGO' | 'TRANSFER';
   autoRenew?: boolean;
 }): Promise<any> => {
   const response = await api.post('/subscriptions', data);
@@ -417,5 +417,10 @@ export const cancelSubscription = async (id: string): Promise<any> => {
 
 export const renewSubscription = async (id: string): Promise<any> => {
   const response = await api.post(`/subscriptions/${id}/renew`);
+  return response.data;
+};
+
+export const getSubscriptionStatus = async (id: string): Promise<any> => {
+  const response = await api.get(`/subscriptions/${id}/status`);
   return response.data;
 };

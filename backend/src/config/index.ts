@@ -43,5 +43,13 @@ export const config = {
     commerceCode: process.env.WEBPAY_COMMERCE_CODE || '',
     apiKey: process.env.WEBPAY_API_KEY || '',
     environment: process.env.WEBPAY_ENV || 'integration',
+  },
+  mercadopago: {
+    accessToken: process.env.MERCADOPAGO_ACCESS_TOKEN || process.env.MP_ACCESS_TOKEN || '',
+    publicKey: process.env.MERCADOPAGO_PUBLIC_KEY || process.env.MP_PUBLIC_KEY || '',
+    webhookSecret: process.env.MERCADOPAGO_WEBHOOK_SECRET || process.env.MP_WEBHOOK_SECRET || '',
+    notificationUrl: process.env.MERCADOPAGO_NOTIFICATION_URL || '',
+    returnUrl: process.env.MERCADOPAGO_RETURN_URL || '',
+    finalUrl: process.env.MERCADOPAGO_FINAL_URL || '',
   }
 };

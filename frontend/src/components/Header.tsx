@@ -96,7 +96,7 @@ const Header: React.FC = () => {
                     ? 'text-blue-700 bg-blue-50 border border-blue-100 font-bold'
                     : 'text-blue-600 border border-blue-600 hover:bg-blue-50'
                 }`}>
-                {user ? `👋 Hola, ${user.name.split(' ')[0]}` : 'Mi Cuenta'}
+                {user ? `👋 Hola, ${user.name?.split(' ')[0] || 'Usuario'}` : 'Mi Cuenta'}
               </button>
 
               {user && (
@@ -228,7 +228,7 @@ const Header: React.FC = () => {
               {user ? (
                 <>
                   <div className="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs font-bold">
-                    {user.name.charAt(0).toUpperCase()}
+                    {user.name?.charAt(0)?.toUpperCase() || 'U'}
                   </div>
                   <span>Mi Cuenta</span>
                 </>

@@ -17,6 +17,8 @@ import Hero from '../components/Hero';
 import Testimonials from '../components/landing/Testimonials';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import LaunchBanner from '../components/LaunchBanner';
+import WhatsAppButton from '../components/common/WhatsAppButton';
+import PitchBanners from '../components/landing/PitchBanners';
 
 // Lazy load all other pages for better performance
 const ProviderDashboard = React.lazy(() => import('../features/providers/ProviderDashboard'));
@@ -39,6 +41,13 @@ const ServiceRequestFlow = React.lazy(() => import('../pages/ServiceRequestFlow'
 const SuccessStories = React.lazy(() => import('../pages/SuccessStories'));
 const Terms = React.lazy(() => import('../pages/Terms'));
 const NotFoundPage = React.lazy(() => import('../pages/NotFoundPage'));
+
+// New SEO and Blog pages
+const ProviderProfilePage = React.lazy(() => import('../pages/ProviderProfilePage'));
+const BlogList = React.lazy(() => import('../pages/BlogList'));
+const BlogPost = React.lazy(() => import('../pages/BlogPost'));
+const ProgrammaticLandingPage = React.lazy(() => import('../pages/ProgrammaticLandingPage'));
+const PaymentStatusPage = React.lazy(() => import('../pages/PaymentStatusPage'));
 
 // Admin Pages - Lazy loaded (separate chunk)
 const AdminLayout = React.lazy(() => import('../layouts/AdminLayout'));
@@ -74,7 +83,7 @@ const MainLayout: React.FC = () => {
       <Header />
       <main id="main-content" className="flex-1 container mx-auto px-4 py-8" tabIndex={-1}>
         <Routes>
-           <Route path="/" element={<><Hero /><Testimonials /></>} />
+           <Route path="/" element={<><Hero /><PitchBanners /><Testimonials /></>} />
            <Route path="/onboarding" element={<LazyRoute><ProviderOnboarding onComplete={() => navigate('/provider-dashboard')} onCancel={() => navigate('/')} /></LazyRoute>} />
            <Route path="/search" element={<LazyRoute><ProviderSearch /></LazyRoute>} />
            <Route path="/triage" element={<LazyRoute><TriageChatbot /></LazyRoute>} />
@@ -92,6 +101,16 @@ const MainLayout: React.FC = () => {
            <Route path="/stories" element={<LazyRoute><SuccessStories onClose={() => navigate('/')} /></LazyRoute>} />
            <Route path="/terms" element={<LazyRoute><Terms onClose={() => navigate('/')} /></LazyRoute>} />
            
+           {/* Blog and SEO indexable routes */}
+           <Route path="/blog" element={<LazyRoute><BlogList /></LazyRoute>} />
+           <Route path="/blog/:slug" element={<LazyRoute><BlogPost /></LazyRoute>} />
+           <Route path="/proveedor/:id" element={<LazyRoute><ProviderProfilePage /></LazyRoute>} />
+           <Route path="/payment/return" element={<LazyRoute><PaymentStatusPage /></LazyRoute>} />
+           <Route path="/payment/final" element={<LazyRoute><PaymentStatusPage /></LazyRoute>} />
+           
+           {/* Programmatic SEO dynamic URL landing page */}
+           <Route path="/:seoSlug" element={<LazyRoute><ProgrammaticLandingPage /></LazyRoute>} />
+           
            {/* 404 - Not Found */}
            <Route path="*" element={<LazyRoute><NotFoundPage /></LazyRoute>} />
            
@@ -105,6 +124,7 @@ const MainLayout: React.FC = () => {
         </Routes>
       </main>
       <LaunchBanner />
+      <WhatsAppButton />
       <Footer />
     </div>
   );

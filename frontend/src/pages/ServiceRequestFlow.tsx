@@ -45,8 +45,7 @@ const ServiceRequestFlow: React.FC = () => {
   const [vehicle, setVehicle] = useState<Vehicle>({ 
     make: carMakes[0].make, 
     model: carMakes[0].models[0], 
-    year: vehicleYears[0],
-    licensePlate: ''
+    year: vehicleYears[0]
   });
   
   const [problemDescription, setProblemDescription] = useState('');
@@ -171,7 +170,7 @@ const ServiceRequestFlow: React.FC = () => {
         jobId: job?.id || 'demo-job',
         providerId: provider.id,
         preliminaryDiagnosis: problemDescription,
-        totalCost: selectedService.price,
+        totalCost: Array.isArray(selectedService.price) ? selectedService.price[0] : selectedService.price,
         estimatedDuration: 60,
         warranty: '30 días'
       });
@@ -230,7 +229,7 @@ const ServiceRequestFlow: React.FC = () => {
 
       const paymentData = await createPayment({
         jobId: job?.id || 'demo-job',
-        amount: selectedService?.price || 0,
+        amount: Array.isArray(selectedService?.price) ? selectedService.price[0] : (selectedService?.price || 0),
         paymentMethod: selectedPaymentMethod
       });
 

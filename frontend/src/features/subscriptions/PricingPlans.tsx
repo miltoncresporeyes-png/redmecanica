@@ -42,13 +42,19 @@ const PricingPlans: React.FC<PricingPlansProps> = ({ providerId, currentPlan, on
       const result = await createSubscription({
         providerId,
         plan: planId as 'MONTHLY' | 'YEARLY' | 'PROFESSIONAL',
-        paymentMethod: 'WEBPAY',
+          paymentMethod: 'MERCADOPAGO',
         autoRenew: true,
       });
 
       if (result.paymentRequired && result.subscription) {
         onPlanSelected?.(planId);
-        alert(`Plan ${plans[planId]?.name} seleccionado. ID de suscripción: ${result.subscription.id}`);
+          const paymentUrl = result.payment?.initPoint || result.payment?.init_point || result.payment?.sandboxInitPoint;
+          if (paymentUrl) {
+            window.location.href = paymentUrl;
+            return;
+          }
+
+          alert(`Plan ${plans[planId]?.name} seleccionado. ID de suscripción: ${result.subscription.id}`);
       }
     } catch (err: any) {
       setError(err.response?.data?.error || 'Error al seleccionar el plan');
@@ -93,7 +99,7 @@ const PricingPlans: React.FC<PricingPlansProps> = ({ providerId, currentPlan, on
       )}
 
       <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-        {planEntries.map(([planId, plan]) => {
+        {planEntries.map(([planId, plan]: [string, SubscriptionPlan]) => {
           const isCurrentPlan = currentPlan === planId;
           const isYearly = planId === 'YEARLY';
           const savings = planId === 'MONTHLY' ? Math.round((plan.price * 12 - 150000) / 1000) * 1000 : 0;

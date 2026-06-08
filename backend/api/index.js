@@ -2,6 +2,7 @@ require('dotenv').config({ path: require('path').join(__dirname, '..', '.env') }
 const express = require('express');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
+const path = require('path');
 
 const app = express();
 
@@ -45,11 +46,25 @@ app.get('/api/health', (_req, res) => {
 });
 
 const mountRoute = (basePath, modulePath) => {
+  const distModulePath = modulePath.replace('../src/', '../dist/');
+  const candidates = [distModulePath, modulePath];
+
+  for (const candidate of candidates) {
+    try {
+      const absPath = path.join(__dirname, candidate);
+      const routeModule = require(absPath);
+      app.use(basePath, routeModule.default || routeModule);
+      return;
+    } catch (_error) {
+      // Try next candidate.
+    }
+  }
+
   try {
     const routeModule = require(modulePath);
     app.use(basePath, routeModule.default || routeModule);
   } catch (error) {
-    console.error(`Failed to mount route ${basePath} from ${modulePath}:`, error);
+    console.error(`Failed to mount route ${basePath} from candidates: ${distModulePath}, ${modulePath}`, error);
   }
 };
 

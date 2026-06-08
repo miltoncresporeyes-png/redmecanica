@@ -42,7 +42,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       const { data } = await api.get('/auth/me');
       setUser(data.user);
-    } catch (error) {
+    } catch (error: any) {
+      // Si el token es inválido o expirado, limpiar sesión
+      if (error.response?.status === 401 || error.response?.status === 403) {
+        setAuthToken(null);
+      }
       setUser(null);
     } finally {
       setIsLoading(false);

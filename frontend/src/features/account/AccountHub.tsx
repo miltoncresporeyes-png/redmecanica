@@ -15,10 +15,34 @@ const AccountHub: React.FC<AccountHubProps> = ({ currentUser, onClose }) => {
   const fetchData = async () => {
     try {
       setLoading(true);
-      const [userRes, quotesRes] = await Promise.all([
-        api.get(`/users/${currentUser.id}`),
-        api.get('/quotes/user/me')
-      ]);
+      
+      let userRes, quotesRes;
+      
+      // Si es un usuario simulado por OAuth, no llamamos al Backend para evitar el 404
+      if (currentUser?.id?.startsWith('oauth-')) {
+        userRes = { 
+          data: { 
+            id: currentUser.id, 
+            name: currentUser.name, 
+            email: currentUser.email, 
+            createdAt: new Date().toISOString(),
+            vehicles: [],
+            serviceRequests: []
+          } 
+        };
+        quotesRes = { data: [] };
+        
+        // Simular latencia de red
+        await new Promise(resolve => setTimeout(resolve, 500));
+      } else {
+        const responses = await Promise.all([
+          api.get(`/users/${currentUser.id}`),
+          api.get('/quotes/user/me')
+        ]);
+        userRes = responses[0];
+        quotesRes = responses[1];
+      }
+      
       setUserData(userRes.data);
       setQuotes(quotesRes.data);
     } catch (error) {

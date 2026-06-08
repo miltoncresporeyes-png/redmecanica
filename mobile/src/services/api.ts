@@ -10,6 +10,31 @@ const CACHE_KEYS = {
   ZONES: 'zones',
 };
 
+export interface MercadoPagoCheckoutRequest {
+  jobId: string;
+  amount: number;
+  paymentMethod?: 'mercadopago' | 'MERCADOPAGO';
+  title?: string;
+  description?: string;
+}
+
+export interface MercadoPagoCheckoutResponse {
+  payment: {
+    id: string;
+    jobId: string;
+    amount: number;
+    paymentMethod: 'MERCADOPAGO';
+    status: string;
+    preferenceId: string;
+    createdAt: string | Date;
+  };
+  preferenceId: string;
+  initPoint: string;
+  sandboxInitPoint?: string;
+  publicKey?: string;
+  message: string;
+}
+
 const CACHE_TTL = {
   CATEGORIES: 30 * 60 * 1000,
   SERVICES: 15 * 60 * 1000,
@@ -215,6 +240,15 @@ class ApiService {
 
   async acceptQuote(quoteId: string) {
     const response = await this.api.post(`/quotes/${quoteId}/accept`);
+    return response.data;
+  }
+
+  async createMercadoPagoCheckout(data: MercadoPagoCheckoutRequest) {
+    const response = await this.api.post<MercadoPagoCheckoutResponse>('/payments/create', {
+      ...data,
+      paymentMethod: data.paymentMethod || 'mercadopago',
+    });
+
     return response.data;
   }
 

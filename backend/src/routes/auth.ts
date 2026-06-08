@@ -43,16 +43,6 @@ router.post('/register', async (req, res) => {
             }
         });
 
-        if (userRole === 'MECHANIC') {
-            await tx.serviceProvider.create({
-                data: {
-                    userId: user.id,
-                    status: 'PENDING',
-                    // Inicializar con valores por defecto o vacíos que sean opcionales
-                }
-            });
-        }
-
         return user;
     });
 

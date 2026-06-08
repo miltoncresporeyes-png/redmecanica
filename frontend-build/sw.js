@@ -13,16 +13,13 @@ const STATIC_ASSETS = [
   '/auth',
   '/login',
   '/dashboard',
+  '/pricing',
   '/favicon.svg',
   '/manifest.json',
   '/robots.txt',
   '/sitemap.xml',
   '/offline.html',
-  '/assets/images/logo-primary.svg',
-  '/assets/images/logo-white.svg',
-  '/assets/images/icons/offline-icon.svg',
-  '/assets/fonts/inter-var.woff2',
-  '/assets/css/critical.css'
+  '/assets/index-CCwrcQLr.css'
 ];
 
 // Rutas de API para network-first con stale-while-revalidate
@@ -381,12 +378,43 @@ async function networkFirst(request, event) {
   return revalidate;
 }
 
-// Network with cache fallback
+// Network with cache fallback con reintentos automáticos
 async function networkWithCacheFallback(request, event) {
+  const maxRetries = 3;
+  const retryDelay = 500;
+  
+  async function fetchWithRetry(attempt = 1) {
+    try {
+      const response = await fetch(request);
+      trackMetric('networkHit');
+      
+      // Cachear exitosamente respuestas de JS/CSS para futuras visitas
+      if (response.ok && isDynamicAsset(request.url)) {
+        const cache = await caches.open(CACHE_NAME);
+        const headers = new Headers(response.headers);
+        headers.set('sw-cache-timestamp', Date.now().toString());
+        
+        const cachedResponse = new Response(await response.blob(), {
+          status: response.status,
+          statusText: response.statusText,
+          headers: headers
+        });
+        
+        await cache.put(request, cachedResponse);
+      }
+      
+      return response;
+    } catch (error) {
+      if (attempt < maxRetries) {
+        await new Promise(r => setTimeout(r, retryDelay * attempt));
+        return fetchWithRetry(attempt + 1);
+      }
+      throw error;
+    }
+  }
+  
   try {
-    const response = await fetch(request);
-    trackMetric('networkHit');
-    return response;
+    return await fetchWithRetry();
   } catch (error) {
     const cache = await caches.open(CACHE_NAME);
     const cached = await cache.match(request);
@@ -397,6 +425,10 @@ async function networkWithCacheFallback(request, event) {
     trackMetric('cacheMiss');
     throw error;
   }
+}
+
+function isDynamicAsset(url) {
+  return url.includes('/assets/') && (url.endsWith('.js') || url.endsWith('.css'));
 }
 
 // Utility functions para detectar tipos de recursos

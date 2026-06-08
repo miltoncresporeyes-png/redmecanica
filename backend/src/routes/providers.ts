@@ -20,16 +20,16 @@ router.get('/search', async (req, res) => {
     const rad = parseFloat((radius as string) || '10'); // km
 
     // Basic "bounding box" or approximate query since Prisma doesn't support PostGIS natively without raw SQL
-    // For MVP/Demo: Fetch all of type (or all) and filter in JS. 
-    // Optimization: Filter by lat/lng range (approx 1 deg = 111km)
-    
     // 1 deg lat ~= 111km
     // 1 deg lng ~= 111km * cos(lat)
     const latDelta = rad / 111;
     const lngDelta = rad / (111 * Math.cos(latitude * (Math.PI / 180)));
 
     const whereClause: any = {
-      status: { in: ['ACTIVE', 'APPROVED'] },
+      status: 'ACTIVE',
+      subscription: {
+        status: 'ACTIVE'
+      },
       latitude: {
         gte: latitude - latDelta,
         lte: latitude + latDelta
@@ -96,7 +96,7 @@ function getDistanceFromLatLonInKm(lat1: number, lon1: number, lat2: number, lon
 }
 
 function deg2rad(deg: number) {
-  return deg * (Math.PI/180)
+  return deg * (Math.PI/180);
 }
 
 // Get provider profile
@@ -121,19 +121,33 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-// Register new provider (creates or links to existing user)
-router.post('/', async (req, res) => {
+// Register new provider (always bound to authenticated user)
+router.post('/', authenticateToken, async (req: AuthRequest, res) => {
   try {
+    const userId = req.user?.id;
     const { 
-        userId, type, bio, vehicle, licensePlate, 
+        type, bio, vehicle, licensePlate, 
         latitude, longitude, 
         address, commune, region, phone, website, paymentMethods,
         rut, specialties, idDocumentUrl, backgroundCheckUrl
     } = req.body;
 
+    if (!userId) {
+      return res.status(401).json({ error: 'No autenticado' });
+    }
+
     // Validate essential fields
-    if (!userId || !type) {
-        return res.status(400).json({ error: "Faltan campos obligatorios: userId, tipo" });
+    if (!type) {
+        return res.status(400).json({ error: 'Falta campo obligatorio: tipo' });
+    }
+
+    const existingUser = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { id: true },
+    });
+
+    if (!existingUser) {
+      return res.status(404).json({ error: 'Usuario no encontrado para crear perfil de prestador' });
     }
 
     if (rut && !validarRUT(rut)) {
@@ -169,20 +183,19 @@ router.post('/', async (req, res) => {
         idDocumentUrl,
         backgroundCheckUrl,
         submittedAt: new Date(),
-        status: "PENDING" // Default to pending approval
+        status: "ACTIVE" // Default to ACTIVE so they can get visibility once approved/linked
       },
       include: {
           user: true
       }
     });
 
-    // Optionally update user role to reflect provider status if needed
-    // await prisma.user.update({ where: { id: userId }, data: { role: type } });
-
     return res.status(201).json(newProvider);
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error registering provider:", error);
-    return res.status(500).json({ error: 'Failed to register provider' });
+    // Devolver el mensaje de error real para debug
+    const errorMessage = error?.message || error?.code || 'Unknown error';
+    return res.status(500).json({ error: 'Failed to register provider', details: errorMessage });
   }
 });
 
@@ -241,13 +254,14 @@ router.get('/me/quotes', authenticateToken, async (req: AuthRequest, res) => {
 });
 
 // --- DASHBOARD FOR AUTHENTICATED PROVIDER ---
-
 router.get('/me/dashboard', authenticateToken, async (req: AuthRequest, res) => {
   try {
     const userId = req.user?.id;
     const provider = await prisma.serviceProvider.findUnique({
       where: { userId },
       include: {
+        subscription: true,
+        history: { orderBy: { createdAt: 'desc' }, take: 10 },
         _count: {
           select: { jobs: true }
         }
@@ -260,7 +274,7 @@ router.get('/me/dashboard', authenticateToken, async (req: AuthRequest, res) => 
     const earnings = await prisma.job.aggregate({
       where: {
         providerId: provider.id,
-        status: 'COMPLETED'
+        status: 'CLOSED'
       },
       _sum: {
         estimatedCost: true
@@ -273,7 +287,7 @@ router.get('/me/dashboard', authenticateToken, async (req: AuthRequest, res) => 
     const monthEarnings = await prisma.job.aggregate({
       where: {
         providerId: provider.id,
-        status: 'COMPLETED',
+        status: 'CLOSED',
         completedAt: { gte: firstDayOfMonth }
       },
       _sum: {
@@ -295,6 +309,24 @@ router.get('/me/dashboard', authenticateToken, async (req: AuthRequest, res) => 
   } catch (error) {
     console.error("Dashboard error:", error);
     return res.status(500).json({ error: 'Error al cargar dashboard' });
+  }
+});
+
+router.get('/me/invoices', authenticateToken, async (req: AuthRequest, res) => {
+  try {
+    const userId = req.user?.id;
+    const provider = await prisma.serviceProvider.findUnique({ where: { userId } });
+    if (!provider) return res.status(404).json({ error: 'Proveedor no encontrado' });
+
+    const invoices = await prisma.invoice.findMany({
+      where: { providerId: provider.id },
+      orderBy: { createdAt: 'desc' }
+    });
+
+    return res.json(invoices);
+  } catch (error) {
+    console.error("Invoices error:", error);
+    return res.status(500).json({ error: 'Error al obtener facturas' });
   }
 });
 
