@@ -24,8 +24,9 @@ import mapsRoutes from './routes/maps.js';
 import subscriptionsRoutes from './routes/subscriptions.js';
 import contactRoutes from './routes/contact.js';
 
-import { requestIdMiddleware } from './middlewares/securityHeaders.js';
+import { requestIdMiddleware, securityHeadersMiddleware } from './middlewares/securityHeaders.js';
 import { errorHandler } from './middlewares/errorHandler.js';
+import { requireAuth, requireRole } from './middlewares/requireAuth.js';
 
 const app = express();
 
@@ -63,6 +64,8 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
+app.use(securityHeadersMiddleware);
+app.use(globalLimiter);
 
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
@@ -103,8 +106,8 @@ app.use('/api/maps', mapsRoutes);
 app.use('/api/subscriptions', subscriptionsRoutes);
 app.use('/api/contact', contactRoutes);
 
-// Temporary public endpoint to view launch leads (until admin is set up)
-app.get('/api/public/launch-leads', async (req, res) => {
+// Protected endpoint to view launch leads
+app.get('/api/public/launch-leads', requireAuth, requireRole(['ADMIN', 'SUPER_ADMIN']), async (req, res) => {
   try {
     const { prisma } = await import('./db.js');
     const leads = await prisma.launchLead.findMany({

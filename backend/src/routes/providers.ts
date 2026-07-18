@@ -105,7 +105,14 @@ router.get('/:id', async (req, res) => {
     const provider = await prisma.serviceProvider.findUnique({
       where: { id: req.params.id },
       include: {
-        user: true,
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            phone: true
+          }
+        },
         jobs: true
       }
     });
@@ -186,7 +193,14 @@ router.post('/', authenticateToken, async (req: AuthRequest, res) => {
         status: "ACTIVE" // Default to ACTIVE so they can get visibility once approved/linked
       },
       include: {
-          user: true
+          user: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+              phone: true
+            }
+          }
       }
     });
 
@@ -200,19 +214,46 @@ router.post('/', authenticateToken, async (req: AuthRequest, res) => {
 });
 
 // Update provider profile
-router.put('/:id', async (req, res) => {
+router.put('/:id', authenticateToken, async (req: AuthRequest, res) => {
   try {
+    const providerId = req.params.id;
+    const userId = req.user?.id;
+    const userRole = req.user?.role;
+
+    if (!userId) {
+      return res.status(401).json({ error: 'No autenticado' });
+    }
+
+    const provider = await prisma.serviceProvider.findUnique({
+      where: { id: providerId as string }
+    });
+
+    if (!provider) {
+      return res.status(404).json({ error: 'Proveedor no encontrado' });
+    }
+
+    const isOwner = provider.userId === userId;
+    const isAdmin = userRole === 'ADMIN' || userRole === 'SUPER_ADMIN';
+
+    if (!isOwner && !isAdmin) {
+      return res.status(403).json({ error: 'Acceso denegado: No tienes permiso para modificar este perfil' });
+    }
+
     const { bio, vehicle, licensePlate, status, latitude, longitude } = req.body;
-    
+
+    if (status !== undefined && status !== provider.status && !isAdmin) {
+      return res.status(403).json({ error: 'Acceso denegado: Solo administradores pueden cambiar el estado del proveedor' });
+    }
+
     const updatedProvider = await prisma.serviceProvider.update({
-      where: { id: req.params.id },
+      where: { id: providerId as string },
       data: {
         bio,
         vehicle,
         licensePlate,
-        status, 
         latitude,
-        longitude
+        longitude,
+        ...(isAdmin && status && { status })
       }
     });
 

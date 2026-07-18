@@ -2,6 +2,8 @@ import { Router } from 'express';
 import { prisma } from '../db.js';
 import { z } from 'zod';
 import { providerAvailabilitySchema, providerAvailabilityBulkSchema } from '../schemas/shared.schemas.js';
+import { authenticateToken } from '../middleware/auth.js';
+import type { AuthRequest } from '../middleware/auth.js';
 
 const router = Router();
 
@@ -19,10 +21,21 @@ router.get('/:providerId', async (req, res) => {
   }
 });
 
-router.post('/', async (req, res) => {
+router.post('/', authenticateToken, async (req: AuthRequest, res) => {
   try {
     const data = providerAvailabilitySchema.parse(req.body);
     
+    // Verify that the logged-in user is the owner of the provider profile
+    const provider = await prisma.serviceProvider.findUnique({
+      where: { id: data.providerId }
+    });
+    if (!provider) {
+      return res.status(404).json({ error: 'Proveedor no encontrado' });
+    }
+    if (provider.userId !== req.user?.id && req.user?.role !== 'ADMIN' && req.user?.role !== 'SUPER_ADMIN') {
+      return res.status(403).json({ error: 'Acceso denegado: No tienes permiso para este proveedor' });
+    }
+
     const availability = await prisma.providerAvailability.create({
       data: data as any,
     });
@@ -37,10 +50,20 @@ router.post('/', async (req, res) => {
   }
 });
 
-router.post('/bulk', async (req, res) => {
+router.post('/bulk', authenticateToken, async (req: AuthRequest, res) => {
   try {
     const { providerId, schedule } = providerAvailabilityBulkSchema.parse(req.body);
     
+    const provider = await prisma.serviceProvider.findUnique({
+      where: { id: providerId }
+    });
+    if (!provider) {
+      return res.status(404).json({ error: 'Proveedor no encontrado' });
+    }
+    if (provider.userId !== req.user?.id && req.user?.role !== 'ADMIN' && req.user?.role !== 'SUPER_ADMIN') {
+      return res.status(403).json({ error: 'Acceso denegado: No tienes permiso para este proveedor' });
+    }
+
     await prisma.providerAvailability.deleteMany({
       where: { providerId },
     });
@@ -70,16 +93,27 @@ router.post('/bulk', async (req, res) => {
   }
 });
 
-router.patch('/:id', async (req, res) => {
+router.patch('/:id', authenticateToken, async (req: AuthRequest, res) => {
   try {
+    const availability = (await prisma.providerAvailability.findUnique({
+      where: { id: req.params.id as string },
+      include: { provider: true }
+    })) as any;
+    if (!availability) {
+      return res.status(404).json({ error: 'Horario no encontrado' });
+    }
+    if (availability.provider.userId !== req.user?.id && req.user?.role !== 'ADMIN' && req.user?.role !== 'SUPER_ADMIN') {
+      return res.status(403).json({ error: 'Acceso denegado: No autorizado para modificar este horario' });
+    }
+
     const data = providerAvailabilitySchema.partial().parse(req.body);
     
-    const availability = await prisma.providerAvailability.update({
-      where: { id: req.params.id },
+    const updated = await prisma.providerAvailability.update({
+      where: { id: req.params.id as string },
       data,
     });
     
-    res.json(availability);
+    res.json(updated);
   } catch (error) {
     if (error instanceof z.ZodError) {
       return res.status(400).json({ errors: (error as any).issues });
@@ -89,10 +123,21 @@ router.patch('/:id', async (req, res) => {
   }
 });
 
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', authenticateToken, async (req: AuthRequest, res) => {
   try {
+    const availability = (await prisma.providerAvailability.findUnique({
+      where: { id: req.params.id as string },
+      include: { provider: true }
+    })) as any;
+    if (!availability) {
+      return res.status(404).json({ error: 'Horario no encontrado' });
+    }
+    if (availability.provider.userId !== req.user?.id && req.user?.role !== 'ADMIN' && req.user?.role !== 'SUPER_ADMIN') {
+      return res.status(403).json({ error: 'Acceso denegado: No autorizado para eliminar este horario' });
+    }
+
     await prisma.providerAvailability.delete({
-      where: { id: req.params.id },
+      where: { id: req.params.id as string },
     });
     
     res.status(204).send();

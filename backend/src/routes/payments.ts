@@ -2,6 +2,8 @@ import express from 'express';
 import { prisma } from '../db.js';
 import { webpayService } from '../services/webpay.js';
 import { mercadoPagoService } from '../services/mercadopago.js';
+import { authenticateToken } from '../middleware/auth.js';
+import type { AuthRequest } from '../middleware/auth.js';
 
 const router = express.Router();
 
@@ -38,7 +40,7 @@ async function createMercadoPagoCheckout(params: {
 
 
 
-router.post('/create', async (req, res) => {
+router.post('/create', authenticateToken, async (req: AuthRequest, res) => {
   try {
     const { jobId, amount, paymentMethod } = req.body;
     let existingJob: any = null;
@@ -60,6 +62,10 @@ router.post('/create', async (req, res) => {
 
       if (!existingJob) {
         return res.status(404).json({ error: 'Job no encontrado' });
+      }
+
+      if (existingJob.customerId !== req.user?.id && req.user?.role !== 'ADMIN' && req.user?.role !== 'SUPER_ADMIN') {
+        return res.status(403).json({ error: 'Acceso denegado: No tienes permiso para pagar por este trabajo' });
       }
     }
 
@@ -374,9 +380,33 @@ router.post('/webhook/mercadopago', async (req, res) => {
   }
 });
 
-router.post('/confirm', async (req, res) => {
+router.post('/confirm', authenticateToken, async (req: AuthRequest, res) => {
   try {
     const { jobId, subscriptionId, token, paymentMethod } = req.body;
+
+    // Validation checks
+    if (subscriptionId) {
+      const subscription = await prisma.subscription.findUnique({
+        where: { id: subscriptionId },
+        include: { provider: true }
+      });
+      if (!subscription) return res.status(404).json({ error: 'Suscripción no encontrada' });
+      if (subscription.provider.userId !== req.user?.id && req.user?.role !== 'ADMIN' && req.user?.role !== 'SUPER_ADMIN') {
+        return res.status(403).json({ error: 'Acceso denegado: No tienes permiso para esta suscripción' });
+      }
+    }
+
+    if (jobId) {
+      const existingJob = await prisma.job.findUnique({
+        where: { id: jobId }
+      });
+      if (!existingJob) {
+        return res.status(404).json({ error: 'Job no encontrado' });
+      }
+      if (existingJob.customerId !== req.user?.id && req.user?.role !== 'ADMIN' && req.user?.role !== 'SUPER_ADMIN') {
+        return res.status(403).json({ error: 'Acceso denegado: No tienes permiso para confirmar el pago de este trabajo' });
+      }
+    }
 
     if (paymentMethod === 'webpay' && token) {
       const commitResult = await webpayService.commitTransaction(token);
@@ -577,7 +607,7 @@ router.post('/confirm', async (req, res) => {
   }
 });
 
-router.post('/release', async (req, res) => {
+router.post('/release', authenticateToken, async (req: AuthRequest, res) => {
   try {
     const { jobId } = req.body;
 
@@ -588,6 +618,10 @@ router.post('/release', async (req, res) => {
 
     if (!job) {
       return res.status(404).json({ error: 'Job no encontrado' });
+    }
+
+    if (job.customerId !== req.user?.id && req.user?.role !== 'ADMIN' && req.user?.role !== 'SUPER_ADMIN') {
+      return res.status(403).json({ error: 'Acceso denegado: Solo el cliente o un administrador pueden liberar el pago' });
     }
 
     if (job.paymentStatus !== 'HELD') {
@@ -662,7 +696,7 @@ router.post('/release', async (req, res) => {
   }
 });
 
-router.post('/refund', async (req, res) => {
+router.post('/refund', authenticateToken, async (req: AuthRequest, res) => {
   try {
     const { jobId, reason, amount, token, authorizationCode } = req.body;
 
@@ -672,6 +706,10 @@ router.post('/refund', async (req, res) => {
 
     if (!job) {
       return res.status(404).json({ error: 'Job no encontrado' });
+    }
+
+    if (job.customerId !== req.user?.id && req.user?.role !== 'ADMIN' && req.user?.role !== 'SUPER_ADMIN') {
+      return res.status(403).json({ error: 'Acceso denegado: No autorizado para procesar reembolsos' });
     }
 
     if (job.paymentStatus === 'RELEASED') {
@@ -749,22 +787,36 @@ router.get('/methods', (req, res) => {
   });
 });
 
-router.get('/status/:jobId', async (req, res) => {
+router.get('/status/:jobId', authenticateToken, async (req: AuthRequest, res) => {
   try {
     const { jobId } = req.params;
 
     const job = await prisma.job.findUnique({
-      where: { id: jobId },
+      where: { id: jobId as string },
       select: {
         id: true,
         paymentStatus: true,
         estimatedCost: true,
-        status: true
+        status: true,
+        customerId: true,
+        providerId: true
       }
     });
 
     if (!job) {
       return res.status(404).json({ error: 'Job no encontrado' });
+    }
+
+    const providerProfile = await prisma.serviceProvider.findFirst({
+      where: { userId: req.user?.id }
+    });
+
+    const isClientOwner = job.customerId === req.user?.id;
+    const isProviderOwner = job.providerId === providerProfile?.id;
+    const isAdmin = req.user?.role === 'ADMIN' || req.user?.role === 'SUPER_ADMIN';
+
+    if (!isClientOwner && !isProviderOwner && !isAdmin) {
+      return res.status(403).json({ error: 'Acceso denegado: No tienes acceso a este trabajo' });
     }
 
     res.json({

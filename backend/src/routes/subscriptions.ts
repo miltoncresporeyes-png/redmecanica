@@ -3,6 +3,8 @@ import { prisma } from '../db.js';
 import { z } from 'zod';
 import { webpayService } from '../services/webpay.js';
 import { mercadoPagoService } from '../services/mercadopago.js';
+import { authenticateToken } from '../middleware/auth.js';
+import type { AuthRequest } from '../middleware/auth.js';
 
 const router = Router();
 
@@ -75,9 +77,26 @@ router.get('/plans', (_req, res) => {
   res.json(SUBSCRIPTION_PLANS);
 });
 
-router.get('/provider/:providerId', async (req, res) => {
+// Protect all following routes
+router.use(authenticateToken as any);
+
+router.get('/provider/:providerId', async (req: any, res) => {
   try {
     const { providerId } = req.params;
+    const userId = req.user?.id;
+    const userRole = req.user?.role;
+
+    const provider = await prisma.serviceProvider.findUnique({
+      where: { id: providerId }
+    });
+
+    if (!provider) {
+      return res.status(404).json({ error: 'Provider not found' });
+    }
+
+    if (provider.userId !== userId && userRole !== 'ADMIN' && userRole !== 'SUPER_ADMIN') {
+      return res.status(403).json({ error: 'Acceso denegado: No tienes acceso a esta suscripción' });
+    }
 
     const subscription = await prisma.subscription.findUnique({
       where: { providerId },
@@ -112,38 +131,59 @@ router.get('/provider/:providerId', async (req, res) => {
   }
 });
 
-router.get('/:id/status', async (req, res) => {
+router.get('/:id/status', async (req: any, res) => {
   try {
     const { id } = req.params;
+    const userId = req.user?.id;
+    const userRole = req.user?.role;
 
     const subscription = await prisma.subscription.findUnique({
       where: { id: String(id) },
-      select: {
-        id: true,
-        status: true,
-        amount: true,
-        plan: true,
-        providerId: true,
-        lastPaymentDate: true,
-        endDate: true,
-        autoRenew: true,
-      },
+      include: { provider: true }
     });
 
     if (!subscription) {
       return res.status(404).json({ error: 'Subscription not found' });
     }
 
-    return res.json(subscription);
+    if (subscription.provider.userId !== userId && userRole !== 'ADMIN' && userRole !== 'SUPER_ADMIN') {
+      return res.status(403).json({ error: 'Acceso denegado: No tienes acceso a esta suscripción' });
+    }
+
+    return res.json({
+      id: subscription.id,
+      status: subscription.status,
+      amount: subscription.amount,
+      plan: subscription.plan,
+      providerId: subscription.providerId,
+      lastPaymentDate: subscription.lastPaymentDate,
+      endDate: subscription.endDate,
+      autoRenew: subscription.autoRenew,
+    });
   } catch (error) {
     console.error('Error getting subscription status:', error);
     return res.status(500).json({ error: 'Failed to get subscription status' });
   }
 });
 
-router.post('/', async (req, res) => {
+router.post('/', async (req: any, res) => {
   try {
     const data = createSubscriptionSchema.parse(req.body);
+    const userId = req.user?.id;
+    const userRole = req.user?.role;
+
+    const provider = await prisma.serviceProvider.findUnique({
+      where: { id: data.providerId }
+    });
+
+    if (!provider) {
+      return res.status(404).json({ error: 'Provider not found' });
+    }
+
+    if (provider.userId !== userId && userRole !== 'ADMIN' && userRole !== 'SUPER_ADMIN') {
+      return res.status(403).json({ error: 'Acceso denegado: No tienes permiso para esta suscripción' });
+    }
+
     const planDetails = SUBSCRIPTION_PLANS[data.plan];
 
     const existingSubscription = await prisma.subscription.findUnique({
@@ -282,10 +322,11 @@ router.post('/', async (req, res) => {
   }
 });
 
-router.patch('/:id', async (req, res) => {
+router.patch('/:id', async (req: any, res) => {
   try {
     const { id } = req.params;
-    const data = updateSubscriptionSchema.parse(req.body);
+    const userId = req.user?.id;
+    const userRole = req.user?.role;
 
     const subscription = await prisma.subscription.findUnique({
       where: { id: String(id) },
@@ -295,6 +336,12 @@ router.patch('/:id', async (req, res) => {
     if (!subscription) {
       return res.status(404).json({ error: 'Subscription not found' });
     }
+
+    if (subscription.provider.userId !== userId && userRole !== 'ADMIN' && userRole !== 'SUPER_ADMIN') {
+      return res.status(403).json({ error: 'Acceso denegado: No tienes permiso para modificar esta suscripción' });
+    }
+
+    const data = updateSubscriptionSchema.parse(req.body);
 
     if (data.plan && data.plan !== subscription.plan) {
       const planDetails = SUBSCRIPTION_PLANS[data.plan];
@@ -363,9 +410,14 @@ router.patch('/:id', async (req, res) => {
   }
 });
 
-router.post('/:id/activate', async (req, res) => {
+router.post('/:id/activate', async (req: any, res) => {
   try {
     const { id } = req.params;
+    const userRole = req.user?.role;
+
+    if (userRole !== 'ADMIN' && userRole !== 'SUPER_ADMIN') {
+      return res.status(403).json({ error: 'Acceso denegado: Solo administradores pueden activar suscripciones directamente' });
+    }
 
     const subscription = await prisma.subscription.update({
       where: { id },
@@ -395,14 +447,28 @@ router.post('/:id/activate', async (req, res) => {
   }
 });
 
-router.post('/:id/cancel', async (req, res) => {
+router.post('/:id/cancel', async (req: any, res) => {
   try {
     const { id } = req.params;
+    const userId = req.user?.id;
+    const userRole = req.user?.role;
 
-    const subscription = await prisma.subscription.update({
+    const subscription = await prisma.subscription.findUnique({
+      where: { id: String(id) },
+      include: { provider: true }
+    });
+
+    if (!subscription) {
+      return res.status(404).json({ error: 'Subscription not found' });
+    }
+
+    if (subscription.provider.userId !== userId && userRole !== 'ADMIN' && userRole !== 'SUPER_ADMIN') {
+      return res.status(403).json({ error: 'Acceso denegado: No tienes permiso para cancelar esta suscripción' });
+    }
+
+    const updatedSub = await prisma.subscription.update({
       where: { id },
       data: { 
-        // Keep status as ACTIVE so they do not lose visibility until the end of paid period
         autoRenew: false 
       },
       include: { provider: true }
@@ -423,13 +489,22 @@ router.post('/:id/cancel', async (req, res) => {
   }
 });
 
-router.post('/:id/renew', async (req, res) => {
+router.post('/:id/renew', async (req: any, res) => {
   try {
     const { id } = req.params;
+    const userId = req.user?.id;
+    const userRole = req.user?.role;
 
-    const current = await prisma.subscription.findUnique({ where: { id } });
+    const current = await prisma.subscription.findUnique({ 
+      where: { id },
+      include: { provider: true }
+    });
     if (!current) {
       return res.status(404).json({ error: 'Subscription not found' });
+    }
+
+    if (current.provider.userId !== userId && userRole !== 'ADMIN' && userRole !== 'SUPER_ADMIN') {
+      return res.status(403).json({ error: 'Acceso denegado: No tienes permiso para renovar esta suscripción' });
     }
 
     const planDetails = SUBSCRIPTION_PLANS[current.plan as keyof typeof SUBSCRIPTION_PLANS];

@@ -197,9 +197,39 @@ router.get('/marketplace', async (req: any, res) => {
 });
 
 // GET /api/quotes/job/:jobId - Obtener todas las cotizaciones de un job
-router.get('/job/:jobId', async (req, res) => {
+router.get('/job/:jobId', async (req: any, res) => {
   try {
     const { jobId } = req.params;
+    const userId = req.user?.id;
+    const userRole = req.user?.role;
+
+    if (!userId) return res.status(401).json({ error: 'No autenticado' });
+
+    const job = await prisma.job.findUnique({
+      where: { id: jobId },
+      include: {
+        request: { select: { userId: true } },
+        provider: { select: { userId: true } }
+      }
+    });
+
+    if (!job) return res.status(404).json({ error: 'Trabajo no encontrado' });
+
+    const isClientOwner = job.customerId === userId || job.request?.userId === userId;
+    const isAssignedProvider = job.provider?.userId === userId;
+    const isAdmin = userRole === 'ADMIN' || userRole === 'SUPER_ADMIN';
+
+    // A provider can view if they submitted a quote for this job
+    const providerProfile = await prisma.serviceProvider.findFirst({
+      where: { userId }
+    });
+    const hasSubmittedQuote = providerProfile 
+      ? await prisma.quote.findFirst({ where: { jobId, providerId: providerProfile.id } }).then(q => !!q)
+      : false;
+
+    if (!isClientOwner && !isAssignedProvider && !isAdmin && !hasSubmittedQuote) {
+      return res.status(403).json({ error: 'No tienes permiso para ver las cotizaciones de este trabajo' });
+    }
 
     const quotes = await prisma.quote.findMany({
       where: { jobId },
@@ -226,9 +256,14 @@ router.get('/job/:jobId', async (req, res) => {
 });
 
 // GET /api/quotes/:id - Obtener una cotización específica
-router.get('/:id', async (req, res) => {
+router.get('/:id', async (req: any, res) => {
   try {
     const { id } = req.params;
+    const userId = req.user?.id;
+    const userRole = req.user?.role;
+
+    if (!userId) return res.status(401).json({ error: 'No autenticado' });
+
     const quote = await prisma.quote.findUnique({
       where: { id },
       include: {
@@ -238,6 +273,15 @@ router.get('/:id', async (req, res) => {
     });
 
     if (!quote) return res.status(404).json({ error: 'Cotización no encontrada' });
+
+    const isClientOwner = quote.job.customerId === userId;
+    const isProviderOwner = quote.provider.userId === userId;
+    const isAdmin = userRole === 'ADMIN' || userRole === 'SUPER_ADMIN';
+
+    if (!isClientOwner && !isProviderOwner && !isAdmin) {
+      return res.status(403).json({ error: 'No tienes permiso para ver esta cotización' });
+    }
+
     res.json(quote);
   } catch (error) {
     res.status(500).json({ error: 'Error al obtener cotización' });
@@ -303,9 +347,12 @@ router.put('/:id', async (req: any, res) => {
 });
 
 // POST /api/quotes/:id/accept - Aceptar una cotización
-router.post('/:id/accept', async (req, res) => {
+router.post('/:id/accept', async (req: any, res) => {
   try {
     const { id } = req.params;
+    const userId = req.user?.id;
+
+    if (!userId) return res.status(401).json({ error: 'No autenticado' });
 
     const quote = await prisma.quote.findUnique({
       where: { id },
@@ -314,6 +361,10 @@ router.post('/:id/accept', async (req, res) => {
 
     if (!quote) {
       return res.status(404).json({ error: 'Cotización no encontrada' });
+    }
+
+    if (quote.job.customerId !== userId && req.user?.role !== 'ADMIN' && req.user?.role !== 'SUPER_ADMIN') {
+      return res.status(403).json({ error: 'No autorizado para aceptar esta cotización' });
     }
 
     // Actualizar la cotización a ACCEPTED
@@ -354,11 +405,27 @@ router.post('/:id/accept', async (req, res) => {
 });
 
 // POST /api/quotes/:id/reject - Rechazar una cotización
-router.post('/:id/reject', async (req, res) => {
+router.post('/:id/reject', async (req: any, res) => {
   try {
     const { id } = req.params;
+    const userId = req.user?.id;
 
-    const quote = await prisma.quote.update({
+    if (!userId) return res.status(401).json({ error: 'No autenticado' });
+
+    const quote = await prisma.quote.findUnique({
+      where: { id },
+      include: { job: true }
+    });
+
+    if (!quote) {
+      return res.status(404).json({ error: 'Cotización no encontrada' });
+    }
+
+    if (quote.job.customerId !== userId && req.user?.role !== 'ADMIN' && req.user?.role !== 'SUPER_ADMIN') {
+      return res.status(403).json({ error: 'No autorizado para rechazar esta cotización' });
+    }
+
+    const updatedQuote = await prisma.quote.update({
       where: { id },
       data: {
         status: 'REJECTED',
@@ -366,7 +433,7 @@ router.post('/:id/reject', async (req, res) => {
       }
     });
 
-    res.json(quote);
+    res.json(updatedQuote);
   } catch (error) {
     console.error('Error rejecting quote:', error);
     res.status(500).json({ error: 'Error al rechazar cotización' });
