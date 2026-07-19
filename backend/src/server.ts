@@ -9,9 +9,6 @@ import { setupWebSocket } from './lib/websocket.js';
 
 const startServer = async () => {
     try {
-        await prisma.$connect();
-        logger.info('Connected to PostgreSQL');
-
         const httpServer = createServer(app);
         
         (global as unknown as { httpServer: typeof httpServer }).httpServer = httpServer;
@@ -19,11 +16,21 @@ const startServer = async () => {
         setupWebSocket(httpServer);
         logger.info('WebSocket server initialized');
 
-        httpServer.listen(Number(config.port), '0.0.0.0', () => {
-            logger.info(`Server running on http://0.0.0.0:${config.port} in ${config.env} mode`);
+        const port = Number(process.env.PORT || config.port || 3011);
+
+        httpServer.listen(port, '0.0.0.0', () => {
+            logger.info(`Server running on http://0.0.0.0:${port} in ${config.env} mode`);
         });
+
+        prisma.$connect()
+            .then(() => {
+                logger.info('Connected to PostgreSQL');
+            })
+            .catch((dbError) => {
+                logger.error({ dbError }, 'Warning: Database connection failed on startup. Server is still running and listening.');
+            });
     } catch (error) {
-        logger.error({ error }, 'Failed to start server');
+        logger.error({ error }, 'Failed to start HTTP server');
         process.exit(1);
     }
 };

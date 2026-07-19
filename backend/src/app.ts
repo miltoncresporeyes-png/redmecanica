@@ -30,6 +30,15 @@ import { requireAuth, requireRole } from './middlewares/requireAuth.js';
 
 const app = express();
 
+// Health Check Endpoints (placed BEFORE CORS, RateLimiter & security headers to ensure health probes always succeed)
+app.get(['/', '/health', '/api/health'], (_req, res) => {
+  res.status(200).json({ status: 'ok', service: 'redmecanica-backend', timestamp: new Date().toISOString() });
+});
+
+app.get('/api', (_req, res) => {
+  res.status(200).json({ status: 'ok', service: 'api', timestamp: new Date().toISOString() });
+});
+
 const defaultFrontendOrigins = [
   'https://redmecanica.cl',
   'https://www.redmecanica.cl',
@@ -56,7 +65,7 @@ const corsOptions = {
       return;
     }
 
-    callback(new Error(`CORS blocked for origin: ${origin}`));
+    callback(null, false);
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
@@ -72,19 +81,6 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(cookieParser());
 
 app.use(requestIdMiddleware);
-
-// Health Check
-app.get('/', (_req, res) => {
-  res.send('RedMecanica Backend Running');
-});
-
-app.get('/api', (_req, res) => {
-  res.json({ status: 'ok', service: 'api', timestamp: new Date().toISOString() });
-});
-
-app.get('/api/health', (_req, res) => {
-  res.json({ status: 'ok', timestamp: new Date().toISOString() });
-});
 
 // Mount Routes
 app.use('/api/auth', authRoutes);
