@@ -35,16 +35,47 @@
     <meta property="twitter:description" content="Directorio de talleres, grúas y mecánicos cerca de ti" />
     <meta property="twitter:image" content="https://redmecanica.cl/og-image.jpg" />
     
-    <!-- Preconnect fonts -->
+    <!-- Preconnect / dns-prefetch for critical origins -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://pagead2.googlesyndication.com" />
+    <link rel="preconnect" href="https://www.googletagmanager.com" />
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
+    <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
+    <link rel="dns-prefetch" href="https://pagead2.googlesyndication.com" />
+    <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
+    
+    <!-- Deferred Google Fonts (non-blocking) -->
     <link
       href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
       rel="stylesheet"
+      media="print"
+      onload="this.media='all'"
     />
-    <!-- Google AdSense -->
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8488238206685791"
-     crossorigin="anonymous"></script>
+    <noscript>
+      <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet" />
+    </noscript>
+    
+    <!-- Deferred Google AdSense (loaded after page becomes idle) -->
+    <script>
+      (function() {
+        var loaded = false;
+        var loadAdsense = function() {
+          if (loaded) return;
+          loaded = true;
+          var s = document.createElement('script');
+          s.async = true;
+          s.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8488238206685791';
+          s.crossOrigin = 'anonymous';
+          document.head.appendChild(s);
+        };
+        if ('requestIdleCallback' in window) {
+          requestIdleCallback(loadAdsense, { timeout: 3000 });
+        } else {
+          setTimeout(loadAdsense, 2000);
+        }
+      })();
+    </script>
   </head>
   <body class="bg-gray-100">
     <div id="root"></div>

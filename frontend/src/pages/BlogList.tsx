@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { BLOG_ARTICLES } from '../data/blogArticles';
 import Card from '../components/common/Card';
+import AdBanner from '../components/common/AdBanner';
 
 const BlogList: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -95,9 +96,9 @@ const BlogList: React.FC = () => {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {filteredArticles.map(article => (
+          {filteredArticles.map((article, index) => (
+            <React.Fragment key={article.slug}>
             <Card 
-              key={article.slug} 
               className="group flex flex-col border border-gray-100 hover:border-blue-200 shadow-sm hover:shadow-xl transition-all duration-300 rounded-2xl overflow-hidden cursor-pointer"
             >
               <Link to={`/blog/${article.slug}`} className="flex flex-col h-full">
@@ -137,6 +138,12 @@ const BlogList: React.FC = () => {
                 </div>
               </Link>
             </Card>
+            {(index + 1) % 4 === 3 && (
+              <div className="col-span-1 md:col-span-2 lg:col-span-3">
+                <AdBanner className="my-2" />
+              </div>
+            )}
+            </React.Fragment>
           ))}
         </div>
       )}

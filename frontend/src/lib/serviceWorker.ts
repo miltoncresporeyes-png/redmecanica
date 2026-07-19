@@ -1,6 +1,6 @@
 // Service Worker Registration
 // Handles PWA installation and updates
-import React from 'react';
+import { useState, useEffect } from 'react';
 export function registerSW() {
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
@@ -138,9 +138,9 @@ function urlBase64ToUint8Array(base64String: string) {
 
 // Check online/offline status
 export function useNetworkStatus() {
-  const [isOnline, setIsOnline] = React.useState(navigator.onLine);
+  const [isOnline, setIsOnline] = useState(navigator.onLine);
   
-  React.useEffect(() => {
+  useEffect(() => {
     const handleOnline = () => setIsOnline(true);
     const handleOffline = () => setIsOnline(false);
     

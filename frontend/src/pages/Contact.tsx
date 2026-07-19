@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import SEO from '../components/SEO';
 import { sendContactMessage } from '../services/api';
 
 interface ContactProps {
@@ -44,9 +45,15 @@ const Contact: React.FC<ContactProps> = ({ onClose }) => {
 
   return (
     <div className="max-w-6xl mx-auto">
+      <SEO
+        title="Contacto | RedMecánica"
+        description="Contáctanos por WhatsApp, email o teléfono. Estamos en Santiago, Placer 1156. Horarios de atención y soporte 24/7 para emergencias automotrices."
+        keywords="contacto redmecánica, soporte mecánico chile, atención al cliente redmecánica"
+        canonicalUrl="https://redmecanica.cl/contact"
+      />
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold text-gray-900">Contacto</h1>
+        <h1 className="text-3xl font-bold text-gray-900">Contacto | RedMecánica</h1>
         <button
           onClick={onClose}
           className="text-gray-500 hover:text-gray-700 text-2xl font-bold"

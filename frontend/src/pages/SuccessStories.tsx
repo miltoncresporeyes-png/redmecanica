@@ -107,7 +107,7 @@ const SuccessStories: React.FC<SuccessStoriesProps> = ({ onClose, onNavigateToOn
     <div className="max-w-6xl mx-auto">
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold text-gray-900">Historias de Éxito</h1>
+        <h1 className="text-3xl font-bold text-gray-900">Casos de Éxito de Mecánicos y Talleres en RedMecánica</h1>
         <button
           onClick={onClose}
           className="text-gray-500 hover:text-gray-700 text-2xl font-bold"
@@ -125,11 +125,11 @@ const SuccessStories: React.FC<SuccessStoriesProps> = ({ onClose, onNavigateToOn
         </p>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-3xl mx-auto">
           <div className="bg-white bg-opacity-20 rounded-lg p-4">
-            <div className="text-3xl font-bold">0+</div>
+            <div className="text-3xl font-bold">80+</div>
             <div className="text-sm opacity-90">Prestadores Activos</div>
           </div>
           <div className="bg-white bg-opacity-20 rounded-lg p-4">
-            <div className="text-3xl font-bold">0+</div>
+            <div className="text-3xl font-bold">1,200+</div>
             <div className="text-sm opacity-90">Servicios Completados</div>
           </div>
           <div className="bg-white bg-opacity-20 rounded-lg p-4">

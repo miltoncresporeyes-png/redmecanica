@@ -80,7 +80,6 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ onClose }) => {
       alert('Error: El RUT ingresado no es válido');
       return;
     }
-    console.log('Guardando perfil:', userData);
     setEditMode(false);
   };
 
@@ -292,17 +291,17 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ onClose }) => {
   );
 
   return (
-    <div className="max-w-6xl mx-auto">
-      <Card className="overflow-hidden">
+    <div className="max-w-6xl mx-auto px-2 sm:px-4 py-4 sm:py-8">
+      <Card className="overflow-hidden shadow-lg border border-slate-200/80 rounded-2xl">
         {/* Header */}
-        <div className="bg-gradient-to-r from-blue-600 to-blue-800 text-white p-8">
+        <div className="bg-gradient-to-r from-blue-700 via-blue-800 to-indigo-900 text-white p-5 sm:p-8">
           <div className="flex justify-between items-center">
             <div>
-              <h2 className="text-3xl font-bold mb-2">Mi Cuenta</h2>
-              <p className="text-blue-100">Panel de Cliente</p>
+              <h2 className="text-xl sm:text-3xl font-extrabold tracking-tight mb-1">Mi Cuenta</h2>
+              <p className="text-blue-200 text-xs sm:text-sm font-medium">Panel de Cliente RedMecánica</p>
             </div>
             {onClose && (
-              <button onClick={onClose} className="text-white text-2xl hover:text-blue-200 transition-colors">
+              <button onClick={onClose} className="text-white text-2xl hover:text-blue-200 transition-colors p-2 touch-target">
                 ×
               </button>
             )}
@@ -310,8 +309,8 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ onClose }) => {
         </div>
 
         {/* Tabs */}
-        <div className="border-b">
-          <div className="flex overflow-x-auto">
+        <div className="border-b border-slate-200 bg-slate-50/50">
+          <div className="flex overflow-x-auto no-scrollbar">
             {[
               { id: 'profile', label: '👤 Perfil', icon: '👤' },
               { id: 'vehicles', label: '🚗 Vehículos', icon: '🚗' },
@@ -320,10 +319,10 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ onClose }) => {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id as any)}
-                className={`px-6 py-4 font-semibold transition-colors whitespace-nowrap ${
+                className={`px-5 py-3.5 font-bold text-xs sm:text-sm transition-colors whitespace-nowrap min-h-[44px] flex items-center justify-center ${
                   activeTab === tab.id
-                    ? 'text-blue-600 border-b-2 border-blue-600 bg-blue-50'
-                    : 'text-gray-600 hover:text-blue-600 hover:bg-gray-50'
+                    ? 'text-blue-600 border-b-2 border-blue-600 bg-white'
+                    : 'text-slate-600 hover:text-blue-600 hover:bg-slate-100/60'
                 }`}
               >
                 {tab.label}
@@ -333,7 +332,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ onClose }) => {
         </div>
 
         {/* Content */}
-        <div className="p-8">
+        <div className="p-4 sm:p-8">
           {activeTab === 'profile' && renderProfileTab()}
           {activeTab === 'vehicles' && renderVehiclesTab()}
           {activeTab === 'history' && renderHistoryTab()}

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Check, X, Wrench, Settings, Gauge, Warehouse, HelpCircle, CreditCard, ArrowLeft, Loader2, Shield } from 'lucide-react';
 import SEO from '../components/SEO';
 import { useAuth } from '../app/providers';
@@ -232,64 +233,64 @@ const PricingPlans: React.FC<PricingPlansProps> = ({ onClose, onSelectPlan, onNa
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch">
           {plans.map((plan) => {
             const displayPrice = billingCycle === 'annual' ? plan.priceAnnual : plan.price;
 
             return (
               <div
                 key={plan.id}
-                className={`relative group bg-white rounded-[2rem] p-1 transition-all duration-300 hover:-translate-y-2 ${
-                  plan.popular ? 'ring-2 ring-blue-500 shadow-2xl scale-105 z-10' : 'shadow-xl'
+                className={`relative group bg-white rounded-2xl p-1 transition-all duration-300 flex flex-col justify-between ${
+                  plan.popular ? 'ring-2 ring-blue-500 shadow-2xl z-10 md:scale-105' : 'shadow-lg border border-slate-100'
                 }`}
               >
                 {plan.popular && (
-                  <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-[10px] font-black uppercase tracking-widest px-4 py-1.5 rounded-full shadow-lg z-20 whitespace-nowrap">
+                  <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-[10px] font-black uppercase tracking-widest px-4 py-1 rounded-full shadow-md z-20 whitespace-nowrap">
                     Recomendado
                   </div>
                 )}
 
-                <div className="bg-white rounded-[1.9rem] p-7 flex flex-col h-full">
-                  <div className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-6 transition-transform group-hover:scale-110 duration-300 ${
-                    plan.color === 'slate' ? 'bg-slate-100 text-slate-600' :
-                    plan.color === 'blue' ? 'bg-blue-100 text-blue-600' :
-                    plan.color === 'indigo' ? 'bg-indigo-100 text-indigo-600' :
-                    'bg-emerald-100 text-emerald-600'
-                  }`}>
-                    {plan.icon}
-                  </div>
+                <div className="bg-white rounded-xl p-6 sm:p-7 flex flex-col h-full justify-between">
+                  <div>
+                    <div className={`w-12 h-12 sm:w-14 sm:h-14 rounded-2xl flex items-center justify-center mb-5 transition-transform group-hover:scale-110 duration-300 ${
+                      plan.color === 'slate' ? 'bg-slate-100 text-slate-600' :
+                      plan.color === 'blue' ? 'bg-blue-100 text-blue-600' :
+                      plan.color === 'indigo' ? 'bg-indigo-100 text-indigo-600' :
+                      'bg-emerald-100 text-emerald-600'
+                    }`}>
+                      {plan.icon}
+                    </div>
 
-                  <h3 className="text-xl font-black text-slate-900 mb-1">{plan.name}</h3>
-                  <p className="text-sm font-medium text-slate-400 mb-6">{plan.subtitle}</p>
+                    <h2 className="text-xl font-black text-slate-900 mb-1 tracking-tight">{plan.name}</h2>
+                    <p className="text-xs sm:text-sm font-medium text-slate-400 mb-5">{plan.subtitle}</p>
 
-                  <div className="mb-8">
-                    {displayPrice === null ? (
-                      <div className="flex flex-col">
-                        <span className="text-3xl font-black text-slate-900">A medida</span>
-                        <span className="text-xs text-slate-400">Cotización a medida</span>
-                      </div>
-                    ) : (
-                      <div className="flex items-baseline gap-1">
-                        <span className="text-3xl font-black text-slate-900">
-                          {displayPrice === 0 ? 'Gratis' : `$${displayPrice.toLocaleString('es-CL')}`}
-                        </span>
-                        {displayPrice !== 0 && (
-                          <span className="text-xs font-bold text-slate-400">/{billingCycle === 'monthly' ? 'mes' : 'año'}</span>
-                        )}
-                      </div>
-                    )}
-                  </div>
+                    <div className="mb-6">
+                      {displayPrice === null ? (
+                        <div className="flex flex-col">
+                          <span className="text-2xl sm:text-3xl font-black text-slate-900">A medida</span>
+                          <span className="text-xs text-slate-400">Cotización personalizada</span>
+                        </div>
+                      ) : (
+                        <div className="flex items-baseline gap-1">
+                          <span className="text-2xl sm:text-3xl font-black text-slate-900">
+                            {displayPrice === 0 ? 'Gratis' : `$${displayPrice.toLocaleString('es-CL')}`}
+                          </span>
+                          {displayPrice !== 0 && (
+                            <span className="text-xs font-bold text-slate-400">/{billingCycle === 'monthly' ? 'mes' : 'año'}</span>
+                          )}
+                        </div>
+                      )}
+                    </div>
 
-                  <div className="flex-1">
-                    <ul className="space-y-3 mb-8">
+                    <ul className="space-y-3 mb-6">
                       {plan.features.map((feature, i) => (
-                        <li key={i} className={`flex items-start gap-2 text-sm ${feature.included ? 'text-slate-600' : 'text-slate-300'}`}>
+                        <li key={i} className={`flex items-start gap-2 text-xs sm:text-sm ${feature.included ? 'text-slate-600' : 'text-slate-300'}`}>
                           {feature.included ? (
                             <Check className="w-4 h-4 text-emerald-500 mt-0.5 shrink-0" />
                           ) : (
                             <X className="w-4 h-4 text-slate-300 mt-0.5 shrink-0" />
                           )}
-                          <span className="font-medium">{feature.text}</span>
+                          <span className="font-medium leading-snug">{feature.text}</span>
                         </li>
                       ))}
                     </ul>
@@ -297,10 +298,10 @@ const PricingPlans: React.FC<PricingPlansProps> = ({ onClose, onSelectPlan, onNa
 
                   <button
                     onClick={() => handleSelectPlan(plan.id)}
-                    className={`w-full py-3.5 rounded-xl font-black text-sm transition-all active:scale-95 ${
+                    className={`w-full py-3.5 rounded-xl font-black text-sm transition-all min-h-[44px] flex items-center justify-center ${
                       plan.popular
                         ? 'bg-blue-600 text-white hover:bg-blue-700 shadow-lg shadow-blue-200'
-                        : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                        : 'bg-slate-900 text-white hover:bg-slate-800'
                     }`}
                   >
                     {plan.id === 'enterprise' ? 'Contactar' : plan.id === 'free' ? 'Comenzar' : 'Empezar ahora'}
@@ -312,11 +313,11 @@ const PricingPlans: React.FC<PricingPlansProps> = ({ onClose, onSelectPlan, onNa
         </div>
 
         <div className="mt-24 text-center">
-          <button className="inline-flex items-center gap-2 text-slate-500 hover:text-blue-600 font-bold transition-colors group">
+          <Link to="/benefits" className="inline-flex items-center gap-2 text-slate-500 hover:text-blue-600 font-bold transition-colors group">
             <HelpCircle className="w-5 h-5" />
             <span>Ver comparativa completa de beneficios</span>
             <div className="w-1.5 h-1.5 rounded-full bg-blue-600 opacity-0 group-hover:opacity-100 transition-opacity" />
-          </button>
+          </Link>
         </div>
 
         <div className="mt-24 max-w-4xl mx-auto grid md:grid-cols-2 gap-x-12 gap-y-8 px-6">

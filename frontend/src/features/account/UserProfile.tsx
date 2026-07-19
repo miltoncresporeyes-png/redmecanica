@@ -80,7 +80,6 @@ const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
       alert('Error: El RUT ingresado no es válido');
       return;
     }
-    console.log('Guardando perfil:', userData);
     setEditMode(false);
   };
 

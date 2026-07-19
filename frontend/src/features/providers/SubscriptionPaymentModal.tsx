@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import api from '../../lib/http';
+import { formatPrice } from '../../utils/format';
 
 interface SubscriptionPaymentModalProps {
   providerId: string;
@@ -87,14 +88,6 @@ const SubscriptionPaymentModal: React.FC<SubscriptionPaymentModalProps> = ({ pro
       setError(err.response?.data?.error || 'Transacción denegada por Webpay');
       setStep('payment');
     }
-  };
-
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('es-CL', {
-      style: 'currency',
-      currency: 'CLP',
-      minimumFractionDigits: 0
-    }).format(price);
   };
 
   return (

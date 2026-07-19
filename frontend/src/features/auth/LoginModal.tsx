@@ -273,20 +273,8 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLoginSuccess
               </button>
             </p>
           </div>
-          
-          <div className="mt-6 flex justify-center gap-4">
-             <div className="text-[10px] text-slate-300 font-bold uppercase tracking-widest italic">
-                Sugerencia: usa admin123 para el seed
-             </div>
-          </div>
         </div>
       </div>
-      <style dangerouslySetInnerHTML={{ __html: `
-        @keyframes fadeIn { from { opacity: 0; backdrop-filter: blur(0); } to { opacity: 1; backdrop-filter: blur(12px); } }
-        @keyframes shake { 0%, 100% { transform: translateX(0); } 20%, 60% { transform: translateX(-5px); } 40%, 80% { transform: translateX(5px); } }
-        .animate-fadeIn { animation: fadeIn 0.3s ease-out forwards; }
-        .animate-shake { animation: shake 0.4s ease-in-out; }
-      `}} />
     </div>
   );
 };

@@ -8,8 +8,9 @@ Disallow: /provider-dashboard/
 Disallow: /onboarding/
 Disallow: /api/
 
-# Sitemap location
+# Sitemaps
 Sitemap: https://redmecanica.cl/sitemap.xml
+Sitemap: https://redmecanica.cl/image-sitemap.xml
 
 # Crawl rate
 Crawl-delay: 10

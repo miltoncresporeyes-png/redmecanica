@@ -40,7 +40,7 @@ const Testimonials: React.FC = () => {
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold text-gray-800 mb-3">Lo que dicen nuestros usuarios</h2>
-          <p className="text-gray-600">Miles de conductores confían en RedMecánica cada día</p>
+          <p className="text-gray-600">Estamos construyendo la red de mecánicos más confiable de Chile</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -66,18 +66,18 @@ const Testimonials: React.FC = () => {
         <div className="text-center mt-10">
           <div className="inline-flex items-center space-x-8 text-gray-700">
             <div>
-              <p className="text-3xl font-bold text-blue-600">15,000+</p>
+              <p className="text-3xl font-bold text-blue-600">---</p>
               <p className="text-sm">Servicios Realizados</p>
             </div>
             <div className="h-12 w-px bg-gray-300"></div>
             <div>
-              <p className="text-3xl font-bold text-blue-600">4.8/5</p>
+              <p className="text-3xl font-bold text-blue-600">---</p>
               <p className="text-sm">Calificación Promedio</p>
             </div>
             <div className="h-12 w-px bg-gray-300"></div>
             <div>
-              <p className="text-3xl font-bold text-blue-600">98%</p>
-              <p className="text-sm">Clientes Satisfechos</p>
+              <p className="text-3xl font-bold text-blue-600">100%</p>
+              <p className="text-sm">Compromiso</p>
             </div>
           </div>
         </div>

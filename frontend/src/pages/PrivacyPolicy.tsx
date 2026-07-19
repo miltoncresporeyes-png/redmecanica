@@ -203,7 +203,35 @@ const PrivacyPolicy: React.FC<PrivacyPolicyProps> = ({ onClose }) => {
             <li><strong>Cookies de publicidad:</strong> Personalizan anuncios relevantes (solo con su consentimiento)</li>
           </ul>
 
-          <h3 className="text-lg font-bold text-gray-900 mb-2">8.2 Gestión de Cookies</h3>
+          <h3 className="text-lg font-bold text-gray-900 mb-2">8.2 Publicidad de Terceros (Google AdSense)</h3>
+          <p className="mb-3">
+            Utilizamos <strong>Google AdSense</strong>, un servicio de publicidad proporcionado por
+            Google LLC ("Google"), para mostrar anuncios relevantes en nuestra plataforma.
+            Google AdSense utiliza cookies y web beacons para recopilar información sobre sus
+            visitas a nuestro sitio y a otros sitios web, con el fin de mostrarle anuncios
+            personalizados basados en sus intereses.
+          </p>
+          <p className="mb-3">
+            Los datos recopilados por Google AdSense pueden incluir: dirección IP, tipo de
+            navegador, dispositivo utilizado, páginas visitadas, hora de la visita, y
+            actividad de clics en los anuncios. Esta información es gestionada por Google
+            según su propia <strong>Política de Privacidad</strong> disponible en
+            <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline ml-1">
+              policies.google.com/privacy
+            </a>.
+          </p>
+          <p className="mb-3">
+            Para inhabilitar la publicidad personalizada de Google, puede visitar
+            <a href="https://adssettings.google.com" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline ml-1">
+              Configuración de anuncios de Google
+            </a>.
+            También puede optar por no recibir publicidad personalizada de terceros visitando
+            <a href="https://www.networkadvertising.org/choices/" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline ml-1">
+              www.networkadvertising.org/choices/
+            </a>.
+          </p>
+
+          <h3 className="text-lg font-bold text-gray-900 mb-2">8.3 Gestión de Cookies</h3>
           <p>
             Puede controlar y eliminar cookies desde la configuración de su navegador.
             Sin embargo, deshabilitar ciertas cookies puede afectar la funcionalidad de la plataforma.

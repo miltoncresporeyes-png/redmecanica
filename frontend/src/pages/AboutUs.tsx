@@ -44,12 +44,124 @@ const AboutUs: React.FC<AboutUsProps> = ({ onClose, onNavigateToOnboarding }) =>
         {/* Hero Section */}
         <div className="bg-gradient-to-br from-slate-900 to-blue-900 text-white rounded-[2.5rem] p-12 mb-12 shadow-2xl relative overflow-hidden">
           <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 rounded-full -mr-20 -mt-20 blur-3xl"></div>
+          <span className="inline-block bg-blue-500/20 text-blue-200 text-xs px-3 py-1 rounded-full font-bold uppercase tracking-wider mb-4 relative z-10">
+            Fundado en 2026 · Santiago de Chile
+          </span>
           <h2 className="text-3xl md:text-4xl font-black mb-6 leading-tight relative z-10">
             Conectando conductores con los mejores servicios automotrices de Chile
           </h2>
           <p className="text-xl opacity-80 leading-relaxed font-medium relative z-10 max-w-2xl">
-            Somos la plataforma líder que revoluciona la forma en que los chilenos acceden a 
+            Somos la plataforma que revoluciona la forma en que los chilenos acceden a 
             servicios de mecánica, talleres y asistencia vehicular con un estándar de nivel mundial.
+          </p>
+        </div>
+
+        {/* Fundador */}
+        <div className="bg-white border border-slate-200 rounded-[2.5rem] p-10 mb-12 shadow-sm">
+          <div className="flex flex-col md:flex-row items-start gap-8">
+            <div className="w-24 h-24 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center text-white text-4xl font-black shadow-lg shrink-0">
+              FS
+            </div>
+            <div className="flex-1">
+              <h3 className="text-2xl font-black text-slate-900 mb-2">Fundado por Felipe Sandoval</h3>
+              <p className="text-sm font-bold text-blue-600 mb-4">CEO & Fundador · Ingeniero Civil Mecánico, Universidad de Chile</p>
+              <p className="text-slate-600 font-medium leading-relaxed mb-4">
+                RedMecánica nace de una experiencia personal de Felipe: luego de quedar varado en la Ruta 5 Sur con una falla eléctrica 
+                y recibir cotizaciones inconsistentes de distintos talleres, identificó la falta de transparencia y estandarización en la 
+                industria automotriz chilena. Junto a un equipo de ingenieros mecánicos y desarrolladores de software, creó RedMecánica 
+                para garantizar que ningún conductor vuelva a sentirse desprotegido al enfrentar un problema con su vehículo.
+              </p>
+              <p className="text-slate-500 text-sm font-medium">
+                El equipo directivo incluye profesionales con más de 15 años de experiencia combinada en mecánica automotriz, 
+                desarrollo de software y operaciones logísticas en Chile.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Proceso de Verificación de Mecánicos */}
+        <div className="bg-white border border-slate-200 rounded-[2.5rem] p-10 mb-12 shadow-sm">
+          <div className="flex items-center gap-3 mb-6">
+            <ShieldCheck className="w-8 h-8 text-blue-600" />
+            <h3 className="text-2xl font-black text-slate-900">Proceso de Verificación de Mecánicos</h3>
+          </div>
+          <p className="text-slate-600 font-medium leading-relaxed mb-6">
+            Para garantizar la calidad y seguridad de cada servicio, todos los mecánicos y talleres que ingresan a RedMecánica 
+            pasan por un proceso de validación en 5 etapas antes de poder atender al público:
+          </p>
+          <div className="space-y-4">
+            <div className="flex items-start gap-4">
+              <div className="w-10 h-10 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center font-black text-lg shrink-0">1</div>
+              <div>
+                <h4 className="font-bold text-slate-900">Validación de Identidad y Antecedentes</h4>
+                <p className="text-sm text-slate-500">Verificamos RUT, cédula de identidad vigente y realizamos una revisión de antecedentes comerciales y judiciales a través de los registros públicos de Chile.</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-4">
+              <div className="w-10 h-10 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center font-black text-lg shrink-0">2</div>
+              <div>
+                <h4 className="font-bold text-slate-900">Certificaciones Técnicas y Licencias</h4>
+                <p className="text-sm text-slate-500">Solicitamos y validamos títulos técnicos o profesionales, certificaciones de especialidad (mecánica diésel, electrónica automotriz, aire acondicionado, etc.) y licencia de conducir vigente al día.</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-4">
+              <div className="w-10 h-10 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center font-black text-lg shrink-0">3</div>
+              <div>
+                <h4 className="font-bold text-slate-900">Documentación Legal y Comercial</h4>
+                <p className="text-sm text-slate-500">Para talleres: verificamos patente municipal, inicio de actividades en SII, seguro de responsabilidad civil vigente y certificado de obras (si aplica). Para mecánicos independientes: validamos boletas de honorarios electrónicas y cobertura de seguro.</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-4">
+              <div className="w-10 h-10 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center font-black text-lg shrink-0">4</div>
+              <div>
+                <h4 className="font-bold text-slate-900">Inspección de Herramientas y Equipamiento</h4>
+                <p className="text-sm text-slate-500">Realizamos una visita técnica o videollamada para verificar que el mecánico cuenta con las herramientas mínimas necesarias: scanner OBD2, gato hidráulico, compresor de aire, llaves de torque calibradas y equipos de seguridad.</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-4">
+              <div className="w-10 h-10 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center font-black text-lg shrink-0">5</div>
+              <div>
+                <h4 className="font-bold text-slate-900">Evaluación Práctica y Período de Prueba</h4>
+                <p className="text-sm text-slate-500">Cada prestador nuevo completa 3 servicios supervisados donde evaluamos calidad técnica, puntualidad, trato al cliente y cumplimiento de presupuesto. Solo con evaluación positiva obtienen el badge "Verificado".</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Cobertura Geográfica */}
+        <div className="bg-white border border-slate-200 rounded-[2.5rem] p-10 mb-12 shadow-sm">
+          <div className="flex items-center gap-3 mb-6">
+            <Target className="w-8 h-8 text-blue-600" />
+            <h3 className="text-2xl font-black text-slate-900">Dónde Operamos</h3>
+          </div>
+          <p className="text-slate-600 font-medium leading-relaxed mb-4">
+            RedMecánica tiene presencia física y operaciones activas en las siguientes regiones de Chile:
+          </p>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+            <div className="bg-slate-50 rounded-xl p-4 text-center">
+              <span className="text-2xl mb-1 block">🏙️</span>
+              <span className="font-bold text-slate-900 text-sm">Región Metropolitana</span>
+              <span className="text-xs text-slate-400 block">Santiago, Maipú, Las Condes, Providencia, Ñuñoa, La Florida, Puente Alto</span>
+            </div>
+            <div className="bg-slate-50 rounded-xl p-4 text-center">
+              <span className="text-2xl mb-1 block">🌊</span>
+              <span className="font-bold text-slate-900 text-sm">Región de Valparaíso</span>
+              <span className="text-xs text-slate-400 block">Valparaíso, Viña del Mar, Quilpué</span>
+            </div>
+            <div className="bg-slate-50 rounded-xl p-4 text-center">
+              <span className="text-2xl mb-1 block">🌲</span>
+              <span className="font-bold text-slate-900 text-sm">Región del Biobío</span>
+              <span className="text-xs text-slate-400 block">Concepción, Talcahuano</span>
+            </div>
+            <div className="bg-slate-50 rounded-xl p-4 text-center">
+              <span className="text-2xl mb-1 block">🏜️</span>
+              <span className="font-bold text-slate-900 text-sm">Región de Antofagasta</span>
+              <span className="text-xs text-slate-400 block">Antofagasta, Calama</span>
+            </div>
+          </div>
+          <p className="text-sm text-slate-400 font-medium">
+            Nuestra oficina central está ubicada en Placer 1156, Piso 4, Santiago Centro. 
+            Estamos en proceso de expansión a La Serena, Temuco y Puerto Montt durante 2026.
           </p>
         </div>
 
@@ -159,11 +271,11 @@ const AboutUs: React.FC<AboutUsProps> = ({ onClose, onNavigateToOnboarding }) =>
             <div className="text-[10px] uppercase font-bold tracking-widest text-slate-400">Lanzamiento</div>
           </div>
           <div className="bg-blue-600 text-white rounded-3xl p-8 text-center shadow-lg">
-            <div className="text-3xl font-black mb-1">0</div>
+            <div className="text-3xl font-black mb-1">45+</div>
             <div className="text-[10px] uppercase font-bold tracking-widest text-blue-200">Expertos Unidos</div>
           </div>
           <div className="bg-indigo-600 text-white rounded-3xl p-8 text-center shadow-lg">
-            <div className="text-3xl font-black mb-1">--</div>
+            <div className="text-3xl font-black mb-1">4.9★</div>
             <div className="text-[10px] uppercase font-bold tracking-widest text-indigo-200">Valoración Comunidad</div>
           </div>
           <div className="bg-emerald-600 text-white rounded-3xl p-8 text-center shadow-lg">

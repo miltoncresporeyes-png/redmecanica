@@ -9,20 +9,11 @@ const API_CACHE_NAME = `redmecanica-api-${VERSION}`;
 const STATIC_ASSETS = [
   '/',
   '/index.html',
-  '/onboarding',
-  '/auth',
-  '/login',
-  '/dashboard',
   '/favicon.svg',
   '/manifest.json',
   '/robots.txt',
   '/sitemap.xml',
-  '/offline.html',
-  '/assets/images/logo-primary.svg',
-  '/assets/images/logo-white.svg',
-  '/assets/images/icons/offline-icon.svg',
-  '/assets/fonts/inter-var.woff2',
-  '/assets/css/critical.css'
+  '/offline.html'
 ];
 
 // Rutas de API para network-first con stale-while-revalidate

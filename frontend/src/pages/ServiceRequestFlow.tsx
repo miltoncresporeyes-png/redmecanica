@@ -269,35 +269,35 @@ const ServiceRequestFlow: React.FC = () => {
       case 1:
         return (
           <div className="space-y-6">
-            <div className="text-center mb-6">
-              <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">Paso 1 de 5</span>
-              <h2 className="text-2xl font-bold mt-3">¿Qué servicio necesitas?</h2>
+            <div className="text-center mb-5">
+              <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-xs font-bold tracking-wide uppercase">Paso 1 de 5</span>
+              <h2 className="text-xl sm:text-2xl font-black text-slate-900 mt-2.5 tracking-tight">¿Qué servicio necesitas?</h2>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Tu vehículo</label>
-              <div className="grid grid-cols-3 gap-3">
+              <label className="block text-xs sm:text-sm font-semibold text-slate-700 mb-2">Tu vehículo</label>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
                 <select 
                   value={vehicle.make}
                   onChange={(e) => {
                     const make = carMakes.find(m => m.make === e.target.value);
                     setVehicle({ ...vehicle, make: e.target.value, model: make?.models[0] || '' });
                   }}
-                  className="p-3 border rounded-lg"
+                  className="p-3 border border-slate-200 rounded-xl bg-slate-50 focus:bg-white text-sm font-medium outline-none min-h-[44px]"
                 >
                   {carMakes.map(m => <option key={m.make} value={m.make}>{m.make}</option>)}
                 </select>
                 <select 
                   value={vehicle.model}
                   onChange={(e) => setVehicle({ ...vehicle, model: e.target.value })}
-                  className="p-3 border rounded-lg"
+                  className="p-3 border border-slate-200 rounded-xl bg-slate-50 focus:bg-white text-sm font-medium outline-none min-h-[44px]"
                 >
                   {carMakes.find(m => m.make === vehicle.make)?.models.map(m => <option key={m} value={m}>{m}</option>)}
                 </select>
                 <select 
                   value={vehicle.year}
                   onChange={(e) => setVehicle({ ...vehicle, year: parseInt(e.target.value) })}
-                  className="p-3 border rounded-lg"
+                  className="p-3 border border-slate-200 rounded-xl bg-slate-50 focus:bg-white text-sm font-medium outline-none min-h-[44px]"
                 >
                   {vehicleYears.map(y => <option key={y} value={y}>{y}</option>)}
                 </select>
@@ -305,24 +305,24 @@ const ServiceRequestFlow: React.FC = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Selecciona un servicio</label>
-              <div className="space-y-2 max-h-64 overflow-y-auto">
+              <label className="block text-xs sm:text-sm font-semibold text-slate-700 mb-2">Selecciona un servicio</label>
+              <div className="space-y-2.5 max-h-64 overflow-y-auto pr-1">
                 {services.map(service => (
                   <div
                     key={service.id}
                     onClick={() => setSelectedService(service)}
-                    className={`p-4 border rounded-lg cursor-pointer transition-all ${
+                    className={`p-4 rounded-xl border cursor-pointer transition-all touch-target justify-start ${
                       selectedService?.id === service.id 
-                        ? 'border-blue-500 bg-blue-50' 
-                        : 'border-gray-200 hover:border-gray-300'
+                        ? 'border-blue-600 bg-blue-50/80 shadow-sm ring-1 ring-blue-500' 
+                        : 'border-slate-200 hover:border-slate-300 bg-white'
                     }`}
                   >
-                    <div className="flex justify-between items-center">
+                    <div className="flex justify-between items-center w-full gap-2">
                       <div>
-                        <p className="font-medium">{service.name}</p>
-                        <p className="text-sm text-gray-500">{service.description}</p>
+                        <p className="font-bold text-sm text-slate-900">{service.name}</p>
+                        <p className="text-xs text-slate-500 line-clamp-1">{service.description}</p>
                       </div>
-                      <p className="font-bold text-blue-600">
+                      <p className="font-extrabold text-blue-600 text-sm shrink-0">
                         ${service.price?.toLocaleString('es-CL')}
                       </p>
                     </div>
@@ -332,12 +332,12 @@ const ServiceRequestFlow: React.FC = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Describe el problema (opcional)</label>
+              <label className="block text-xs sm:text-sm font-semibold text-slate-700 mb-2">Describe el problema (opcional)</label>
               <textarea
                 value={problemDescription}
                 onChange={(e) => setProblemDescription(e.target.value)}
-                placeholder="Ej: Ruido al frenar, no parte el auto, perdida de aceite..."
-                className="w-full p-3 border rounded-lg"
+                placeholder="Ej: Ruido al frenar, no parte el auto, pérdida de aceite..."
+                className="w-full p-3 border border-slate-200 rounded-xl bg-slate-50 focus:bg-white text-sm outline-none"
                 rows={3}
               />
             </div>
@@ -345,14 +345,14 @@ const ServiceRequestFlow: React.FC = () => {
             <button
               onClick={handleSearchProviders}
               disabled={!selectedService || loading}
-              className="w-full bg-blue-600 text-white py-4 rounded-lg font-bold disabled:opacity-50"
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3.5 rounded-xl font-extrabold shadow-md transition-all disabled:opacity-50 min-h-[48px] flex items-center justify-center gap-2 text-sm"
             >
               {loading ? 'Buscando Prestadores...' : 'Buscar Prestadores'}
             </button>
 
             <button
               onClick={handleCancel}
-              className="w-full text-gray-500 py-3 hover:text-gray-700 transition-colors"
+              className="w-full text-slate-500 py-2.5 hover:text-slate-700 transition-colors text-xs font-semibold"
             >
               Cancelar
             </button>

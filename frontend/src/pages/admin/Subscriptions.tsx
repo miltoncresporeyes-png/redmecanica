@@ -1,6 +1,7 @@
 
 import React, { useEffect, useState } from 'react';
 import api from '../../lib/http';
+import { formatPrice } from '../../utils/format';
 import { 
   CreditCard, 
   CheckCircle2, 
@@ -101,10 +102,6 @@ const SubscriptionsAdmin: React.FC = () => {
 
   const formatDate = (date: string) => {
     return new Date(date).toLocaleDateString('es-CL', { day: '2-digit', month: 'short', year: 'numeric' });
-  };
-
-  const formatPrice = (amount: number, currency: string = 'CLP') => {
-    return new Intl.NumberFormat('es-CL', { style: 'currency', currency }).format(amount);
   };
 
   const stats = {

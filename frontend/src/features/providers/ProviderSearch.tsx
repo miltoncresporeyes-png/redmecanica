@@ -2,6 +2,7 @@ import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import Card from '../../components/common/Card';
 import ProviderCard from './ProviderCard';
+import AdBanner from '../../components/common/AdBanner';
 import AutocompleteInput from '../../components/common/AutocompleteInput';
 import { REGIONES, COMUNAS_POR_REGION } from '../../data/autocompleteData';
 import api from '../../lib/http';
@@ -348,8 +349,11 @@ const ProviderSearch: React.FC = () => {
             No hay resultados. Intenta ajustar los filtros.
           </p>
         )}
-        {results.map((provider) => (
-          <ProviderCard key={provider.id} provider={provider} />
+        {results.map((provider, index) => (
+          <React.Fragment key={provider.id}>
+            <ProviderCard provider={provider} />
+            {(index + 1) % 4 === 3 && <AdBanner className="my-4" />}
+          </React.Fragment>
         ))}
       </div>
     </div>

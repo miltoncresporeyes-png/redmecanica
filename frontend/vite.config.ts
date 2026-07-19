@@ -59,10 +59,10 @@ export default defineConfig(({ mode }) => {
         
         // Optimize chunk size
         target: 'esnext',
-        minify: false,
+        minify: 'esbuild',
         cssMinify: true,
         
-        // Code splitting configuration
+        // Enable tree-shaking
         rollupOptions: {
           output: {
             // Manual chunks for better caching
@@ -71,12 +71,16 @@ export default defineConfig(({ mode }) => {
               'vendor-react': ['react', 'react-dom', 'react-router-dom'],
               // HTTP client and utilities
               'vendor-utils': ['axios', 'recharts'],
+              // SEO & meta framework
+              'vendor-seo': ['react-helmet-async'],
+              // Icons
+              'vendor-icons': ['lucide-react'],
             },
           }
         },
         
         // Chunk size warning limit
-        chunkSizeWarningLimit: 1000,
+        chunkSizeWarningLimit: 500,
         
         // CSS optimization
         cssCodeSplit: true,

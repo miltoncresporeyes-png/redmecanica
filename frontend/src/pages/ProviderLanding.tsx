@@ -86,9 +86,9 @@ const ProviderLanding: React.FC<ProviderLandingProps> = ({ onClose }) => {
               <circle cx="18" cy="18" r="3" />
               <path d="M6 12L18 6M6 12L18 18" stroke="white" strokeWidth="2" />
             </svg>
-            <h1 className="text-2xl font-bold text-white">
+            <span className="text-2xl font-bold text-white">
               Red<span className="text-yellow-300">Mecánica</span>
-            </h1>
+            </span>
           </div>
           {onClose && (
             <button onClick={onClose} className="text-white/80 hover:text-white">

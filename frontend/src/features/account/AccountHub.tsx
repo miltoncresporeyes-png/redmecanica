@@ -427,11 +427,6 @@ const AccountHub: React.FC<AccountHubProps> = ({ currentUser, onClose }) => {
           </div>
         )}
       </div>
-
-      <style dangerouslySetInnerHTML={{ __html: `
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        .animate-fadeIn { animation: fadeIn 0.5s ease-out; }
-      `}} />
     </div>
   );
 };

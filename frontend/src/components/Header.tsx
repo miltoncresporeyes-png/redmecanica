@@ -40,17 +40,25 @@ const Header: React.FC = () => {
   return (
     <>
       <SkipToContent />
-      <header className="bg-white shadow-md relative z-50" role="banner">
-        <nav className="container mx-auto px-4 py-4 flex justify-between items-center" aria-label="Navegación principal">
+      <div className="bg-amber-600 text-white text-[11px] sm:text-xs py-2 px-3 sm:px-4 text-center font-medium relative z-50 flex items-center justify-center gap-1.5 shadow-sm leading-tight" role="status">
+        <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+        </svg>
+        <span>
+          <strong>Modo Demostración:</strong> Todos los datos de esta plataforma (proveedores, cotizaciones, pagos) son simulados para demostración.
+        </span>
+      </div>
+      <header className="bg-white shadow-sm border-b border-slate-100 relative z-50 sticky top-0" role="banner">
+        <nav className="container mx-auto px-4 sm:px-6 py-3 sm:py-4 flex justify-between items-center" aria-label="Navegación principal">
           <Link
             to="/"
-            className="flex items-center space-x-2 cursor-pointer"
+            className="flex items-center space-x-2 cursor-pointer touch-target"
             aria-label="RedMecánica - Inicio"
           >
-            <svg className="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m12 0a2 2 0 100-4m0 4a2 2 0 110-4M6 12a2 2 0 100-4m0 4a2 2 0 110-4m12 0a2 2 0 100-4m0 4a2 2 0 110-4M12 18v-2m0 2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6a2 2 0 100-4m0 4a2 2 0 110-4"></path></svg>
-            <h1 className="text-2xl font-bold text-gray-800">
+            <svg className="w-8 h-8 text-blue-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m12 0a2 2 0 100-4m0 4a2 2 0 110-4M6 12a2 2 0 100-4m0 4a2 2 0 110-4m12 0a2 2 0 100-4m0 4a2 2 0 110-4M12 18v-2m0 2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6a2 2 0 100-4m0 4a2 2 0 110-4"></path></svg>
+            <span className="text-xl sm:text-2xl font-bold text-gray-800 tracking-tight">
               Red<span className="text-blue-600">Mecánica</span>
-            </h1>
+            </span>
           </Link>
 
           {/* Desktop Navigation */}
@@ -58,7 +66,7 @@ const Header: React.FC = () => {
             {user?.role === 'ADMIN' && (
               <Link
                 to="/admin"
-                className="px-4 py-2 text-sm font-medium text-white bg-purple-600 rounded-lg hover:bg-purple-700 transition-colors"
+                className="px-4 py-2 text-sm font-medium text-white bg-purple-600 rounded-lg hover:bg-purple-700 transition-colors min-h-[40px] flex items-center"
               >
                 🛡️ Admin
               </Link>
@@ -91,7 +99,7 @@ const Header: React.FC = () => {
             <div className="flex items-center gap-2">
               <button
                 onClick={handleAccountClick}
-                className={`px-4 py-2 text-sm font-medium rounded-lg transition-all ${
+                className={`px-4 py-2 text-sm font-medium rounded-lg transition-all min-h-[40px] ${
                   user
                     ? 'text-blue-700 bg-blue-50 border border-blue-100 font-bold'
                     : 'text-blue-600 border border-blue-600 hover:bg-blue-50'
@@ -102,7 +110,7 @@ const Header: React.FC = () => {
               {user && (
                 <button
                   onClick={() => { logout(); closeMobileMenu(); }}
-                  className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
+                  className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all touch-target"
                   title="Cerrar Sesión"
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
@@ -114,7 +122,7 @@ const Header: React.FC = () => {
           {/* Mobile Hamburger Button */}
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="md:hidden p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+            className="md:hidden touch-target p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-colors"
             aria-label={isMobileMenuOpen ? 'Cerrar menú' : 'Abrir menú'}
             aria-expanded={isMobileMenuOpen}
           >
@@ -133,26 +141,26 @@ const Header: React.FC = () => {
         {/* Mobile Menu Overlay */}
         {isMobileMenuOpen && (
           <div
-            className="fixed inset-0 bg-black/30 z-40 md:hidden"
+            className="fixed inset-0 bg-slate-950/40 backdrop-blur-sm z-40 md:hidden animate-fade-in"
             onClick={closeMobileMenu}
           />
         )}
 
         {/* Mobile Menu Drawer */}
         <div
-          className={`fixed top-0 right-0 h-full w-[280px] bg-white shadow-2xl z-50 transform transition-transform duration-300 ease-in-out md:hidden ${
+          className={`fixed top-0 right-0 h-full w-[290px] max-w-[85vw] bg-white shadow-2xl z-50 transform transition-transform duration-300 ease-in-out md:hidden flex flex-col justify-between ${
             isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'
           }`}
         >
           {/* Mobile Menu Header */}
-          <div className="flex items-center justify-between px-4 py-4 border-b border-gray-100">
+          <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 shrink-0">
             <Link to="/" onClick={closeMobileMenu} className="flex items-center space-x-2">
               <svg className="w-7 h-7 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m12 0a2 2 0 100-4m0 4a2 2 0 110-4M6 12a2 2 0 100-4m0 4a2 2 0 110-4m12 0a2 2 0 100-4m0 4a2 2 0 110-4M12 18v-2m0 2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6a2 2 0 100-4m0 4a2 2 0 110-4"></path></svg>
               <span className="text-lg font-bold text-gray-800">Red<span className="text-blue-600">Mecánica</span></span>
             </Link>
             <button
               onClick={closeMobileMenu}
-              className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+              className="p-2 touch-target text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-xl transition-colors"
               aria-label="Cerrar menú"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
