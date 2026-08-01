@@ -1,12 +1,13 @@
-import nodemailer from 'nodemailer';
-import { logger } from '../lib/logger.js';
+import nodemailer from "nodemailer";
+import crypto from "node:crypto";
+import { logger } from "../lib/logger.js";
 
 const getSmtpConfig = () => ({
-  host: process.env.SMTP_HOST || 'smtp.gmail.com',
-  configuredPort: parseInt(process.env.SMTP_PORT || '587'),
+  host: process.env.SMTP_HOST || "smtp.gmail.com",
+  configuredPort: parseInt(process.env.SMTP_PORT || "587"),
   user: process.env.SMTP_USER,
   pass: process.env.SMTP_PASS,
-  debugEnabled: process.env.SMTP_DEBUG === 'true',
+  debugEnabled: process.env.SMTP_DEBUG === "true",
 });
 
 /** Extrae los campos más relevantes de un error de nodemailer para logging. */
@@ -21,15 +22,23 @@ const extractSmtpError = (error: any) => ({
 /** Escapa caracteres especiales HTML para prevenir XSS en contenido de correos. */
 const escapeHtml = (str: string): string =>
   str
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#039;');
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
 
-const createTransporter = (host: string, port: number, user?: string, pass?: string, debugEnabled = false) => {
+const createTransporter = (
+  host: string,
+  port: number,
+  user?: string,
+  pass?: string,
+  debugEnabled = false,
+) => {
   if (!user || !pass) {
-    logger.warn('Email service: No SMTP credentials found. Emails will be logged to console but not sent.');
+    logger.warn(
+      "Email service: No SMTP credentials found. Emails will be logged to console but not sent.",
+    );
     return null;
   }
 
@@ -61,6 +70,76 @@ const getFallbackPort = (port: number): number => {
   return 587;
 };
 
+const getVerificationKey = () =>
+  crypto
+    .createHash("sha256")
+    .update(
+      process.env.EMAIL_VERIFICATION_SECRET ||
+        process.env.ACCESS_TOKEN_SECRET ||
+        "redmecanica-email-verification",
+    )
+    .digest();
+
+export const encryptVerificationCode = (code: string) => {
+  const iv = crypto.randomBytes(12);
+  const cipher = crypto.createCipheriv("aes-256-gcm", getVerificationKey(), iv);
+  const encrypted = Buffer.concat([
+    cipher.update(code, "utf8"),
+    cipher.final(),
+  ]);
+  const authTag = cipher.getAuthTag();
+
+  return [
+    iv.toString("base64url"),
+    authTag.toString("base64url"),
+    encrypted.toString("base64url"),
+  ].join(".");
+};
+
+export const decryptVerificationCode = (payload: string) => {
+  const [ivPart, authTagPart, encryptedPart] = payload.split(".");
+
+  if (!ivPart || !authTagPart || !encryptedPart) {
+    throw new Error("Verification token malformed");
+  }
+
+  const decipher = crypto.createDecipheriv(
+    "aes-256-gcm",
+    getVerificationKey(),
+    Buffer.from(ivPart, "base64url"),
+  );
+
+  decipher.setAuthTag(Buffer.from(authTagPart, "base64url"));
+
+  const decrypted = Buffer.concat([
+    decipher.update(Buffer.from(encryptedPart, "base64url")),
+    decipher.final(),
+  ]);
+
+  return decrypted.toString("utf8");
+};
+
+export const sendVerificationCodeEmail = async (
+  userEmail: string,
+  userName: string,
+  verificationCode: string,
+) => {
+  const html = `
+    <h2>Verificación de correo - RedMecánica</h2>
+    <p>Hola ${escapeHtml(userName)}, recibimos un registro reciente. Usa este código seguro una sola vez para validar tu correo:</p>
+    <p style="font-size: 18px; font-weight: 700; letter-spacing: 1px;">${escapeHtml(verificationCode)}</p>
+    <p>El código expira en 10 minutos y está cifrado con AES antes de ser almacenado por el sistema.</p>
+    <p>Si no solicitaste esta cuenta, puedes ignorar este mensaje.</p>
+  `;
+
+  return sendEmail({
+    to: userEmail,
+    subject: "Tu código de seguridad RedMecánica",
+    html,
+    text: `Hola ${userName}. Tu código de seguridad para RedMecánica es: ${verificationCode}. Expira en 10 minutos.`,
+  });
+};
+
 export const sendEmail = async (options: {
   to: string;
   subject: string;
@@ -69,8 +148,10 @@ export const sendEmail = async (options: {
   from?: string;
 }) => {
   const { host, configuredPort, user, pass, debugEnabled } = getSmtpConfig();
-  const from = options.from || `"RedMecánica" <${process.env.SMTP_USER || 'no-reply@redmecanica.cl'}>`;
-  
+  const from =
+    options.from ||
+    `"RedMecánica" <${process.env.SMTP_USER || "no-reply@redmecanica.cl"}>`;
+
   const mailOptions = {
     from,
     to: options.to,
@@ -79,13 +160,21 @@ export const sendEmail = async (options: {
     html: options.html,
   };
 
-  const primaryTransporter = createTransporter(host, configuredPort, user, pass, debugEnabled);
+  const primaryTransporter = createTransporter(
+    host,
+    configuredPort,
+    user,
+    pass,
+    debugEnabled,
+  );
 
   if (!primaryTransporter) {
     // if no SMTP credentials are configured we used to log and pretend the email
     // was sent. in production this hides configuration mistakes, so fail fast.
-    logger.error('SMTP transporter not available – check SMTP_USER/SMTP_PASS environment variables');
-    throw new Error('SMTP not configured');
+    logger.error(
+      "SMTP transporter not available – check SMTP_USER/SMTP_PASS environment variables",
+    );
+    throw new Error("SMTP not configured");
   }
 
   try {
@@ -94,32 +183,46 @@ export const sendEmail = async (options: {
     return info;
   } catch (error: any) {
     const errorCode = error?.code;
-    const retryable = errorCode === 'ETIMEDOUT' || errorCode === 'ECONNREFUSED' || errorCode === 'ESOCKET';
+    const retryable =
+      errorCode === "ETIMEDOUT" ||
+      errorCode === "ECONNREFUSED" ||
+      errorCode === "ESOCKET";
 
     if (!retryable) {
       logger.error(
         { smtp: extractSmtpError(error), host, port: configuredPort },
-        'Error sending email (non-retryable)',
+        "Error sending email (non-retryable)",
       );
       throw error;
     }
 
     const fallbackPort = getFallbackPort(configuredPort);
-    const fallbackTransporter = createTransporter(host, fallbackPort, user, pass, debugEnabled);
+    const fallbackTransporter = createTransporter(
+      host,
+      fallbackPort,
+      user,
+      pass,
+      debugEnabled,
+    );
 
     if (!fallbackTransporter) {
-      logger.error({ smtp: extractSmtpError(error) }, 'SMTP fallback unavailable');
+      logger.error(
+        { smtp: extractSmtpError(error) },
+        "SMTP fallback unavailable",
+      );
       throw error;
     }
 
     logger.warn(
       { errorCode, host, configuredPort, fallbackPort },
-      'SMTP primary failed, retrying with fallback port',
+      "SMTP primary failed, retrying with fallback port",
     );
 
     try {
       const fallbackInfo = await fallbackTransporter.sendMail(mailOptions);
-      logger.info(`Email sent with fallback port ${fallbackPort}: ${fallbackInfo.messageId}`);
+      logger.info(
+        `Email sent with fallback port ${fallbackPort}: ${fallbackInfo.messageId}`,
+      );
       return fallbackInfo;
     } catch (fallbackError: any) {
       logger.error(
@@ -130,7 +233,7 @@ export const sendEmail = async (options: {
           configuredPort,
           fallbackPort,
         },
-        'Error sending email with primary and fallback SMTP ports',
+        "Error sending email with primary and fallback SMTP ports",
       );
       throw fallbackError;
     }
@@ -144,28 +247,31 @@ export const sendContactNotification = async (contactData: {
   subject: string;
   message: string;
 }) => {
-  const adminEmail = 'contacto@redmecanica.cl';
-  
+  const adminEmail = "contacto@redmecanica.cl";
+
   const html = `
     <h2>Nuevo mensaje de contacto - RedMecánica</h2>
     <p><strong>De:</strong> ${escapeHtml(contactData.name)} &lt;${escapeHtml(contactData.email)}&gt;</p>
-    <p><strong>Teléfono:</strong> ${escapeHtml(contactData.phone || 'No proporcionado')}</p>
+    <p><strong>Teléfono:</strong> ${escapeHtml(contactData.phone || "No proporcionado")}</p>
     <p><strong>Asunto:</strong> ${escapeHtml(contactData.subject)}</p>
     <p><strong>Mensaje:</strong></p>
-    <p>${escapeHtml(contactData.message).replace(/\n/g, '<br>')}</p>
+    <p>${escapeHtml(contactData.message).replace(/\n/g, "<br>")}</p>
   `;
 
   return sendEmail({
     to: adminEmail,
     subject: `[Contacto Web] ${contactData.subject}: ${contactData.name}`,
     html,
-    text: `Nuevo mensaje de ${contactData.name} (${contactData.email})\nAsunto: ${contactData.subject}\n\nMensaje:\n${contactData.message}`
+    text: `Nuevo mensaje de ${contactData.name} (${contactData.email})\nAsunto: ${contactData.subject}\n\nMensaje:\n${contactData.message}`,
   });
 };
 
-export const sendLaunchLeadNotification = async (email: string, ticket: string) => {
-  const adminEmail = 'contacto@redmecanica.cl';
-  
+export const sendLaunchLeadNotification = async (
+  email: string,
+  ticket: string,
+) => {
+  const adminEmail = "contacto@redmecanica.cl";
+
   const html = `
     <h2>Nuevo registro de preventa - RedMecánica</h2>
     <p><strong>Email:</strong> ${escapeHtml(email)}</p>
@@ -176,11 +282,14 @@ export const sendLaunchLeadNotification = async (email: string, ticket: string) 
     to: adminEmail,
     subject: `🚀 Nuevo Lead Lanzamiento [${ticket}]`,
     html,
-    text: `Nuevo registro de preventa\nEmail: ${email}\nTicket: ${ticket}`
+    text: `Nuevo registro de preventa\nEmail: ${email}\nTicket: ${ticket}`,
   });
 };
 
-export const sendLaunchLeadConfirmation = async (userEmail: string, ticket: string) => {
+export const sendLaunchLeadConfirmation = async (
+  userEmail: string,
+  ticket: string,
+) => {
   const html = `
     <h2>Gracias por registrarte en RedMecánica</h2>
     <p>¡Estamos preparando la plataforma! Te avisaremos por este correo cuando estemos en línea.</p>
@@ -190,8 +299,8 @@ export const sendLaunchLeadConfirmation = async (userEmail: string, ticket: stri
 
   return sendEmail({
     to: userEmail,
-    subject: '¡Gracias por tu interés! - RedMecánica',
+    subject: "¡Gracias por tu interés! - RedMecánica",
     html,
-    text: `Gracias por registrarte en RedMecánica. Te avisaremos cuando el servicio esté disponible. Tu ticket es: ${ticket}.`
+    text: `Gracias por registrarte en RedMecánica. Te avisaremos cuando el servicio esté disponible. Tu ticket es: ${ticket}.`,
   });
 };

@@ -1,19 +1,19 @@
-import axios, { AxiosInstance } from 'axios';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import cacheService from './cache';
+import axios, { AxiosInstance } from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import cacheService from "./cache";
 
-const API_URL = 'http://192.168.1.100:3011/api';
+const API_URL = "http://192.168.1.100:3011/api";
 
 const CACHE_KEYS = {
-  CATEGORIES: 'categories',
-  SERVICES: 'services',
-  ZONES: 'zones',
+  CATEGORIES: "categories",
+  SERVICES: "services",
+  ZONES: "zones",
 };
 
 export interface MercadoPagoCheckoutRequest {
   jobId: string;
   amount: number;
-  paymentMethod?: 'mercadopago' | 'MERCADOPAGO';
+  paymentMethod?: "mercadopago" | "MERCADOPAGO";
   title?: string;
   description?: string;
 }
@@ -23,7 +23,7 @@ export interface MercadoPagoCheckoutResponse {
     id: string;
     jobId: string;
     amount: number;
-    paymentMethod: 'MERCADOPAGO';
+    paymentMethod: "MERCADOPAGO";
     status: string;
     preferenceId: string;
     createdAt: string | Date;
@@ -49,7 +49,7 @@ class ApiService {
     this.api = axios.create({
       baseURL: API_URL,
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       timeout: 10000,
     });
@@ -60,16 +60,16 @@ class ApiService {
 
   private async loadToken() {
     try {
-      this.token = await AsyncStorage.getItem('auth_token');
+      this.token = await AsyncStorage.getItem("auth_token");
     } catch (error) {
-      console.error('Error loading token:', error);
+      console.error("Error loading token:", error);
     }
   }
 
   private setupInterceptors() {
     this.api.interceptors.request.use(async (config) => {
       if (!this.token) {
-        this.token = await AsyncStorage.getItem('auth_token');
+        this.token = await AsyncStorage.getItem("auth_token");
       }
       if (this.token) {
         config.headers.Authorization = `Bearer ${this.token}`;
@@ -86,29 +86,29 @@ class ApiService {
           try {
             await this.logout();
           } catch (logoutError) {
-            console.error('Logout error:', logoutError);
+            console.error("Logout error:", logoutError);
           }
         }
         return Promise.reject(error);
-      }
+      },
     );
   }
 
   async setToken(token: string) {
     this.token = token;
-    await AsyncStorage.setItem('auth_token', token);
+    await AsyncStorage.setItem("auth_token", token);
   }
 
   async clearToken() {
     this.token = null;
-    await AsyncStorage.removeItem('auth_token');
+    await AsyncStorage.removeItem("auth_token");
   }
 
   private async cachedRequest<T>(
     cacheKey: string,
     requestFn: () => Promise<any>,
     ttl: number = 60000,
-    forceRefresh: boolean = false
+    forceRefresh: boolean = false,
   ): Promise<T> {
     if (!forceRefresh) {
       const cached = cacheService.get<T>(cacheKey, ttl);
@@ -121,7 +121,7 @@ class ApiService {
 
   private async requestWithRetry<T>(
     requestFn: () => Promise<T>,
-    retries: number = 2
+    retries: number = 2,
   ): Promise<T> {
     try {
       return await requestFn();
@@ -141,18 +141,38 @@ class ApiService {
   }
 
   async login(email: string, password: string) {
-    const response = await this.api.post('/auth/login', { email, password });
+    const response = await this.api.post("/auth/login", { email, password });
     if (response.data.token) {
       await this.setToken(response.data.token);
     }
     return response.data;
   }
 
-  async register(data: { email: string; password: string; name: string; role?: string }) {
-    const response = await this.api.post('/auth/register', data);
+  async register(data: {
+    email: string;
+    password: string;
+    name: string;
+    role?: string;
+  }) {
+    const response = await this.api.post("/auth/register", data);
     if (response.data.token) {
       await this.setToken(response.data.token);
     }
+    return response.data;
+  }
+
+  async verifyEmail(data: { email: string; verificationCode: string }) {
+    const response = await this.api.post("/auth/verify-email", data);
+    if (response.data.token) {
+      await this.setToken(response.data.token);
+    }
+    return response.data;
+  }
+
+  async resendVerificationCode(email: string) {
+    const response = await this.api.post("/auth/resend-verification", {
+      email,
+    });
     return response.data;
   }
 
@@ -164,27 +184,27 @@ class ApiService {
   async getCategories(forceRefresh: boolean = false) {
     return this.cachedRequest<any[]>(
       CACHE_KEYS.CATEGORIES,
-      () => this.api.get('/categories'),
+      () => this.api.get("/categories"),
       CACHE_TTL.CATEGORIES,
-      forceRefresh
+      forceRefresh,
     );
   }
 
   async getServices(forceRefresh: boolean = false) {
     return this.cachedRequest<any[]>(
       CACHE_KEYS.SERVICES,
-      () => this.api.get('/services'),
+      () => this.api.get("/services"),
       CACHE_TTL.SERVICES,
-      forceRefresh
+      forceRefresh,
     );
   }
 
   async getZones(forceRefresh: boolean = false) {
     return this.cachedRequest<any[]>(
       CACHE_KEYS.ZONES,
-      () => this.api.get('/zones'),
+      () => this.api.get("/zones"),
       CACHE_TTL.ZONES,
-      forceRefresh
+      forceRefresh,
     );
   }
 
@@ -195,7 +215,7 @@ class ApiService {
     serviceType?: string;
   }) {
     return this.requestWithRetry(async () => {
-      const response = await this.api.get('/geo/search', { params });
+      const response = await this.api.get("/geo/search", { params });
       return response.data;
     });
   }
@@ -213,8 +233,8 @@ class ApiService {
     providerId?: string;
     problemDescription?: string;
   }) {
-    const response = await this.api.post('/jobs', data);
-    cacheService.invalidatePattern('jobs_');
+    const response = await this.api.post("/jobs", data);
+    cacheService.invalidatePattern("jobs_");
     return response.data;
   }
 
@@ -229,7 +249,7 @@ class ApiService {
     return this.cachedRequest<any[]>(
       `jobs_user_${userId}`,
       () => this.api.get(`/jobs/user/${userId}`),
-      60000
+      60000,
     );
   }
 
@@ -244,10 +264,13 @@ class ApiService {
   }
 
   async createMercadoPagoCheckout(data: MercadoPagoCheckoutRequest) {
-    const response = await this.api.post<MercadoPagoCheckoutResponse>('/payments/create', {
-      ...data,
-      paymentMethod: data.paymentMethod || 'mercadopago',
-    });
+    const response = await this.api.post<MercadoPagoCheckoutResponse>(
+      "/payments/create",
+      {
+        ...data,
+        paymentMethod: data.paymentMethod || "mercadopago",
+      },
+    );
 
     return response.data;
   }
@@ -256,55 +279,76 @@ class ApiService {
     return this.cachedRequest<any[]>(
       `vehicles_${userId}`,
       () => this.api.get(`/users/${userId}/vehicles`),
-      300000
+      300000,
     );
   }
 
-  async addVehicle(data: { make: string; model: string; year: number; licensePlate?: string }) {
-    const response = await this.api.post('/users/vehicles', data);
-    cacheService.invalidatePattern('vehicles_');
+  async addVehicle(data: {
+    make: string;
+    model: string;
+    year: number;
+    licensePlate?: string;
+  }) {
+    const response = await this.api.post("/users/vehicles", data);
+    cacheService.invalidatePattern("vehicles_");
     return response.data;
   }
 
   async getNotifications(userId: string) {
     return this.cachedRequest<any[]>(
       `notifications_${userId}`,
-      () => this.api.get('/notifications', { params: { userId } }),
-      30000
+      () => this.api.get("/notifications", { params: { userId } }),
+      30000,
     );
   }
 
   async markNotificationAsRead(notificationId: string) {
-    const response = await this.api.post('/notifications/mark-read', { notificationId });
-    cacheService.invalidatePattern('notifications_');
+    const response = await this.api.post("/notifications/mark-read", {
+      notificationId,
+    });
+    cacheService.invalidatePattern("notifications_");
     return response.data;
   }
 
   async getConversations(userId: string) {
-    const response = await this.api.get('/conversations', { params: { userId } });
+    const response = await this.api.get("/conversations", {
+      params: { userId },
+    });
     return response.data;
   }
 
   async getConversationMessages(conversationId: string) {
-    const response = await this.api.get(`/conversations/${conversationId}/messages`);
+    const response = await this.api.get(
+      `/conversations/${conversationId}/messages`,
+    );
     return response.data;
   }
 
-  async sendMessage(conversationId: string, data: { senderId: string; senderType: string; content: string }) {
-    const response = await this.api.post(`/conversations/${conversationId}/messages`, data);
+  async sendMessage(
+    conversationId: string,
+    data: { senderId: string; senderType: string; content: string },
+  ) {
+    const response = await this.api.post(
+      `/conversations/${conversationId}/messages`,
+      data,
+    );
     return response.data;
   }
 
   async geocodeAddress(address: string) {
     return this.requestWithRetry(async () => {
-      const response = await this.api.get('/maps/geocode', { params: { address } });
+      const response = await this.api.get("/maps/geocode", {
+        params: { address },
+      });
       return response.data;
     });
   }
 
   async reverseGeocode(lat: number, lng: number) {
     return this.requestWithRetry(async () => {
-      const response = await this.api.get('/maps/reverse-geocode', { params: { lat, lng } });
+      const response = await this.api.get("/maps/reverse-geocode", {
+        params: { lat, lng },
+      });
       return response.data;
     });
   }

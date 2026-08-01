@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigation } from '@react-navigation/native';
+import { useBiometricAuth } from '../hooks/useBiometricAuth';
 
 export default function LoginScreen() {
   const [email, setEmail] = useState('');
@@ -9,6 +10,7 @@ export default function LoginScreen() {
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
   const navigation = useNavigation<any>();
+  const { authenticate, isSupported, isEnrolled } = useBiometricAuth();
 
   const handleLogin = async () => {
     if (!email || !password) {
@@ -18,16 +20,26 @@ export default function LoginScreen() {
 
     setLoading(true);
     try {
+      if (isSupported && isEnrolled) {
+        const biometricResult = await authenticate('Confirma tu identidad para continuar');
+
+        if (!biometricResult.success) {
+          Alert.alert('Biometría requerida', biometricResult.error || 'No fue posible validar tu identidad');
+          return;
+        }
+      }
+
       await login(email, password);
     } catch (error) {
-      Alert.alert('Error', 'Credenciales incorrectas');
+      const message = error instanceof Error ? error.message : 'Credenciales incorrectas';
+      Alert.alert('Error', message);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <KeyboardAvoidingView 
+    <KeyboardAvoidingView
       style={styles.container}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
@@ -36,6 +48,9 @@ export default function LoginScreen() {
           <Text style={styles.logo}>🔧</Text>
           <Text style={styles.title}>RedMecánica</Text>
           <Text style={styles.subtitle}>Tu mecánico de confianza</Text>
+          {(isSupported && isEnrolled) ? (
+            <Text style={styles.biometricHint}>Acceso protegido con biometría en este dispositivo</Text>
+          ) : null}
         </View>
 
         <View style={styles.form}>
@@ -64,7 +79,7 @@ export default function LoginScreen() {
             />
           </View>
 
-          <TouchableOpacity 
+          <TouchableOpacity
             style={[styles.button, loading && styles.buttonDisabled]}
             onPress={handleLogin}
             disabled={loading}
@@ -113,6 +128,13 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#6B7280',
     marginTop: 4,
+  },
+  biometricHint: {
+    marginTop: 12,
+    fontSize: 13,
+    color: '#4B5563',
+    textAlign: 'center',
+    lineHeight: 18,
   },
   form: {
     backgroundColor: '#FFFFFF',

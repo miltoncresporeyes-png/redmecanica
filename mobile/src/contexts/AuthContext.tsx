@@ -7,8 +7,9 @@ interface AuthContextType {
   user: User | null;
   token: string | null;
   isLoading: boolean;
-  login: (email: string, password: string) => Promise<void>;
-  register: (data: { email: string; password: string; name: string; role?: string }) => Promise<void>;
+  login: (email: string, password: string) => Promise<any>;
+  register: (data: { email: string; password: string; name: string; role?: string }) => Promise<any>;
+  verifyEmail: (data: { email: string; verificationCode: string }) => Promise<any>;
   logout: () => Promise<void>;
   updateUser: (user: User) => void;
 }
@@ -53,28 +54,47 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = useCallback(async (email: string, password: string) => {
     const response = await api.login(email, password);
-    
+
     if (response.user) {
       setUser(response.user);
       await AsyncStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(response.user));
     }
-    
+
     if (response.token) {
       setToken(response.token);
     }
+
+    return response;
   }, []);
 
   const register = useCallback(async (data: { email: string; password: string; name: string; role?: string }) => {
     const response = await api.register(data);
-    
+
+    if (response.user && response.token) {
+      setUser(response.user);
+      await AsyncStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(response.user));
+    }
+
+    if (response.token) {
+      setToken(response.token);
+    }
+
+    return response;
+  }, []);
+
+  const verifyEmail = useCallback(async (data: { email: string; verificationCode: string }) => {
+    const response = await api.verifyEmail(data);
+
     if (response.user) {
       setUser(response.user);
       await AsyncStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(response.user));
     }
-    
+
     if (response.token) {
       setToken(response.token);
     }
+
+    return response;
   }, []);
 
   const logout = useCallback(async () => {
@@ -93,7 +113,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, token, isLoading, login, register, logout, updateUser }}>
+    <AuthContext.Provider value={{ user, token, isLoading, login, register, verifyEmail, logout, updateUser }}>
       {children}
     </AuthContext.Provider>
   );

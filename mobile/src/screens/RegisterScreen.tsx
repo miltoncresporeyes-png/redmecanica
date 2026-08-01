@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
 import { useAuth } from '../contexts/AuthContext';
+import api from '../services/api';
 import { useNavigation } from '@react-navigation/native';
 
 export default function RegisterScreen() {
@@ -8,8 +9,11 @@ export default function RegisterScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [verificationCode, setVerificationCode] = useState('');
+  const [verificationEmail, setVerificationEmail] = useState('');
+  const [awaitingVerification, setAwaitingVerification] = useState(false);
   const [loading, setLoading] = useState(false);
-  const { register } = useAuth();
+  const { register, verifyEmail } = useAuth();
   const navigation = useNavigation<any>();
 
   const handleRegister = async () => {
@@ -30,7 +34,13 @@ export default function RegisterScreen() {
 
     setLoading(true);
     try {
-      await register({ name, email, password, role: 'client' });
+      const response = await register({ name, email, password, role: 'client' });
+
+      if (response?.requiresEmailVerification) {
+        setVerificationEmail(email);
+        setAwaitingVerification(true);
+        Alert.alert('Verificación pendiente', 'Revisa tu correo y pega el código cifrado para activar tu cuenta.');
+      }
     } catch (error) {
       Alert.alert('Error', 'No se pudo crear la cuenta');
     } finally {
@@ -38,8 +48,42 @@ export default function RegisterScreen() {
     }
   };
 
+  const handleVerifyEmail = async () => {
+    if (!verificationEmail || !verificationCode) {
+      Alert.alert('Error', 'Ingresa el correo y el código de seguridad');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      await verifyEmail({ email: verificationEmail, verificationCode: verificationCode.trim() });
+      Alert.alert('Listo', 'Tu correo fue verificado correctamente');
+    } catch (error) {
+      Alert.alert('Error', 'No se pudo verificar el correo');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleResendCode = async () => {
+    if (!verificationEmail) {
+      Alert.alert('Error', 'Ingresa primero el correo de la cuenta');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      await api.resendVerificationCode(verificationEmail);
+      Alert.alert('Reenviado', 'Se envió un nuevo código al correo');
+    } catch (error) {
+      Alert.alert('Error', 'No se pudo reenviar el código');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <KeyboardAvoidingView 
+    <KeyboardAvoidingView
       style={styles.container}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
@@ -51,63 +95,104 @@ export default function RegisterScreen() {
         </View>
 
         <View style={styles.form}>
-          <View style={styles.inputContainer}>
-            <Text style={styles.label}>Nombre Completo</Text>
-            <TextInput
-              style={styles.input}
-              value={name}
-              onChangeText={setName}
-              placeholder="Juan Pérez"
-              placeholderTextColor="#9CA3AF"
-            />
-          </View>
+          {awaitingVerification ? (
+            <>
+              <View style={styles.noticeBox}>
+                <Text style={styles.noticeTitle}>Correo pendiente de validación</Text>
+                <Text style={styles.noticeText}>
+                  Se envió un código de seguridad cifrado a {verificationEmail || email}. Copia el token exacto del correo para continuar.
+                </Text>
+              </View>
 
-          <View style={styles.inputContainer}>
-            <Text style={styles.label}>Email</Text>
-            <TextInput
-              style={styles.input}
-              value={email}
-              onChangeText={setEmail}
-              placeholder="tu@email.com"
-              keyboardType="email-address"
-              autoCapitalize="none"
-              placeholderTextColor="#9CA3AF"
-            />
-          </View>
+              <View style={styles.inputContainer}>
+                <Text style={styles.label}>Código de seguridad</Text>
+                <TextInput
+                  style={styles.input}
+                  value={verificationCode}
+                  onChangeText={setVerificationCode}
+                  placeholder="Token cifrado del correo"
+                  autoCapitalize="none"
+                  placeholderTextColor="#9CA3AF"
+                />
+              </View>
 
-          <View style={styles.inputContainer}>
-            <Text style={styles.label}>Contraseña</Text>
-            <TextInput
-              style={styles.input}
-              value={password}
-              onChangeText={setPassword}
-              placeholder="••••••••"
-              secureTextEntry
-              placeholderTextColor="#9CA3AF"
-            />
-          </View>
+              <TouchableOpacity
+                style={[styles.button, loading && styles.buttonDisabled]}
+                onPress={handleVerifyEmail}
+                disabled={loading}
+              >
+                <Text style={styles.buttonText}>{loading ? 'Verificando...' : 'Verificar correo'}</Text>
+              </TouchableOpacity>
 
-          <View style={styles.inputContainer}>
-            <Text style={styles.label}>Confirmar Contraseña</Text>
-            <TextInput
-              style={styles.input}
-              value={confirmPassword}
-              onChangeText={setConfirmPassword}
-              placeholder="••••••••"
-              secureTextEntry
-              placeholderTextColor="#9CA3AF"
-            />
-          </View>
+              <TouchableOpacity
+                style={[styles.secondaryButton, loading && styles.buttonDisabled]}
+                onPress={handleResendCode}
+                disabled={loading}
+              >
+                <Text style={styles.secondaryButtonText}>Reenviar código</Text>
+              </TouchableOpacity>
+            </>
+          ) : (
+            <>
+              <View style={styles.inputContainer}>
+                <Text style={styles.label}>Nombre Completo</Text>
+                <TextInput
+                  style={styles.input}
+                  value={name}
+                  onChangeText={setName}
+                  placeholder="Juan Pérez"
+                  placeholderTextColor="#9CA3AF"
+                />
+              </View>
 
-          <TouchableOpacity 
-            style={[styles.button, loading && styles.buttonDisabled]}
-            onPress={handleRegister}
-            disabled={loading}
-          >
-            <Text style={styles.buttonText}>
-              {loading ? 'Creando cuenta...' : 'Crear Cuenta'}
-            </Text>
-          </TouchableOpacity>
+              <View style={styles.inputContainer}>
+                <Text style={styles.label}>Email</Text>
+                <TextInput
+                  style={styles.input}
+                  value={email}
+                  onChangeText={setEmail}
+                  placeholder="tu@email.com"
+                  keyboardType="email-address"
+                  autoCapitalize="none"
+                  placeholderTextColor="#9CA3AF"
+                />
+              </View>
+
+              <View style={styles.inputContainer}>
+                <Text style={styles.label}>Contraseña</Text>
+                <TextInput
+                  style={styles.input}
+                  value={password}
+                  onChangeText={setPassword}
+                  placeholder="••••••••"
+                  secureTextEntry
+                  placeholderTextColor="#9CA3AF"
+                />
+              </View>
+
+              <View style={styles.inputContainer}>
+                <Text style={styles.label}>Confirmar Contraseña</Text>
+                <TextInput
+                  style={styles.input}
+                  value={confirmPassword}
+                  onChangeText={setConfirmPassword}
+                  placeholder="••••••••"
+                  secureTextEntry
+                  placeholderTextColor="#9CA3AF"
+                />
+              </View>
+
+              <TouchableOpacity
+                style={[styles.button, loading && styles.buttonDisabled]}
+                onPress={handleRegister}
+                disabled={loading}
+              >
+                <Text style={styles.buttonText}>
+                  {loading ? 'Creando cuenta...' : 'Crear Cuenta'}
+                </Text>
+              </TouchableOpacity>
+            </>
+          )}
 
           <View style={styles.footer}>
             <Text style={styles.footerText}>¿Ya tienes cuenta? </Text>
@@ -162,6 +247,25 @@ const styles = StyleSheet.create({
   inputContainer: {
     marginBottom: 16,
   },
+  noticeBox: {
+    backgroundColor: '#ECFDF5',
+    borderColor: '#10B981',
+    borderWidth: 1,
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 20,
+  },
+  noticeTitle: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: '#065F46',
+    marginBottom: 6,
+  },
+  noticeText: {
+    fontSize: 13,
+    color: '#047857',
+    lineHeight: 18,
+  },
   label: {
     fontSize: 14,
     fontWeight: '600',
@@ -186,6 +290,18 @@ const styles = StyleSheet.create({
   },
   buttonDisabled: {
     opacity: 0.7,
+  },
+  secondaryButton: {
+    backgroundColor: '#E5E7EB',
+    borderRadius: 12,
+    padding: 16,
+    alignItems: 'center',
+    marginTop: 12,
+  },
+  secondaryButtonText: {
+    color: '#374151',
+    fontSize: 16,
+    fontWeight: '600',
   },
   buttonText: {
     color: '#FFFFFF',
