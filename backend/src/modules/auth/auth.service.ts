@@ -57,7 +57,7 @@ class AuthService {
     await sendVerificationCodeEmail(
       user.email,
       user.name || "usuario",
-      verificationToken,
+      verificationCode,
     );
 
     const { password, ...userWithoutPassword } = user;
@@ -140,20 +140,18 @@ class AuthService {
     }
 
     let expectedCode: string;
-    let providedCode: string;
 
     try {
       expectedCode = decryptVerificationCode(user.emailVerificationToken);
-      providedCode = decryptVerificationCode(dto.verificationCode);
     } catch (error) {
       throw new BadRequestError("Código de seguridad inválido");
     }
 
     if (
-      expectedCode.length !== providedCode.length ||
+      expectedCode.length !== dto.verificationCode.length ||
       !crypto.timingSafeEqual(
         Buffer.from(expectedCode),
-        Buffer.from(providedCode),
+        Buffer.from(dto.verificationCode),
       )
     ) {
       throw new UnauthorizedError("Código de seguridad incorrecto");
@@ -183,9 +181,8 @@ class AuthService {
       return { message: "El correo ya está verificado" };
     }
 
-    const verificationToken = encryptVerificationCode(
-      crypto.randomInt(100000, 999999).toString(),
-    );
+    const verificationCode = crypto.randomInt(100000, 999999).toString();
+    const verificationToken = encryptVerificationCode(verificationCode);
     const verificationExpiresAt = new Date(Date.now() + 10 * 60 * 1000);
 
     await authRepository.updateVerificationState(user.email, {
@@ -196,7 +193,7 @@ class AuthService {
     await sendVerificationCodeEmail(
       user.email,
       user.name || "usuario",
-      verificationToken,
+      verificationCode,
     );
 
     return {

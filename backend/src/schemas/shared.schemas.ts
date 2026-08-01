@@ -14,7 +14,10 @@ export const registerSchema = z.object({
 
 export const verifyEmailSchema = z.object({
   email: z.string().email(),
-  verificationCode: z.string().trim().min(12),
+  verificationCode: z
+    .string()
+    .trim()
+    .regex(/^\d{6}$/, "El código debe tener 6 dígitos"),
 });
 
 export const resendVerificationSchema = z.object({

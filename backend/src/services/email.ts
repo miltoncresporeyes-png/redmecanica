@@ -126,9 +126,9 @@ export const sendVerificationCodeEmail = async (
 ) => {
   const html = `
     <h2>Verificación de correo - RedMecánica</h2>
-    <p>Hola ${escapeHtml(userName)}, recibimos un registro reciente. Usa este código seguro una sola vez para validar tu correo:</p>
+    <p>Hola ${escapeHtml(userName)}, recibimos un registro reciente. Usa este código de 6 dígitos una sola vez para validar tu correo:</p>
     <p style="font-size: 18px; font-weight: 700; letter-spacing: 1px;">${escapeHtml(verificationCode)}</p>
-    <p>El código expira en 10 minutos y está cifrado con AES antes de ser almacenado por el sistema.</p>
+    <p>El código expira en 10 minutos y el sistema lo almacena cifrado con AES para proteger tu privacidad.</p>
     <p>Si no solicitaste esta cuenta, puedes ignorar este mensaje.</p>
   `;
 

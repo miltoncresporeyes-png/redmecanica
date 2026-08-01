@@ -39,7 +39,7 @@ export default function RegisterScreen() {
       if (response?.requiresEmailVerification) {
         setVerificationEmail(email);
         setAwaitingVerification(true);
-        Alert.alert('Verificación pendiente', 'Revisa tu correo y pega el código cifrado para activar tu cuenta.');
+        Alert.alert('Verificación pendiente', 'Revisa tu correo y pega el código de 6 dígitos para activar tu cuenta.');
       }
     } catch (error) {
       Alert.alert('Error', 'No se pudo crear la cuenta');
@@ -100,7 +100,7 @@ export default function RegisterScreen() {
               <View style={styles.noticeBox}>
                 <Text style={styles.noticeTitle}>Correo pendiente de validación</Text>
                 <Text style={styles.noticeText}>
-                  Se envió un código de seguridad cifrado a {verificationEmail || email}. Copia el token exacto del correo para continuar.
+                  Se envió un código de seguridad de 6 dígitos a {verificationEmail || email}. Ingresa el número exacto del correo para continuar.
                 </Text>
               </View>
 
@@ -110,7 +110,8 @@ export default function RegisterScreen() {
                   style={styles.input}
                   value={verificationCode}
                   onChangeText={setVerificationCode}
-                  placeholder="Token cifrado del correo"
+                  placeholder="123456"
+                  keyboardType="number-pad"
                   autoCapitalize="none"
                   placeholderTextColor="#9CA3AF"
                 />
