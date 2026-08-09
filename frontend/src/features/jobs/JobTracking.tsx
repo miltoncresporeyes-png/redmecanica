@@ -86,10 +86,15 @@ const JobTracking: React.FC<JobTrackingProps> = ({ job: initialJob, onComplete }
         </div>
 
         <div className="p-4 border rounded-lg bg-white shadow-sm flex items-center space-x-4 mb-6">
-          <img src={`https://ui-avatars.com/api/?name=${job.mechanic?.name || 'Mecanico'}&background=0D8ABC&color=fff`} alt={job.mechanic?.name} className="w-16 h-16 rounded-full" />
-          <div className="flex-grow">
-            <p className="font-bold text-lg">{job.mechanic?.name || 'Mecánico Asignado'}</p>
-            <p className="text-sm text-gray-600">{job.mechanic?.vehicle} • {job.mechanic?.licensePlate}</p>
+          <div
+            className="w-16 h-16 rounded-full flex items-center justify-center text-white font-extrabold text-xl bg-gradient-to-br from-blue-500 to-blue-700 shrink-0"
+            aria-hidden="true"
+          >
+            {(job.mechanic?.name || 'M').trim().charAt(0).toUpperCase()}
+          </div>
+          <div className="flex-grow min-w-0">
+            <p className="font-bold text-lg truncate">{job.mechanic?.name || 'Mecánico Asignado'}</p>
+            <p className="text-sm text-gray-600 truncate">{job.mechanic?.vehicle} • {job.mechanic?.licensePlate}</p>
           </div>
           <div className="flex flex-col items-center bg-yellow-50 px-3 py-2 rounded-lg">
             <span className="text-yellow-500 text-xl">★</span>

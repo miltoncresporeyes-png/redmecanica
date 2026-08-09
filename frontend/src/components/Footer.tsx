@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 
 const Footer: React.FC = () => {
   return (
@@ -8,9 +8,9 @@ const Footer: React.FC = () => {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 sm:gap-10">
           
           {/* Columna 1: Acerca de */}
-          <div className="col-span-2 md:col-span-1">
+          <div>
             <h3 className="text-white font-bold text-lg mb-3 tracking-tight">RedMecánica</h3>
-            <p className="text-xs sm:text-sm text-slate-400 mb-4 leading-relaxed">
+            <p className="hidden sm:block text-xs sm:text-sm text-slate-400 leading-relaxed">
               La plataforma líder en Chile para conectar conductores con los mejores servicios automotrices de confianza cerca de ti.
             </p>
             <div className="flex space-x-3">
@@ -86,7 +86,7 @@ const Footer: React.FC = () => {
           </div>
 
           {/* Columna 4: Legal y Soporte */}
-          <div className="col-span-2 md:col-span-1">
+          <div className="md:col-span-1">
             <h3 className="text-white font-bold text-base mb-3 tracking-tight">Soporte y Legal</h3>
             <ul className="space-y-2.5">
               <li>

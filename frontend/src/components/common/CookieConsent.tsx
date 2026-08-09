@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 
 const COOKIE_CONSENT_KEY = 'rm_cookie_consent';
 
@@ -33,7 +33,7 @@ const CookieConsent: React.FC = () => {
   if (!visible) return null;
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-[200] bg-white border-t border-gray-200 shadow-2xl transform translate-y-0 transition-transform duration-500">
+    <div className="safe-bottom fixed bottom-0 left-0 right-0 z-[200] bg-white border-t border-gray-200 shadow-2xl transform translate-y-0 transition-transform duration-500">
       <div className="max-w-6xl mx-auto px-4 py-5 md:py-4">
         <div className="flex flex-col md:flex-row items-start md:items-center gap-4">
           <div className="flex-1 min-w-0">

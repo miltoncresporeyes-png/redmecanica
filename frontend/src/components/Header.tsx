@@ -1,15 +1,38 @@
 
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router';
 import { useAuth } from '../app/providers';
 import LoginModal from '../features/auth/LoginModal';
 import { SkipToContent } from './common/Accessibility';
+import { getPlatformStatus, type PlatformStatus } from '../services/api';
 
 const Header: React.FC = () => {
   const { user, logout, updateUser } = useAuth();
   const navigate = useNavigate();
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [platformStatus, setPlatformStatus] = useState<PlatformStatus | null>(null);
+
+  useEffect(() => {
+    let active = true;
+    const loadStatus = async () => {
+      try {
+        const data = await getPlatformStatus();
+        if (active) setPlatformStatus(data);
+      } catch {
+        if (active) setPlatformStatus(null);
+      }
+    };
+    loadStatus();
+    const interval = window.setInterval(loadStatus, 60000);
+    const onFocus = () => loadStatus();
+    window.addEventListener('focus', onFocus);
+    return () => {
+      active = false;
+      window.clearInterval(interval);
+      window.removeEventListener('focus', onFocus);
+    };
+  }, []);
 
   useEffect(() => {
     if (isMobileMenuOpen) {
@@ -40,14 +63,37 @@ const Header: React.FC = () => {
   return (
     <>
       <SkipToContent />
-      <div className="bg-amber-600 text-white text-[11px] sm:text-xs py-2 px-3 sm:px-4 text-center font-medium relative z-50 flex items-center justify-center gap-1.5 shadow-sm leading-tight" role="status">
-        <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-        </svg>
-        <span>
-          <strong>Modo Demostración:</strong> Todos los datos de esta plataforma (proveedores, cotizaciones, pagos) son simulados para demostración.
-        </span>
-      </div>
+      {platformStatus && platformStatus.demoMode ? (
+        <div className="safe-top bg-amber-600 text-white text-[11px] sm:text-xs py-2 px-3 sm:px-4 text-center font-medium relative z-50 flex items-center justify-center gap-1.5 shadow-sm leading-tight" role="status">
+          <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+          </svg>
+          <span>
+            <strong>Modo Demostración (transitorio):</strong> los talleres, profesionales, cotizaciones y pagos que ves actualmente son{' '}
+            <strong>simulados</strong> para que conozcas cómo funciona. Este aviso desaparece automáticamente en cuanto se inscriban los primeros talleres y profesionales reales.
+          </span>
+        </div>
+      ) : platformStatus && !platformStatus.demoMode ? (
+        <div className="safe-top bg-emerald-600 text-white text-[11px] sm:text-xs py-2 px-3 sm:px-4 text-center font-medium relative z-50 flex items-center justify-center gap-1.5 shadow-sm leading-tight" role="status">
+          <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+          </svg>
+          <span>
+            <strong>RedMecánica en operación:</strong> la plataforma ya cuenta con{' '}
+            <strong>{platformStatus.realProviderCount} {platformStatus.realProviderCount === 1 ? 'taller o profesional real' : 'talleres y profesionales reales'}</strong>{' '}
+            inscritos. Tus solicitudes se gestionarán con prestadores reales verificados.
+          </span>
+        </div>
+      ) : (
+        <div className="safe-top bg-amber-600 text-white text-[11px] sm:text-xs py-2 px-3 sm:px-4 text-center font-medium relative z-50 flex items-center justify-center gap-1.5 shadow-sm leading-tight" role="status">
+          <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+          </svg>
+          <span>
+            <strong>Modo Demostración (transitorio):</strong> los datos actuales son simulados. Este aviso desaparece automáticamente cuando se inscriban talleres y profesionales reales.
+          </span>
+        </div>
+      )}
       <header className="bg-white shadow-sm border-b border-slate-100 relative z-50 sticky top-0" role="banner">
         <nav className="container mx-auto px-4 sm:px-6 py-3 sm:py-4 flex justify-between items-center" aria-label="Navegación principal">
           <Link

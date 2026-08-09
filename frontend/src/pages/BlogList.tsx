@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 import { Helmet } from 'react-helmet-async';
 import { BLOG_ARTICLES } from '../data/blogArticles';
 import Card from '../components/common/Card';
@@ -107,8 +107,11 @@ const BlogList: React.FC = () => {
                   <img
                     src={article.image}
                     alt={article.title}
+                    width={600}
+                    height={400}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     loading="lazy"
+                    decoding="async"
                   />
                   <div className="absolute top-3 left-3 bg-blue-600 text-white font-extrabold text-[10px] uppercase tracking-wider px-2.5 py-1 rounded shadow-md">
                     {article.category}

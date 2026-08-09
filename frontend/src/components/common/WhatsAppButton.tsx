@@ -9,7 +9,7 @@ const WhatsAppButton: React.FC = () => {
 
   return (
     <div 
-      className="fixed bottom-6 right-6 z-50 flex items-center justify-end"
+      className="fixed bottom-[calc(env(safe-area-inset-bottom)+1.5rem)] right-6 z-50 flex items-center justify-end"
       onMouseEnter={() => setShowTooltip(true)}
       onMouseLeave={() => setShowTooltip(false)}
     >

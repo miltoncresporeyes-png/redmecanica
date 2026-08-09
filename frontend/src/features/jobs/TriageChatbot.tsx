@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import { triageTree, TriageQuestion, TriageOption } from '../../data/triageData';
 import { Service } from '../../types';
 import { getServices } from '../../services/api';

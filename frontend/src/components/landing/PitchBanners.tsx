@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import Card from '../common/Card';
 
 const PitchBanners: React.FC = () => {
@@ -184,7 +184,7 @@ const PitchBanners: React.FC = () => {
             </div>
             <button 
               onClick={() => navigate('/solicitar')} 
-              className="px-4.5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-extrabold text-xs rounded-2xl transition-all shadow-md active:scale-95 hover-rev-vibrate"
+              className="px-4 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-extrabold text-xs rounded-2xl transition-all shadow-md active:scale-95 hover-rev-vibrate flex items-center justify-center whitespace-nowrap"
             >
               Cotizar ⚡
             </button>
@@ -313,7 +313,7 @@ const PitchBanners: React.FC = () => {
                 <span className="text-3xl animate-bounce block">⚠️</span>
                 <button
                   onClick={handleStartSOS}
-                  className="mt-4 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-650 text-white text-xs font-black px-6 py-3 rounded-2xl shadow-xl transition-all active:scale-95 uppercase tracking-widest border border-red-500/30 hover-rev-vibrate"
+                  className="mt-4 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-650 text-white text-[11px] sm:text-xs font-black px-4 sm:px-6 py-3 rounded-2xl shadow-xl transition-all active:scale-95 uppercase tracking-wide sm:tracking-widest whitespace-nowrap border border-red-500/30 hover-rev-vibrate"
                 >
                   🚀 INICIAR SOS INTERACTIVO
                 </button>

@@ -104,6 +104,16 @@ export const getProviders = async (params: Record<string, string> = {}): Promise
     return response.data;
 };
 
+export interface PlatformStatus {
+    demoMode: boolean;
+    realProviderCount: number;
+}
+
+export const getPlatformStatus = async (): Promise<PlatformStatus> => {
+    const response = await api.get('/providers/demo-status');
+    return response.data;
+};
+
 export const getProviderById = async (id: string): Promise<any> => {
     const response = await api.get(`/providers/${id}`);
     return response.data;

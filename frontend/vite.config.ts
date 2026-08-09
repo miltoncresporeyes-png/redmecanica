@@ -68,9 +68,12 @@ export default defineConfig(({ mode }) => {
             // Manual chunks for better caching
             manualChunks: {
               // React and core libraries
-              'vendor-react': ['react', 'react-dom', 'react-router-dom'],
-              // HTTP client and utilities
-              'vendor-utils': ['axios', 'recharts'],
+              'vendor-react': ['react', 'react-dom', 'react-router'],
+              // HTTP client (used by the primary bundle) - kept small and separate
+              // from charts so heavy admin-only libs don't ship on first load.
+              'vendor-axios': ['axios'],
+              // Charts - admin dashboard only, never loaded on the public site
+              'vendor-charts': ['recharts'],
               // SEO & meta framework
               'vendor-seo': ['react-helmet-async'],
               // Icons
@@ -94,7 +97,7 @@ export default defineConfig(({ mode }) => {
       
       // Optimize dependencies
       optimizeDeps: {
-        include: ['react', 'react-dom', 'react-router-dom', 'axios'],
+        include: ['react', 'react-dom', 'react-router', 'axios'],
       },
       
       // CSS configuration

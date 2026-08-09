@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router';
 import { Helmet } from 'react-helmet-async';
 import { SEO_SERVICES, SEO_COMMUNES } from '../data/communesData';
 import { searchNearbyProviders } from '../services/api';

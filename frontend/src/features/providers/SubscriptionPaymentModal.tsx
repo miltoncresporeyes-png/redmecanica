@@ -266,7 +266,7 @@ const SubscriptionPaymentModal: React.FC<SubscriptionPaymentModalProps> = ({ pro
               </button>
               <button
                 type="submit"
-                className="flex-[2] bg-gradient-to-r from-green-500 to-emerald-600 text-black py-4 rounded-2xl font-black hover:from-green-400 hover:to-emerald-500 transition-all shadow-[0_0_30px_rgba(34,197,94,0.2)] hover:scale-[1.01]"
+                className="px-2 flex-[2] bg-gradient-to-r from-green-500 to-emerald-600 text-black text-sm sm:text-base py-4 rounded-2xl font-black whitespace-nowrap hover:from-green-400 hover:to-emerald-500 transition-all shadow-[0_0_30px_rgba(34,197,94,0.2)] hover:scale-[1.01]"
               >
                 Pagar {formatPrice(plans[selectedPlan].price)} CLP
               </button>

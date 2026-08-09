@@ -14,5 +14,12 @@
     "install:all": "npm install",
     "start": "npm start -w backend",
     "start:backend": "npm start -w backend"
+  },
+  "overrides": {
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "ip-address": "^10.3.1",
+    "socket.io-parser": "^4.2.7",
+    "brace-expansion": "^5.0.9"
   }
 }

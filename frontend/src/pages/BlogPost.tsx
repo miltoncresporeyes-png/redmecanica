@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router';
 import { Helmet } from 'react-helmet-async';
 import { BLOG_ARTICLES } from '../data/blogArticles';
 import Card from '../components/common/Card';
@@ -91,7 +91,12 @@ const BlogPost: React.FC = () => {
         <img
           src={post.image}
           alt={post.title}
+          width={1200}
+          height={675}
           className="w-full h-full object-cover"
+          loading="eager"
+          decoding="async"
+          fetchPriority="high"
         />
       </div>
 
@@ -163,7 +168,11 @@ const BlogPost: React.FC = () => {
                   <img
                     src={article.image}
                     alt={article.title}
+                    width={200}
+                    height={200}
                     className="w-full h-full object-cover"
+                    loading="lazy"
+                    decoding="async"
                   />
                 </div>
                 <div className="flex flex-col justify-between flex-1">

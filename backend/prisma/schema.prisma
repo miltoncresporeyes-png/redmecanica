@@ -73,6 +73,9 @@ model ServiceProvider {
   trustScore         Float    @default(0.0)  // 0-100
   canAcceptHighValueJobs Boolean @default(false)
   
+  // Distingue datos precargados de demostración de prestadores reales
+  isDemo   Boolean  @default(true)
+  
   subscription  Subscription?
   jobs         Job[]
   quotes       Quote[]

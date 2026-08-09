@@ -1,5 +1,5 @@
 import React, { Suspense } from 'react';
-import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router';
 import { AuthProvider, useAuth } from './providers';
 import { RequireAuth, RequireRole } from '../lib/guards';
 import { AnalyticsProvider } from '../components/AnalyticsProvider';
@@ -18,7 +18,6 @@ import Testimonials from '../components/landing/Testimonials';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import WhatsAppButton from '../components/common/WhatsAppButton';
 import PitchBanners from '../components/landing/PitchBanners';
-import AdBanner from '../components/common/AdBanner';
 import CookieConsent from '../components/common/CookieConsent';
 
 // Lazy load all other pages for better performance
@@ -81,11 +80,11 @@ const MainLayout: React.FC = () => {
     const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-gray-50 font-sans text-gray-800 flex flex-col">
+    <div className="min-h-dvh bg-gray-50 font-sans text-gray-800 flex flex-col">
       <Header />
       <main id="main-content" className="flex-1 container mx-auto px-4 py-8" tabIndex={-1}>
         <Routes>
-            <Route path="/" element={<div className="space-y-8 sm:space-y-10"><Hero /><AdBanner /><PitchBanners /><Testimonials /></div>} />
+            <Route path="/" element={<div className="space-y-8 sm:space-y-10"><Hero /><PitchBanners /><Testimonials /></div>} />
            <Route path="/onboarding" element={<LazyRoute><ProviderOnboarding onComplete={() => navigate('/provider-dashboard')} onCancel={() => navigate('/')} /></LazyRoute>} />
            <Route path="/search" element={<LazyRoute><ProviderSearch /></LazyRoute>} />
            <Route path="/triage" element={<LazyRoute><TriageChatbot /></LazyRoute>} />
@@ -130,10 +129,6 @@ const MainLayout: React.FC = () => {
                <Route path="/provider-dashboard" element={<LazyRoute><ProviderDashboard onClose={() => navigate('/')} /></LazyRoute>} />
            </Route>
         </Routes>
-
-        <div className="max-w-4xl mx-auto mt-8">
-          <AdBanner />
-        </div>
       </main>
       <WhatsAppButton />
       <CookieConsent />

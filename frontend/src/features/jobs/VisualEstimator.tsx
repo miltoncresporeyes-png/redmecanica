@@ -63,7 +63,7 @@ const VisualEstimator: React.FC<VisualEstimatorProps> = ({ onServiceSelect, avai
       )}
       {image && (
         <div className="mb-4">
-          <img src={image} alt="Daño del vehículo" className="max-h-60 w-auto mx-auto rounded-lg shadow-md" />
+          <img src={image} alt="Daño del vehículo" className="max-h-60 w-auto mx-auto rounded-lg shadow-md" decoding="async" />
         </div>
       )}
       {image && !loading && !response && (

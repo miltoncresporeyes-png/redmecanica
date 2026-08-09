@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 import { Check, X, Wrench, Settings, Gauge, Warehouse, HelpCircle, CreditCard, ArrowLeft, Loader2, Shield } from 'lucide-react';
 import SEO from '../components/SEO';
 import { useAuth } from '../app/providers';

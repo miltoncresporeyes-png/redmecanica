@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Link, useLocation, useSearchParams } from 'react-router-dom';
+import { Link, useLocation, useSearchParams } from 'react-router';
 import { Helmet } from 'react-helmet-async';
 import Card from '../components/common/Card';
 import { getPaymentStatus, getSubscriptionStatus } from '../services/api';

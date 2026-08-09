@@ -103,13 +103,13 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLoginSuccess
                 setRole('client');
                 setError('');
               }}
-              className={`flex-1 py-3 text-xs font-black uppercase tracking-widest rounded-xl transition-all flex items-center justify-center gap-2 ${
+              className={`flex-1 py-2.5 px-2 text-[11px] sm:text-xs font-black uppercase tracking-wide sm:tracking-widest rounded-xl transition-all flex items-center justify-center gap-2 leading-tight ${
                 role === 'client' 
                   ? 'bg-white text-blue-600 shadow-sm' 
                   : 'text-slate-400 hover:text-slate-600'
               }`}
             >
-              <span className="text-lg">👤</span>
+              <span className="text-base sm:text-lg">👤</span>
               Usuario
             </button>
             <button
@@ -118,13 +118,13 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLoginSuccess
                 setRole('provider');
                 setError('');
               }}
-              className={`flex-1 py-3 text-xs font-black uppercase tracking-widest rounded-xl transition-all flex items-center justify-center gap-2 ${
+              className={`flex-1 py-2.5 px-2 text-[11px] sm:text-xs font-black uppercase tracking-wide sm:tracking-widest rounded-xl transition-all flex items-center justify-center gap-2 leading-tight ${
                 role === 'provider' 
                   ? 'bg-white text-indigo-600 shadow-sm' 
                   : 'text-slate-400 hover:text-slate-600'
               }`}
             >
-              <span className="text-lg">🔧</span>
+              <span className="text-base sm:text-lg">🔧</span>
               Portal Prestadores
             </button>
           </div>

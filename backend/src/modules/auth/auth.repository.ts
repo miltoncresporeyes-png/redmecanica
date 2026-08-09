@@ -40,6 +40,7 @@ export class AuthRepository {
           data: {
             userId: user.id,
             status: "PENDING",
+            isDemo: false,
           },
         });
         return user;

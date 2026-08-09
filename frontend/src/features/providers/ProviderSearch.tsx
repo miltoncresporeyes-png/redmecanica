@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
-import { useSearchParams, useNavigate } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router';
 import Card from '../../components/common/Card';
 import ProviderCard from './ProviderCard';
 import AdBanner from '../../components/common/AdBanner';
