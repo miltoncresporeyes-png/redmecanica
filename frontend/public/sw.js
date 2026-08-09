@@ -1,7 +1,7 @@
 // Service Worker Premium para RedMecánica PWA
 // Optimizado para rendimiento UX/UI premium y experiencia offline fluida
 
-const VERSION = 'v3.3';
+const VERSION = 'v3.4';
 const CACHE_NAME = `redmecanica-${VERSION}`;
 const API_CACHE_NAME = `redmecanica-api-${VERSION}`;
 
@@ -530,8 +530,11 @@ async function networkFirstNavigation(request) {
     const networkResponse = await fetch(request);
     if (networkResponse.ok) {
       cache.put(request, networkResponse.clone());
-      return networkResponse;
     }
+
+    // A valid HTTP response (including a 4xx/5xx page) must be returned to
+    // the browser instead of being treated as an unavailable network.
+    return networkResponse;
   } catch (error) {
     // Intentar devolver página del cache
     const cachedResponse = await cache.match(request);
@@ -553,8 +556,6 @@ async function networkFirstNavigation(request) {
       headers: { 'Content-Type': 'text/html' }
     });
   }
-  
-  throw new Error('Network and cache unavailable');
 }
 
 // Generar página offline premium inline
