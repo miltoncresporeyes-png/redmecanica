@@ -306,7 +306,7 @@ const Hero: React.FC = () => {
       </div>
 
       {/* Launch Offer */}
-      <div className="relative mb-10 sm:mb-16 overflow-hidden rounded-xl sm:rounded-2xl bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 shadow-xl">
+      <div className="relative overflow-hidden rounded-xl sm:rounded-2xl bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 shadow-xl">
         <div className="absolute top-0 right-0 w-48 h-48 bg-yellow-400/10 rounded-full -mr-16 -mt-16 blur-2xl" />
         <div className="absolute bottom-0 left-0 w-32 h-32 bg-white/5 rounded-full -ml-10 -mb-10 blur-xl" />
         <div className="relative z-10 px-5 sm:px-10 py-7 sm:py-10 flex flex-col md:flex-row items-center justify-between gap-6">

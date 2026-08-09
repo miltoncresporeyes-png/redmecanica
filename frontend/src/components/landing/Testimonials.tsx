@@ -36,9 +36,9 @@ const Testimonials: React.FC = () => {
   };
 
   return (
-    <section className="py-16 bg-gray-50">
+    <section className="py-10 sm:py-12 bg-gray-50">
       <div className="container mx-auto px-4">
-        <div className="text-center mb-12">
+        <div className="text-center mb-8 sm:mb-10">
           <h2 className="text-3xl font-bold text-gray-800 mb-3">Lo que dicen nuestros usuarios</h2>
           <p className="text-gray-600">Estamos construyendo la red de mecánicos más confiable de Chile</p>
         </div>

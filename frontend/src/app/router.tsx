@@ -85,7 +85,7 @@ const MainLayout: React.FC = () => {
       <Header />
       <main id="main-content" className="flex-1 container mx-auto px-4 py-8" tabIndex={-1}>
         <Routes>
-           <Route path="/" element={<><Hero /><AdBanner className="my-8" /><PitchBanners /><Testimonials /></>} />
+            <Route path="/" element={<div className="space-y-8 sm:space-y-10"><Hero /><AdBanner /><PitchBanners /><Testimonials /></div>} />
            <Route path="/onboarding" element={<LazyRoute><ProviderOnboarding onComplete={() => navigate('/provider-dashboard')} onCancel={() => navigate('/')} /></LazyRoute>} />
            <Route path="/search" element={<LazyRoute><ProviderSearch /></LazyRoute>} />
            <Route path="/triage" element={<LazyRoute><TriageChatbot /></LazyRoute>} />
@@ -131,7 +131,7 @@ const MainLayout: React.FC = () => {
            </Route>
         </Routes>
 
-        <div className="max-w-4xl mx-auto mt-12 mb-8">
+        <div className="max-w-4xl mx-auto mt-8">
           <AdBanner />
         </div>
       </main>

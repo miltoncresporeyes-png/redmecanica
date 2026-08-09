@@ -83,7 +83,7 @@ const PitchBanners: React.FC = () => {
   ];
 
   return (
-    <div className="max-w-6xl mx-auto px-4 mb-20 space-y-16">
+    <div className="max-w-6xl mx-auto px-4 space-y-10 sm:space-y-12">
       
       {/* Sección Header con Estilo Checkered de Carreras */}
       <div className="text-center max-w-2xl mx-auto relative">
