@@ -9,6 +9,7 @@ pnpm-debug.log*
 dist/
 build/
 *.tsbuildinfo
+mobile/.expo/
 
 # Environment variables - NUNCA SUBIR ESTOS ARCHIVOS
 .env
@@ -49,6 +50,10 @@ coverage/
 frontend/dist/
 backend/dist/
 frontend-build/
+shared/src/**/*.js
+shared/src/**/*.js.map
+shared/src/**/*.d.ts
+shared/src/**/*.d.ts.map
 
 # Database
 *.db

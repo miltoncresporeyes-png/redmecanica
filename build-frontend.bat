@@ -37,16 +37,10 @@ echo.
 echo Archivos generados en: frontend\dist\
 echo.
 echo Proximos pasos:
-echo 1. Copia el archivo .htaccess a frontend\dist\
-echo 2. Sube TODO el contenido de frontend\dist\ a Hostinger
+echo 1. Configura Hostinger para publicar frontend\dist\
+echo 2. Ejecuta el redeploy desde GitHub
 echo.
 
-REM Copiar .htaccess a dist
-if exist .htaccess (
-    copy .htaccess dist\.htaccess
-    echo .htaccess copiado a dist\
-)
-
 echo.
-echo Listo para subir a Hostinger!
+echo Listo para el redeploy!
 pause
