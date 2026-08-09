@@ -6,10 +6,11 @@ module.exports = {
     exec_mode: 'fork',
     autorestart: true,
     watch: false,
-    max_memory_restart: '1G',
+    max_memory_restart: '512M',
     env: {
       NODE_ENV: 'production',
-      PORT: 3011
+      PORT: 3011,
+      NODE_OPTIONS: '--max-old-space-size=512'
     },
     error_file: './logs/err.log',
     out_file: './logs/out.log',

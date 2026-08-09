@@ -14,7 +14,7 @@ const JobTracking: React.FC<JobTrackingProps> = ({ job: initialJob, onComplete }
   const [eta, setEta] = useState(initialJob.etaMinutes);
 
   useEffect(() => {
-    // Poll for updates every 3 seconds
+    // Poll for updates every 10 seconds
     const interval = setInterval(async () => {
         try {
             // Optimistic UI updates handled by backend now
@@ -31,7 +31,7 @@ const JobTracking: React.FC<JobTrackingProps> = ({ job: initialJob, onComplete }
         } catch (error) {
             console.error("Error polling job status:", error);
         }
-    }, 3000);
+    }, 10000);
 
     return () => clearInterval(interval);
   }, [job.id, onComplete]);

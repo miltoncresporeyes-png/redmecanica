@@ -54,7 +54,7 @@ const Monitoring: React.FC = () => {
 
   useEffect(() => {
     fetchMonitoringData();
-    const interval = setInterval(fetchMonitoringData, 10000);
+    const interval = setInterval(fetchMonitoringData, 30000);
     return () => clearInterval(interval);
   }, []);
 

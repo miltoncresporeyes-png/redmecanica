@@ -48,6 +48,7 @@ coverage/
 # Production builds
 frontend/dist/
 backend/dist/
+frontend-build/
 
 # Database
 *.db
@@ -90,4 +91,6 @@ temp/
 
 # Documentos temporales
 errors*.txt
+tsc_*.txt
+build_*.txt
 nul

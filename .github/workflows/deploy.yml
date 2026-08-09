@@ -1,4 +1,4 @@
-name: CI Pipeline
+name: Frontend Build
 
 on:
   push:
@@ -10,8 +10,8 @@ env:
   NODE_VERSION: '20'
 
 jobs:
-  test:
-    name: Test
+  build-frontend:
+    name: Build frontend
     runs-on: ubuntu-latest
     
     steps:
@@ -25,18 +25,7 @@ jobs:
           cache: 'npm'
           
       - name: Install dependencies
-        run: |
-          npm install
-          npm install --prefix frontend
-          npm install --prefix backend
-          
-      - name: Run linter (frontend)
-        run: |
-          npm run build --prefix frontend
-        continue-on-error: true
-          
-      - name: Run linter (backend)
-        run: |
-          cd backend
-          npx prisma generate
-        continue-on-error: true
+        run: npm ci
+
+      - name: Build frontend
+        run: npm run build:frontend

@@ -12,6 +12,9 @@ const requiresSsl = /sslmode=(require|verify-ca|verify-full)/i.test(connectionSt
 
 const pool = new pg.Pool({
   connectionString,
+  max: 5,
+  idleTimeoutMillis: 30000,
+  connectionTimeoutMillis: 5000,
   ...(requiresSsl || forceInsecureTls
     ? {
         ssl: {

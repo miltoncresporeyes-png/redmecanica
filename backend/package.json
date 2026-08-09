@@ -2,10 +2,10 @@
   "scripts": {
     "dev:api": "node api/dev.js",
     "dev": "tsx watch src/server.ts",
+    "start": "node dist/server.js",
     "start:ts": "tsx src/server.ts",
     "build": "npx prisma generate && tsc -p tsconfig.json --skipLibCheck",
     "postinstall": "npx prisma generate",
-    "start": "tsx src/server.ts",
     "migrate": "npx prisma migrate dev",
     "seed": "tsx prisma/seed.ts",
     "reprocess:launch-leads": "tsx scripts/reprocess-launch-leads.ts",
