@@ -21,3 +21,13 @@ export const authLimiter = rateLimit({
     message: 'Demasiados intentos de acceso, por favor intente de nuevo en una hora.'
   }
 });
+
+export const authLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 hour
+  max: 10, // limit each IP to 10 login/register attempts per hour
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    message: 'Demasiados intentos de acceso, por favor intente de nuevo en una hora.'
+  }
+});

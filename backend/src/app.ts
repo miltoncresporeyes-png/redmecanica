@@ -1,10 +1,10 @@
 
 import express from 'express';
-import cors from 'cors';
+import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
 
 import authRoutes from './modules/auth/auth.routes.js';
-import { globalLimiter } from './middlewares/rateLimiter.js';
+import { globalLimiter, authLimiter } from './middlewares/rateLimiter.js';
 import monitoringRoutes from './routes/monitoring.js';
 
 import jobsRoutes from './routes/jobs.js';
@@ -72,7 +72,7 @@ const corsOptions = {
   allowedHeaders: ['Content-Type', 'Authorization'],
 };
 
-app.use(cors(corsOptions));
+app.use(helmet());
 app.use(securityHeadersMiddleware);
 app.use(globalLimiter);
 
@@ -83,7 +83,7 @@ app.use(cookieParser());
 app.use(requestIdMiddleware);
 
 // Mount Routes
-app.use('/api/auth', authRoutes);
+app.use('/api/auth', authLimiter, authRoutes);
 app.use('/api/jobs', jobsRoutes);
 app.use('/api/services', servicesRoutes);
 app.use('/api/users', usersRoutes);
