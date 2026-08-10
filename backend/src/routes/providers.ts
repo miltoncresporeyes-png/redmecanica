@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { prisma } from '../db.js';
 import { authenticateToken } from '../middleware/auth.js';
 import type { AuthRequest } from '../middleware/auth.js';
-import { validarRUT } from '../utils/rutValidator.js';
+import { validarRUT } from '@shared/utils/rutValidator';
 
 const router = Router();
 
