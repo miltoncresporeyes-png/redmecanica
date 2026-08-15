@@ -8,6 +8,7 @@ import authRoutes from './modules/auth/auth.routes.js';
 import { globalLimiter, authLimiter } from './middlewares/rateLimiter.js';
 import monitoringRoutes from './routes/monitoring.js';
 
+import { prisma } from './db.js';
 import jobsRoutes from './routes/jobs.js';
 import servicesRoutes from './routes/services.js';
 import usersRoutes from './routes/users.js';
@@ -89,6 +90,18 @@ app.use('/api/auth', authLimiter, authRoutes);
 app.use('/api/jobs', jobsRoutes);
 app.use('/api/services', servicesRoutes);
 app.use('/api/users', usersRoutes);
+
+// Named static routes BEFORE the dynamic /:id router to avoid param capture
+app.get('/api/providers/demo-status', async (_req, res) => {
+  try {
+    const realProviderCount = await prisma.serviceProvider.count({ where: { isDemo: false } });
+    return res.json({ demoMode: realProviderCount === 0, realProviderCount });
+  } catch (error) {
+    console.error('Error fetching demo status:', error);
+    return res.status(500).json({ error: 'Failed to fetch platform status' });
+  }
+});
+
 app.use('/api/providers', providersRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/monitoring', monitoringRoutes);
