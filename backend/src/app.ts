@@ -63,7 +63,10 @@ app.get('/api/test-smtp', async (_req, res) => {
       port,
       secure: port === 465,
       auth: { user, pass },
-      tls: { rejectUnauthorized: false }
+      tls: { rejectUnauthorized: false },
+      connectionTimeout: 5000,
+      greetingTimeout: 5000,
+      socketTimeout: 5000
     });
 
     await transporter.verify();
