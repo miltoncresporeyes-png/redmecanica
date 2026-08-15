@@ -1,7 +1,7 @@
 // Service Worker Premium para RedMecánica PWA
 // Optimizado para rendimiento UX/UI premium y experiencia offline fluida
 
-const VERSION = 'v3.4';
+const VERSION = 'v3.6';
 const CACHE_NAME = `redmecanica-${VERSION}`;
 const API_CACHE_NAME = `redmecanica-api-${VERSION}`;
 
@@ -60,7 +60,7 @@ async function staleWhileRevalidate(request, cacheName, expiryTime, event) {
       const headers = new Headers(response.headers);
       headers.set('sw-cache-timestamp', Date.now().toString());
       
-      const cachedResponse = new Response(await response.blob(), {
+      const cachedResponse = new Response(await clonedResponse.blob(), {
         status: response.status,
         statusText: response.statusText,
         headers: headers
@@ -82,8 +82,21 @@ async function staleWhileRevalidate(request, cacheName, expiryTime, event) {
   // Si no hay cache, esperar la revalidación
   try {
     const response = await revalidate;
-    trackMetric('networkHit');
-    return response || await cache.match(request) || fetch(request);
+    if (response) {
+      trackMetric('networkHit');
+      return response;
+    }
+    const fallbackCached = await cache.match(request);
+    if (fallbackCached) {
+      trackMetric('cacheHit');
+      return fallbackCached;
+    }
+    trackMetric('cacheMiss');
+    return new Response(JSON.stringify({ error: 'Service Unavailable' }), {
+      status: 503,
+      statusText: 'Service Unavailable',
+      headers: { 'Content-Type': 'application/json' }
+    });
   } catch (error) {
     // Fallback para contenido estático
     trackMetric('cacheMiss');
@@ -351,7 +364,7 @@ async function networkFirst(request, event) {
       const headers = new Headers(response.headers);
       headers.set('sw-cache-timestamp', Date.now().toString());
       
-      const cachedResponse = new Response(await response.blob(), {
+      const cachedResponse = new Response(await clonedResponse.blob(), {
         status: response.status,
         statusText: response.statusText,
         headers: headers
@@ -431,7 +444,7 @@ async function imageStrategy(request, event) {
         const headers = new Headers(response.headers);
         headers.set('sw-cache-timestamp', Date.now().toString());
         
-        const cachedResponse = new Response(await response.blob(), {
+        const cachedResponse = new Response(await response.clone().blob(), {
           status: response.status,
           statusText: response.statusText,
           headers: headers
@@ -496,10 +509,11 @@ async function apiStrategy(request, event) {
     
     const revalidate = fetch(request).then(async (response) => {
       if (response.ok) {
+        const clonedResponse = response.clone();
         const headers = new Headers(response.headers);
         headers.set('sw-cache-timestamp', Date.now().toString());
         
-        const cachedResponse = new Response(await response.blob(), {
+        const cachedResponse = new Response(await clonedResponse.blob(), {
           status: response.status,
           statusText: response.statusText,
           headers: headers

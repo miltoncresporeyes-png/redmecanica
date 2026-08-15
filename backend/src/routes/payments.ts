@@ -2,8 +2,7 @@ import express from 'express';
 import { prisma } from '../db.js';
 import { webpayService } from '../services/webpay.js';
 import { mercadoPagoService } from '../services/mercadopago.js';
-import { authenticateToken } from '../middleware/auth.js';
-import type { AuthRequest } from '../middleware/auth.js';
+import { requireAuth as authenticateToken, AuthRequest } from '../middlewares/requireAuth.js';
 
 const router = express.Router();
 

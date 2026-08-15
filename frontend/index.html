@@ -78,7 +78,27 @@
     </script>
   </head>
   <body class="bg-gray-100">
-    <div id="root"></div>
+    <style>
+      body { margin: 0; background-color: #f3f4f6; font-family: system-ui, -apple-system, sans-serif; }
+      .skeleton-header { height: 64px; background: white; border-bottom: 1px solid #e5e7eb; display: flex; align-items: center; padding: 0 20px; }
+      .skeleton-logo { width: 140px; height: 28px; background: #e5e7eb; border-radius: 4px; }
+      .skeleton-hero { height: 450px; background: #0f172a; margin: 24px auto; max-width: 1200px; border-radius: 16px; position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; box-sizing: border-box; }
+      .skeleton-title { width: 60%; height: 40px; background: rgba(255,255,255,0.1); border-radius: 8px; margin-bottom: 20px; }
+      .skeleton-subtitle { width: 80%; max-width: 500px; height: 20px; background: rgba(255,255,255,0.1); border-radius: 8px; margin-bottom: 40px; }
+      .skeleton-search { width: 100%; max-width: 600px; height: 64px; background: white; border-radius: 12px; }
+      @keyframes shimmer { 0% { opacity: 0.6; } 50% { opacity: 1; } 100% { opacity: 0.6; } }
+      .animate-pulse { animation: shimmer 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+    </style>
+    <div id="root">
+      <div class="skeleton-header animate-pulse">
+        <div class="skeleton-logo"></div>
+      </div>
+      <div class="skeleton-hero animate-pulse">
+        <div class="skeleton-title"></div>
+        <div class="skeleton-subtitle"></div>
+        <div class="skeleton-search"></div>
+      </div>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

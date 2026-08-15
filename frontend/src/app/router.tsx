@@ -7,6 +7,7 @@ import { ToastProvider } from '../contexts/ToastContext';
 import { ConfirmProvider } from '../contexts/ConfirmContext';
 import ErrorBoundary from '../components/common/ErrorBoundary';
 import ScrollToTop from '../components/ScrollToTop';
+import { lazyWithRetry } from '../lib/lazyWithRetry';
 
 // Layouts - Critical, load immediately
 import Header from '../components/Header';
@@ -14,51 +15,53 @@ import Footer from '../components/Footer';
 
 // Critical Components - Load immediately
 import Hero from '../components/Hero';
-import Testimonials from '../components/landing/Testimonials';
 import LoadingSpinner from '../components/common/LoadingSpinner';
-import WhatsAppButton from '../components/common/WhatsAppButton';
-import PitchBanners from '../components/landing/PitchBanners';
-import CookieConsent from '../components/common/CookieConsent';
+// Lazy load non-critical components
+const Testimonials = lazyWithRetry(() => import('../components/landing/Testimonials'));
+const WhatsAppButton = lazyWithRetry(() => import('../components/common/WhatsAppButton'));
+const PitchBanners = lazyWithRetry(() => import('../components/landing/PitchBanners'));
+const CookieConsent = lazyWithRetry(() => import('../components/common/CookieConsent'));
+const NewsletterModal = lazyWithRetry(() => import('../components/common/NewsletterModal'));
 
 // Lazy load all other pages for better performance
-const ProviderDashboard = React.lazy(() => import('../features/providers/ProviderDashboard'));
-const AccountHub = React.lazy(() => import('../features/account/AccountHub'));
-const ProviderOnboarding = React.lazy(() => import('../features/providers/ProviderOnboarding'));
-const ProviderSearch = React.lazy(() => import('../features/providers/ProviderSearch'));
-const TriageChatbot = React.lazy(() => import('../features/jobs/TriageChatbot'));
-const HowItWorksModal = React.lazy(() => import('../components/HowItWorksModal'));
+const ProviderDashboard = lazyWithRetry(() => import('../features/providers/ProviderDashboard'));
+const AccountHub = lazyWithRetry(() => import('../features/account/AccountHub'));
+const ProviderOnboarding = lazyWithRetry(() => import('../features/providers/ProviderOnboarding'));
+const ProviderSearch = lazyWithRetry(() => import('../features/providers/ProviderSearch'));
+const TriageChatbot = lazyWithRetry(() => import('../features/jobs/TriageChatbot'));
+const HowItWorksModal = lazyWithRetry(() => import('../components/HowItWorksModal'));
 
 // Static Pages - Lazy loaded
-const AboutUs = React.lazy(() => import('../pages/AboutUs'));
-const Contact = React.lazy(() => import('../pages/Contact'));
-const FAQ = React.lazy(() => import('../pages/FAQ'));
-const HelpCenter = React.lazy(() => import('../pages/HelpCenter'));
-const PricingPlans = React.lazy(() => import('../pages/PricingPlans'));
-const PrivacyPolicy = React.lazy(() => import('../pages/PrivacyPolicy'));
-const ProviderBenefits = React.lazy(() => import('../pages/ProviderBenefits'));
-const ProviderLanding = React.lazy(() => import('../pages/ProviderLanding'));
-const ServiceRequestFlow = React.lazy(() => import('../pages/ServiceRequestFlow'));
-const SuccessStories = React.lazy(() => import('../pages/SuccessStories'));
-const Terms = React.lazy(() => import('../pages/Terms'));
-const NotFoundPage = React.lazy(() => import('../pages/NotFoundPage'));
+const AboutUs = lazyWithRetry(() => import('../pages/AboutUs'));
+const Contact = lazyWithRetry(() => import('../pages/Contact'));
+const FAQ = lazyWithRetry(() => import('../pages/FAQ'));
+const HelpCenter = lazyWithRetry(() => import('../pages/HelpCenter'));
+const PricingPlans = lazyWithRetry(() => import('../pages/PricingPlans'));
+const PrivacyPolicy = lazyWithRetry(() => import('../pages/PrivacyPolicy'));
+const ProviderBenefits = lazyWithRetry(() => import('../pages/ProviderBenefits'));
+const ProviderLanding = lazyWithRetry(() => import('../pages/ProviderLanding'));
+const ServiceRequestFlow = lazyWithRetry(() => import('../pages/ServiceRequestFlow'));
+const SuccessStories = lazyWithRetry(() => import('../pages/SuccessStories'));
+const Terms = lazyWithRetry(() => import('../pages/Terms'));
+const NotFoundPage = lazyWithRetry(() => import('../pages/NotFoundPage'));
 
 // New SEO and Blog pages
-const ProviderProfilePage = React.lazy(() => import('../pages/ProviderProfilePage'));
-const BlogList = React.lazy(() => import('../pages/BlogList'));
-const BlogPost = React.lazy(() => import('../pages/BlogPost'));
-const ProgrammaticLandingPage = React.lazy(() => import('../pages/ProgrammaticLandingPage'));
-const PaymentStatusPage = React.lazy(() => import('../pages/PaymentStatusPage'));
-const ServiceCityPage = React.lazy(() => import('../pages/ServiceCityPage'));
+const ProviderProfilePage = lazyWithRetry(() => import('../pages/ProviderProfilePage'));
+const BlogList = lazyWithRetry(() => import('../pages/BlogList'));
+const BlogPost = lazyWithRetry(() => import('../pages/BlogPost'));
+const ProgrammaticLandingPage = lazyWithRetry(() => import('../pages/ProgrammaticLandingPage'));
+const PaymentStatusPage = lazyWithRetry(() => import('../pages/PaymentStatusPage'));
+const ServiceCityPage = lazyWithRetry(() => import('../pages/ServiceCityPage'));
 
 // Admin Pages - Lazy loaded (separate chunk)
-const AdminLayout = React.lazy(() => import('../layouts/AdminLayout'));
-const AdminDashboardPage = React.lazy(() => import('../pages/admin/AdminDashboard'));
-const UserManagement = React.lazy(() => import('../pages/admin/UserManagement'));
-const ProviderReview = React.lazy(() => import('../pages/admin/ProviderReview'));
-const AuditLogs = React.lazy(() => import('../pages/admin/AuditLogs'));
-const Monitoring = React.lazy(() => import('../pages/admin/Monitoring'));
-const Jobs = React.lazy(() => import('../pages/admin/Jobs'));
-const SubscriptionsAdmin = React.lazy(() => import('../pages/admin/Subscriptions'));
+const AdminLayout = lazyWithRetry(() => import('../layouts/AdminLayout'));
+const AdminDashboardPage = lazyWithRetry(() => import('../pages/admin/AdminDashboard'));
+const UserManagement = lazyWithRetry(() => import('../pages/admin/UserManagement'));
+const ProviderReview = lazyWithRetry(() => import('../pages/admin/ProviderReview'));
+const AuditLogs = lazyWithRetry(() => import('../pages/admin/AuditLogs'));
+const Monitoring = lazyWithRetry(() => import('../pages/admin/Monitoring'));
+const Jobs = lazyWithRetry(() => import('../pages/admin/Jobs'));
+const SubscriptionsAdmin = lazyWithRetry(() => import('../pages/admin/Subscriptions'));
 
 // Helper for Modal Page
 const HowItWorksPage: React.FC = () => {
@@ -78,13 +81,20 @@ const LazyRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => (
 const MainLayout: React.FC = () => {
     const { user } = useAuth();
     const navigate = useNavigate();
+    const [showNewsletter, setShowNewsletter] = React.useState(false);
+
+    React.useEffect(() => {
+      // Mostrar el modal después de 5 segundos
+      const timer = setTimeout(() => setShowNewsletter(true), 5000);
+      return () => clearTimeout(timer);
+    }, []);
 
   return (
     <div className="min-h-dvh bg-gray-50 font-sans text-gray-800 flex flex-col">
       <Header />
       <main id="main-content" className="flex-1 container mx-auto px-4 py-8" tabIndex={-1}>
         <Routes>
-            <Route path="/" element={<div className="space-y-8 sm:space-y-10"><Hero /><PitchBanners /><Testimonials /></div>} />
+            <Route path="/" element={<div className="space-y-8 sm:space-y-10"><Hero /><Suspense fallback={null}><PitchBanners /><Testimonials /></Suspense></div>} />
            <Route path="/onboarding" element={<LazyRoute><ProviderOnboarding onComplete={() => navigate('/provider-dashboard')} onCancel={() => navigate('/')} /></LazyRoute>} />
            <Route path="/search" element={<LazyRoute><ProviderSearch /></LazyRoute>} />
            <Route path="/triage" element={<LazyRoute><TriageChatbot /></LazyRoute>} />
@@ -130,8 +140,11 @@ const MainLayout: React.FC = () => {
            </Route>
         </Routes>
       </main>
-      <WhatsAppButton />
-      <CookieConsent />
+      <Suspense fallback={null}>
+        <WhatsAppButton />
+        <CookieConsent />
+        {showNewsletter && <NewsletterModal onClose={() => setShowNewsletter(false)} />}
+      </Suspense>
       <Footer />
     </div>
   );

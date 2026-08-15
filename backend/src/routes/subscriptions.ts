@@ -3,8 +3,7 @@ import { prisma } from '../db.js';
 import { z } from 'zod';
 import { webpayService } from '../services/webpay.js';
 import { mercadoPagoService } from '../services/mercadopago.js';
-import { authenticateToken } from '../middleware/auth.js';
-import type { AuthRequest } from '../middleware/auth.js';
+import { requireAuth as authenticateToken, AuthRequest } from '../middlewares/requireAuth.js';
 
 const router = Router();
 

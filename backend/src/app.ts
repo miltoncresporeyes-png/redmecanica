@@ -1,5 +1,6 @@
 
 import express from 'express';
+import cors from 'cors';
 import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
 
@@ -72,6 +73,7 @@ const corsOptions = {
   allowedHeaders: ['Content-Type', 'Authorization'],
 };
 
+app.use(cors(corsOptions));
 app.use(helmet());
 app.use(securityHeadersMiddleware);
 app.use(globalLimiter);
