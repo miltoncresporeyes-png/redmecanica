@@ -66,10 +66,11 @@ app.get('/api/test-smtp', async (_req, res) => {
       secure: true,
       auth: { user, pass },
       tls: { rejectUnauthorized: false },
+      family: 4,
       connectionTimeout: 4000,
       greetingTimeout: 4000,
       socketTimeout: 4000
-    });
+    } as any);
     await transporter465.verify();
     results.port465 = { success: true, message: 'Connected successfully' };
   } catch (error: any) {
@@ -85,10 +86,11 @@ app.get('/api/test-smtp', async (_req, res) => {
       requireTLS: true,
       auth: { user, pass },
       tls: { rejectUnauthorized: false },
+      family: 4,
       connectionTimeout: 4000,
       greetingTimeout: 4000,
       socketTimeout: 4000
-    });
+    } as any);
     await transporter587.verify();
     results.port587 = { success: true, message: 'Connected successfully' };
   } catch (error: any) {
