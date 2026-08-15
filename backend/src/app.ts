@@ -50,6 +50,45 @@ app.get('/api/commit-hash', (_req, res) => {
   res.status(200).json({ commit: 'F58B299_ENTRYPOINT_FIX_V2' });
 });
 
+app.get('/api/test-smtp', async (_req, res) => {
+  try {
+    const nodemailer = await import('nodemailer');
+    const host = process.env.SMTP_HOST || "smtp.hostinger.com";
+    const port = parseInt(process.env.SMTP_PORT || "465");
+    const user = process.env.SMTP_USER || "contacto@redmecanica.cl";
+    const pass = process.env.SMTP_PASS;
+
+    const transporter = nodemailer.default.createTransport({
+      host,
+      port,
+      secure: port === 465,
+      auth: { user, pass },
+      tls: { rejectUnauthorized: false }
+    });
+
+    await transporter.verify();
+    res.json({
+      success: true,
+      message: 'SMTP connection verified successfully',
+      config: { host, port, user, hasPass: !!pass, passLength: pass ? pass.length : 0 }
+    });
+  } catch (error: any) {
+    res.status(500).json({
+      success: false,
+      error: error.message,
+      code: error.code,
+      config: {
+        host: process.env.SMTP_HOST,
+        port: process.env.SMTP_PORT,
+        user: process.env.SMTP_USER,
+        hasPass: !!process.env.SMTP_PASS,
+        passLength: process.env.SMTP_PASS ? process.env.SMTP_PASS.length : 0
+      }
+    });
+  }
+});
+
+
 
 const defaultFrontendOrigins = [
   'https://redmecanica.cl',
