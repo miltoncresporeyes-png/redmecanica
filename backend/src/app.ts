@@ -32,6 +32,11 @@ import { requireAuth, requireRole } from './middlewares/requireAuth.js';
 
 const app = express();
 
+// Express app runs behind a reverse proxy (nginx/gateway). Trust proxy hops
+// so req.ip uses the real client IP from X-Forwarded-For instead of the proxy.
+// Required for express-rate-limit to correctly identify users in production.
+app.set('trust proxy', process.env.NODE_ENV === 'production' ? 1 : false);
+
 // Health Check Endpoints (placed BEFORE CORS, RateLimiter & security headers to ensure health probes always succeed)
 app.get(['/', '/health', '/api/health'], (_req, res) => {
   res.status(200).json({ status: 'ok', service: 'redmecanica-backend', timestamp: new Date().toISOString() });
@@ -40,6 +45,11 @@ app.get(['/', '/health', '/api/health'], (_req, res) => {
 app.get('/api', (_req, res) => {
   res.status(200).json({ status: 'ok', service: 'api', timestamp: new Date().toISOString() });
 });
+
+app.get('/api/commit-hash', (_req, res) => {
+  res.status(200).json({ commit: 'F58B299_ENTRYPOINT_FIX_V2' });
+});
+
 
 const defaultFrontendOrigins = [
   'https://redmecanica.cl',
