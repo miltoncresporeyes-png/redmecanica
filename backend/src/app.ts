@@ -51,45 +51,59 @@ app.get('/api/commit-hash', (_req, res) => {
 });
 
 app.get('/api/test-smtp', async (_req, res) => {
-  try {
-    const nodemailer = await import('nodemailer');
-    const host = process.env.SMTP_HOST || "smtp.hostinger.com";
-    const port = parseInt(process.env.SMTP_PORT || "465");
-    const user = process.env.SMTP_USER || "contacto@redmecanica.cl";
-    const pass = process.env.SMTP_PASS;
+  const nodemailer = await import('nodemailer');
+  const host = process.env.SMTP_HOST || "smtp.hostinger.com";
+  const user = process.env.SMTP_USER || "contacto@redmecanica.cl";
+  const pass = process.env.SMTP_PASS;
 
-    const transporter = nodemailer.default.createTransport({
+  const results: any = {};
+
+  // Test port 465
+  try {
+    const transporter465 = nodemailer.default.createTransport({
       host,
-      port,
-      secure: port === 465,
+      port: 465,
+      secure: true,
       auth: { user, pass },
       tls: { rejectUnauthorized: false },
-      connectionTimeout: 5000,
-      greetingTimeout: 5000,
-      socketTimeout: 5000
+      connectionTimeout: 4000,
+      greetingTimeout: 4000,
+      socketTimeout: 4000
     });
-
-    await transporter.verify();
-    res.json({
-      success: true,
-      message: 'SMTP connection verified successfully',
-      config: { host, port, user, hasPass: !!pass, passLength: pass ? pass.length : 0 }
-    });
+    await transporter465.verify();
+    results.port465 = { success: true, message: 'Connected successfully' };
   } catch (error: any) {
-    res.status(500).json({
-      success: false,
-      error: error.message,
-      code: error.code,
-      config: {
-        host: process.env.SMTP_HOST,
-        port: process.env.SMTP_PORT,
-        user: process.env.SMTP_USER,
-        hasPass: !!process.env.SMTP_PASS,
-        passLength: process.env.SMTP_PASS ? process.env.SMTP_PASS.length : 0
-      }
-    });
+    results.port465 = { success: false, error: error.message, code: error.code };
   }
+
+  // Test port 587
+  try {
+    const transporter587 = nodemailer.default.createTransport({
+      host,
+      port: 587,
+      secure: false,
+      requireTLS: true,
+      auth: { user, pass },
+      tls: { rejectUnauthorized: false },
+      connectionTimeout: 4000,
+      greetingTimeout: 4000,
+      socketTimeout: 4000
+    });
+    await transporter587.verify();
+    results.port587 = { success: true, message: 'Connected successfully' };
+  } catch (error: any) {
+    results.port587 = { success: false, error: error.message, code: error.code };
+  }
+
+  res.json({
+    host,
+    user,
+    hasPass: !!pass,
+    passLength: pass ? pass.length : 0,
+    results
+  });
 });
+
 
 
 
