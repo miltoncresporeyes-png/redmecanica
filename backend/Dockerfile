@@ -8,7 +8,7 @@ ENV PRISMA_SCHEMA_DISABLE_ADVISORY_LOCK=1
 
 COPY . .
 
-RUN npm install --legacy-peer-deps --include=dev && npx prisma generate
+RUN npm install --legacy-peer-deps --include=dev && npx prisma generate && npm run build
 
 ENV NODE_ENV=production
 
