@@ -5,22 +5,7 @@ import { validarRUT } from '../utils/rutValidator.js';
 
 const router = Router();
 
-// Estado de plataforma: demo mientras no existan prestadores reales inscritos
-router.get('/demo-status', async (_req, res) => {
-  try {
-    const realProviderCount = await prisma.serviceProvider.count({
-      where: { isDemo: false },
-    });
 
-    return res.json({
-      demoMode: realProviderCount === 0,
-      realProviderCount,
-    });
-  } catch (error) {
-    console.error('Error fetching demo status:', error);
-    return res.status(500).json({ error: 'Failed to fetch platform status' });
-  }
-});
 
 // Search providers by location and type
 router.get('/search', async (req, res) => {
