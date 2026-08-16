@@ -63,9 +63,18 @@ router.post('/launch-lead', async (req, res) => {
       return res.status(400).json({ error: 'El email no tiene un formato válido.' });
     }
 
-    const existingLead = await prisma.launchLead.findUnique({ where: { email } });
+    let existingLead = await prisma.launchLead.findUnique({ where: { email } });
 
     if (existingLead) {
+      // Si el lead es antiguo y no tiene código, se lo generamos y actualizamos.
+      if (!existingLead.discountCode) {
+        const newDiscountCode = `RM-${crypto.randomBytes(3).toString('hex').toUpperCase()}`;
+        existingLead = await prisma.launchLead.update({ 
+          where: { email }, 
+          data: { discountCode: newDiscountCode } 
+        });
+      }
+
       return res.status(200).json({
         success: true,
         duplicate: true,
@@ -76,41 +85,21 @@ router.post('/launch-lead', async (req, res) => {
 
     let queuedInFallback = false;
     let createdLead: { id: string; email: string; createdAt: Date; discountCode: string | null } | null = null;
-    let discountCode = `RM-${crypto.randomBytes(3).toString('hex').toUpperCase()}`;
+    const discountCode = `RM-${crypto.randomBytes(3).toString('hex').toUpperCase()}`;
 
-    // store lead in database, ignore duplicate constraint
+    // store lead in database
     try {
       createdLead = await prisma.launchLead.create({ data: { email, discountCode } });
     } catch (prismaError: any) {
-      // P2002 = unique constraint failed
-      if (prismaError.code === 'P2002') {
-        const duplicatedLead = await prisma.launchLead.findUnique({ where: { email } });
-        if (duplicatedLead && !duplicatedLead.discountCode) {
-            // If they registered before discount codes existed, update them
-            duplicatedLead.discountCode = discountCode;
-            await prisma.launchLead.update({ where: { email }, data: { discountCode } });
-        } else if (duplicatedLead && duplicatedLead.discountCode) {
-            discountCode = duplicatedLead.discountCode;
-        }
+      logger.error({ email, prismaError }, 'Failed to save launch lead in database');
 
-        const duplicatedTicket = duplicatedLead ? buildLeadTicket(duplicatedLead) : buildTemporaryTicket();
-        return res.status(200).json({
-          success: true,
-          duplicate: true,
-          ticket: duplicatedTicket,
-          message: 'Este correo ya se encuentra registrado en nuestra lista de lanzamiento.'
-        });
-      } else {
-        logger.error({ email, prismaError }, 'Failed to save launch lead in database');
-
-        try {
-          await persistLaunchLeadFallback(email, prismaError?.message || 'database-write-failed');
-          queuedInFallback = true;
-          logger.warn({ email, launchLeadsFallbackFile }, 'Lead queued in fallback file');
-        } catch (fallbackError: any) {
-          logger.error({ email, prismaError, fallbackError }, 'Failed to persist launch lead fallback');
-          throw prismaError;
-        }
+      try {
+        await persistLaunchLeadFallback(email, prismaError?.message || 'database-write-failed');
+        queuedInFallback = true;
+        logger.warn({ email, launchLeadsFallbackFile }, 'Lead queued in fallback file');
+      } catch (fallbackError: any) {
+        logger.error({ email, prismaError, fallbackError }, 'Failed to persist launch lead fallback');
+        throw prismaError;
       }
     }
 
