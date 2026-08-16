@@ -1,5 +1,5 @@
-
-import { Router } from 'express';
+import { Router } from 'express';
+import crypto from 'node:crypto';
 import { appendFile, mkdir } from 'fs/promises';
 import { dirname, join } from 'path';
 import { sendContactNotification, sendLaunchLeadNotification, sendLaunchLeadConfirmation } from '../services/email.js';
@@ -75,15 +75,24 @@ router.post('/launch-lead', async (req, res) => {
     }
 
     let queuedInFallback = false;
-    let createdLead: { id: string; email: string; createdAt: Date } | null = null;
+    let createdLead: { id: string; email: string; createdAt: Date; discountCode: string | null } | null = null;
+    let discountCode = `RM-${crypto.randomBytes(3).toString('hex').toUpperCase()}`;
 
     // store lead in database, ignore duplicate constraint
     try {
-      createdLead = await prisma.launchLead.create({ data: { email } });
+      createdLead = await prisma.launchLead.create({ data: { email, discountCode } });
     } catch (prismaError: any) {
       // P2002 = unique constraint failed
       if (prismaError.code === 'P2002') {
         const duplicatedLead = await prisma.launchLead.findUnique({ where: { email } });
+        if (duplicatedLead && !duplicatedLead.discountCode) {
+            // If they registered before discount codes existed, update them
+            duplicatedLead.discountCode = discountCode;
+            await prisma.launchLead.update({ where: { email }, data: { discountCode } });
+        } else if (duplicatedLead && duplicatedLead.discountCode) {
+            discountCode = duplicatedLead.discountCode;
+        }
+
         const duplicatedTicket = duplicatedLead ? buildLeadTicket(duplicatedLead) : buildTemporaryTicket();
         return res.status(200).json({
           success: true,
@@ -110,7 +119,7 @@ router.post('/launch-lead', async (req, res) => {
     void (async () => {
       try {
         await sendLaunchLeadNotification(email, ticket);
-        await sendLaunchLeadConfirmation(email, ticket);
+        await sendLaunchLeadConfirmation(email, ticket, discountCode);
       } catch (emailError: any) {
         logger.warn({ email, ticket, emailError }, 'Lead registrado pero envio de correo fallido');
       }

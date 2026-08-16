@@ -322,11 +322,21 @@ export const sendLaunchLeadNotification = async (
 export const sendLaunchLeadConfirmation = async (
   userEmail: string,
   ticket: string,
+  discountCode?: string,
 ) => {
   const html = `
     <h2>Gracias por registrarte en RedMecánica</h2>
     <p>¡Estamos preparando la plataforma! Te avisaremos por este correo cuando estemos en línea.</p>
     <p><strong>Número de ticket:</strong> ${escapeHtml(ticket)}</p>
+    ${discountCode ? `
+    <div style="background-color: #f3f4f6; padding: 15px; border-radius: 8px; margin: 20px 0; text-align: center;">
+      <h3 style="margin-top: 0; color: #1f2937;">Tu Código de Descuento Exclusivo</h3>
+      <p style="margin-bottom: 10px;">Guarda este código seguro generado para ti. Úsalo cuando lancemos la plataforma para obtener beneficios:</p>
+      <div style="background-color: #ffffff; border: 2px dashed #3b82f6; padding: 10px; font-size: 24px; font-weight: bold; color: #2563eb; letter-spacing: 2px;">
+        ${escapeHtml(discountCode)}
+      </div>
+    </div>
+    ` : ''}
     <p>Mientras tanto puedes seguirnos en nuestras redes sociales o contactarnos si tienes preguntas.</p>
   `;
 
@@ -334,6 +344,6 @@ export const sendLaunchLeadConfirmation = async (
     to: userEmail,
     subject: "¡Gracias por tu interés! - RedMecánica",
     html,
-    text: `Gracias por registrarte en RedMecánica. Te avisaremos cuando el servicio esté disponible. Tu ticket es: ${ticket}.`,
+    text: `Gracias por registrarte en RedMecánica. Te avisaremos cuando el servicio esté disponible. Tu ticket es: ${ticket}.${discountCode ? `\nTu código de descuento exclusivo es: ${discountCode}` : ''}`,
   });
 };

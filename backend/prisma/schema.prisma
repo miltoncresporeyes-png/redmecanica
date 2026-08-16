@@ -135,9 +135,10 @@ model Vehicle {
 // Se guarda el email para poder notificar cuando el servicio esté disponible
 // y evitar reenviar varias veces el mismo contacto.
 model LaunchLead {
-  id        String   @id @default(uuid())
-  email     String   @unique
-  createdAt DateTime @default(now())
+  id           String   @id @default(uuid())
+  email        String   @unique
+  discountCode String?  @unique
+  createdAt    DateTime @default(now())
 }
 
 model Service {
