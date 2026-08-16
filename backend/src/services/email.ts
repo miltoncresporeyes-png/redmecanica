@@ -1,6 +1,7 @@
 import nodemailer from "nodemailer";
 import crypto from "node:crypto";
 import { logger } from "../lib/logger.js";
+import { Resend } from "resend";
 
 const getSmtpConfig = () => ({
   host: process.env.SMTP_HOST || "smtp.gmail.com",
@@ -9,6 +10,7 @@ const getSmtpConfig = () => ({
   pass: process.env.SMTP_PASS,
   debugEnabled: process.env.SMTP_DEBUG === "true",
 });
+
 
 /** Extrae los campos más relevantes de un error de nodemailer para logging. */
 const extractSmtpError = (error: any) => ({
@@ -147,10 +149,40 @@ export const sendEmail = async (options: {
   html?: string;
   from?: string;
 }) => {
-  const { host, configuredPort, user, pass, debugEnabled } = getSmtpConfig();
   const from =
     options.from ||
     `"RedMecánica" <${process.env.SMTP_USER || "no-reply@redmecanica.cl"}>`;
+
+  // Use Resend HTTP API if configured (avoids SMTP port blockages in production)
+  if (process.env.RESEND_API_KEY) {
+    try {
+      logger.info("Using Resend API to send email");
+      const resend = new Resend(process.env.RESEND_API_KEY);
+      
+      const response = await resend.emails.send({
+        from,
+        to: [options.to],
+        subject: options.subject,
+        html: options.html || options.text || "",
+        text: options.text || "",
+      });
+
+      if (response.error) {
+        logger.error({ error: response.error }, "Resend API returned error");
+        throw new Error(response.error.message);
+      }
+
+      logger.info(`Email sent via Resend successfully: ${response.data?.id}`);
+      return response.data;
+    } catch (resendError: any) {
+      logger.warn(
+        { resendError: resendError?.message || resendError },
+        "Resend failed, falling back to standard SMTP"
+      );
+    }
+  }
+
+  const { host, configuredPort, user, pass, debugEnabled } = getSmtpConfig();
 
   const mailOptions = {
     from,
@@ -176,6 +208,7 @@ export const sendEmail = async (options: {
     );
     throw new Error("SMTP not configured");
   }
+
 
   try {
     const info = await primaryTransporter.sendMail(mailOptions);

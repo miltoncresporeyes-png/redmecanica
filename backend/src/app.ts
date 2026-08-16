@@ -97,11 +97,36 @@ app.get('/api/test-smtp', async (_req, res) => {
     results.port587 = { success: false, error: error.message, code: error.code };
   }
 
+  // Test Resend
+  if (process.env.RESEND_API_KEY) {
+    try {
+      const { Resend } = await import('resend');
+      const resendObj = new Resend(process.env.RESEND_API_KEY);
+      const testSend = await resendObj.emails.send({
+        from: `"RedMecánica Diagnostic" <onboarding@resend.dev>`,
+        to: [user], // send a test to the admin email
+        subject: 'Diagnóstico de Conexión Resend - RedMecánica',
+        html: '<p>Este es un correo automático de diagnóstico enviado desde la app en Railway.</p>'
+      });
+      if (testSend.error) {
+        results.resend = { success: false, error: testSend.error.message };
+      } else {
+        results.resend = { success: true, message: 'Email sent successfully', id: testSend.data?.id };
+      }
+    } catch (resendError: any) {
+      results.resend = { success: false, error: resendError.message };
+    }
+  } else {
+    results.resend = { success: false, error: 'RESEND_API_KEY environment variable not configured' };
+  }
+
   res.json({
     host,
     user,
     hasPass: !!pass,
     passLength: pass ? pass.length : 0,
+    hasResendKey: !!process.env.RESEND_API_KEY,
+    resendKeyLength: process.env.RESEND_API_KEY ? process.env.RESEND_API_KEY.length : 0,
     results
   });
 });
