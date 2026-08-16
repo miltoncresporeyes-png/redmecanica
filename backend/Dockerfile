@@ -11,14 +11,15 @@ COPY package*.json ./
 COPY prisma ./prisma/
 COPY prisma.config.ts ./
 
-# Instalar dependencias (aislado del monorepo raíz)
-RUN npm install --legacy-peer-deps --include=dev
+# Instalar dependencias SIN ejecutar postinstall (evita que prisma generate
+# falle antes de que el código fuente esté disponible)
+RUN npm install --legacy-peer-deps --include=dev --ignore-scripts
 
 # Copiar el resto del código fuente
 COPY . .
 
-# Generar Prisma Client y compilar TypeScript
-RUN npx prisma generate && npm run build
+# Generar Prisma Client (con binaryTargets correctos para Alpine) y compilar
+RUN npx prisma generate && npm run build --ignore-scripts
 
 ENV NODE_ENV=production
 
