@@ -515,7 +515,7 @@ const ProviderDashboard: React.FC<ProviderDashboardProps> = ({ onClose }) => {
                           <td className="py-4 px-4 font-mono font-bold text-green-400">{inv.invoiceNumber}</td>
                           <td className="py-4 px-4">
                             <span className="font-semibold text-white">
-                              {inv.type === 'SUBSCRIPTION' ? 'Suscripción Mensual SaaS' : 'Comisión de Servicio (12% Take-Rate)'}
+                              {inv.type === 'SUBSCRIPTION' ? 'Suscripción de visibilidad' : 'Documento de servicio'}
                             </span>
                           </td>
                           <td className="py-4 px-4">{new Date(inv.createdAt).toLocaleDateString('es-CL')}</td>

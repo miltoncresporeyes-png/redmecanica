@@ -93,40 +93,40 @@ const HelpCenter: React.FC<HelpCenterProps> = ({ onClose }) => {
       content: `
         <h3>Comparación de Planes</h3>
         
-        <h4>Plan Básico (Gratuito)</h4>
-        <p><strong>Ideal para:</strong> Probar la plataforma, Prestadores part-time</p>
+        <h4>Vitrina Gratis</h4>
+        <p><strong>Ideal para:</strong> Probar la plataforma, prestadores part-time</p>
         <ul>
           <li>✓ Sin costo mensual</li>
-          <li>✓ Comisión 15% por servicio</li>
-          <li>✓ Hasta 10 cotizaciones/mes</li>
-          <li>✗ Solo zona local</li>
+          <li>✓ Sin comisión por contacto</li>
+          <li>✓ Apareces en tu comuna base</li>
+          <li>✗ Sin insignia "Verificado"</li>
         </ul>
         
-        <h4>Plan Profesional ($29.900/mes)</h4>
+        <h4>Destacado ($15.000/mes o $150.000/año)</h4>
         <p><strong>Ideal para:</strong> Prestadores independientes full-time</p>
         <ul>
-          <li>✓ Cotizaciones ilimitadas</li>
-          <li>✓ Comisión reducida al 10%</li>
+          <li>✓ Primeros lugares en tu comuna</li>
+          <li>✓ Sin comisión por contacto</li>
           <li>✓ Badge "Verificado"</li>
           <li>✓ Posicionamiento prioritario</li>
-          <li>✓ Cobertura regional</li>
+          <li>✓ Hasta 3 comunas de cobertura</li>
         </ul>
         
-        <h4>Plan Premium ($59.900/mes)</h4>
+        <h4>Taller Premium ($500.000/año)</h4>
         <p><strong>Ideal para:</strong> Talleres y empresas establecidas</p>
         <ul>
-          <li>✓ Todo lo del Profesional, más:</li>
-          <li>✓ Comisión ultra-reducida al 7%</li>
-          <li>✓ Badge "Premium Elite"</li>
+          <li>✓ Todo lo de Destacado, más:</li>
+          <li>✓ Cobertura regional y nacional</li>
+          <li>✓ Badge "Premium"</li>
           <li>✓ Destacado en búsquedas</li>
           <li>✓ Multi-usuario (5 cuentas)</li>
           <li>✓ Gestor de cuenta dedicado</li>
         </ul>
         
         <h3>Recomendación</h3>
-        <p>Si recién comienzas: <strong>Plan Básico</strong> para probar sin riesgo.</p>
-        <p>Si eres profesional serio: <strong>Plan Profesional</strong> para maximizar ingresos.</p>
-        <p>Si tienes un taller establecido: <strong>Plan Premium</strong> para escalar rápidamente.</p>
+        <p>Si recién comienzas: <strong>Vitrina Gratis</strong> para probar sin riesgo.</p>
+        <p>Si eres profesional serio: <strong>Destacado</strong> para llenar tu agenda.</p>
+        <p>Si tienes un taller establecido: <strong>Premium</strong> para escalar rápidamente.</p>
       `
     },
 
@@ -306,39 +306,30 @@ const HelpCenter: React.FC<HelpCenterProps> = ({ onClose }) => {
     // Payments
     {
       category: 'payments',
-      title: '¿Cuándo recibo el pago de un servicio?',
+      title: '¿Cómo cobro por mis servicios?',
       content: `
-        <h3>Flujo de Pago</h3>
-        
-        <h4>Sistema de Escrow (Pago Retenido)</h4>
+        <h3>Cobro directo, sin intermediarios</h3>
+        <p>En RedMecánica el trato es directo entre tú y el conductor:</p>
         <ol>
-          <li><strong>Cliente acepta cotización:</strong> Paga el monto total</li>
-          <li><strong>Dinero queda retenido:</strong> En cuenta escrow de RedMecánica</li>
-          <li><strong>Tú realizas el servicio:</strong> Ves "Pago confirmado - Retenido"</li>
-          <li><strong>Cliente valida entrega:</strong> Confirma satisfacción en la app</li>
-          <li><strong>Pago liberado:</strong> Recibes el monto menos la comisión</li>
+          <li><strong>Te contactan:</strong> Por WhatsApp o teléfono desde tu vitrina</li>
+          <li><strong>Cotizas tú:</strong> Envías tu precio por el mismo canal</li>
+          <li><strong>Realizas el servicio:</strong> En tu taller o a domicilio</li>
+          <li><strong>Cobras directo:</strong> Efectivo, transferencia o tarjeta con tu propio medio de pago</li>
         </ol>
+        <p>RedMecánica <strong>no retiene ni cobra comisión</strong> sobre tus servicios. Solo pagas tu plan de visibilidad si eliges uno.</p>
         
-        <h3>Tiempos de Liberación</h3>
+        <h3>Medios de pago que puedes ofrecer</h3>
         <ul>
-          <li><strong>Con validación inmediata:</strong> 24-48 horas hábiles</li>
-          <li><strong>Sin validación del cliente:</strong> Automático después de 7 días</li>
-          <li><strong>Con disputa:</strong> Se retiene hasta resolución</li>
+          <li>✓ Efectivo</li>
+          <li>✓ Transferencia bancaria</li>
+          <li>✓ Tarjeta con tu propio POS o link de pago</li>
         </ul>
         
-        <h3>Métodos de Retiro</h3>
-        <p>Puedes recibir tu dinero por:</p>
+        <h3>Suscripción de visibilidad</h3>
         <ul>
-          <li>✓ Transferencia bancaria (gratis)</li>
-          <li>✓ Cuenta RUT (gratis)</li>
-          <li>✓ MercadoPago (comisión adicional)</li>
-        </ul>
-        
-        <h3>Calendario de Pagos</h3>
-        <ul>
-          <li>Lunes a Viernes: Transferencias procesadas en el día</li>
-          <li>Sábado/Domingo: Se procesan el lunes siguiente</li>
-          <li>Feriados: Se procesan el día hábil siguiente</li>
+          <li>Se paga con Webpay o Mercado Pago al activar el plan</li>
+          <li>Mensual o anual, con renovación automática cancelable</li>
+          <li>Recibes boleta por tu suscripción</li>
         </ul>
       `
     },
@@ -346,7 +337,7 @@ const HelpCenter: React.FC<HelpCenterProps> = ({ onClose }) => {
       category: 'payments',
       title: '¿Cómo funciona la facturación?',
       content: `
-        <h3>Facturación de Servicios</h3>
+        <h3>Facturación de tus servicios</h3>
         
         <h4>Tú emites factura al cliente:</h4>
         <ul>
@@ -358,17 +349,15 @@ const HelpCenter: React.FC<HelpCenterProps> = ({ onClose }) => {
         
         <h4>RedMecánica emite boleta a ti:</h4>
         <ul>
-          <li>Por la comisión de uso de plataforma</li>
-          <li>Mensualmente para suscripciones</li>
-          <li>Por cada servicio completado (comisión variable)</li>
+          <li>Por tu plan de visibilidad (Destacado o Premium)</li>
+          <li>Mensualmente o una vez al año según tu plan</li>
         </ul>
         
         <h3>Documentos Disponibles</h3>
         <p>Desde tu dashboard puedes descargar:</p>
         <ul>
-          <li>✓ Resumen mensual de servicios</li>
-          <li>✓ Detalle de comisiones cobradas</li>
-          <li>✓ Boletas de RedMecánica</li>
+          <li>✓ Resumen mensual de contactos recibidos</li>
+          <li>✓ Boletas de tu suscripción</li>
           <li>✓ Certificado anual para declaración de impuestos</li>
         </ul>
         
@@ -376,9 +365,9 @@ const HelpCenter: React.FC<HelpCenterProps> = ({ onClose }) => {
         <p>Guarda registro de:</p>
         <ul>
           <li>Todas tus facturas emitidas</li>
-          <li>Comprobantes de pago de RedMecánica</li>
+          <li>Comprobantes de pago de tu suscripción</li>
           <li>Gastos operacionales (combustible, herramientas)</li>
-          <li>Puedes deducir la comisión como gasto del negocio</li>
+          <li>Puedes deducir la suscripción como gasto del negocio</li>
         </ul>
       `
     },

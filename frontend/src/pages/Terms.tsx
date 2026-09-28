@@ -117,12 +117,12 @@ const Terms: React.FC<TermsProps> = ({ onClose }) => {
 
           <h3 className="text-lg font-bold text-gray-900 mb-2">4.2 Para Prestadores</h3>
           <ul className="list-decimal list-inside space-y-2 ml-4">
-            <li>El Prestador recibe notificaciones de solicitudes en su zona</li>
-            <li>Envía una cotización detallada al Cliente</li>
-            <li>Si es aceptada, confirma disponibilidad y se dirige al lugar</li>
-            <li>Realiza el servicio según lo cotizado</li>
-            <li>Registra la finalización en la Plataforma</li>
-            <li>Recibe el pago (menos la comisión de RedMecánica)</li>
+            <li>El Prestador publica su vitrina con servicios, cobertura y contacto</li>
+            <li>Recibe contactos directos de conductores por WhatsApp o teléfono</li>
+            <li>Cotiza y acuerda condiciones directamente con el Cliente</li>
+            <li>Realiza el servicio según lo acordado</li>
+            <li>Cobra directamente al Cliente por el medio que ofrezca</li>
+            <li>Acumula reputación con cada servicio completado</li>
           </ul>
         </section>
 
@@ -137,24 +137,25 @@ const Terms: React.FC<TermsProps> = ({ onClose }) => {
 
           <h3 className="text-lg font-bold text-gray-900 mb-2">5.2 Para Prestadores</h3>
           <p className="mb-3">
-            Los Prestadores deben seleccionar un plan de suscripción:
+            Publicar la vitrina es <strong>gratuito y sin comisión por contacto</strong>.
+            Los planes de visibilidad disponibles son:
           </p>
           <ul className="list-disc list-inside space-y-1 ml-4">
-            <li><strong>Plan Básico:</strong> Gratuito - Comisión 15% por servicio completado</li>
-            <li><strong>Plan Profesional:</strong> $29.900/mes - Comisión 10%</li>
-            <li><strong>Plan Premium:</strong> $59.900/mes - Comisión 7%</li>
-            <li><strong>Plan Empresarial:</strong> Personalizado - Comisión desde 5%</li>
+            <li><strong>Vitrina Gratis:</strong> $0 — aparición en comuna base y contacto directo</li>
+            <li><strong>Destacado:</strong> $15.000/mes o $150.000/año — primeros lugares y hasta 3 comunas</li>
+            <li><strong>Taller Premium:</strong> $500.000/año — cobertura regional/nacional y multiusuario</li>
+            <li><strong>Empresarial:</strong> Personalizado — sucursales, ERP y facturación centralizada</li>
           </ul>
           <p className="mt-3">
-            La comisión se cobra <strong>únicamente sobre servicios completados y aceptados</strong> 
-            por el Cliente. No se cobra comisión por cotizaciones enviadas pero no aceptadas.
+            RedMecánica <strong>no cobra comisión por servicios ni contactos</strong>:
+            el trato y el pago del servicio se acuerdan directamente entre el Cliente y el Prestador.
           </p>
 
-          <h3 className="text-lg font-bold text-gray-900 mb-2 mt-4">5.3 Sistema de Pago Seguro (Escrow)</h3>
+          <h3 className="text-lg font-bold text-gray-900 mb-2 mt-4">5.3 Pagos de suscripciones</h3>
           <p>
-            Para proteger a ambas partes, los pagos de servicios se retienen en una cuenta 
-            escrow hasta que el Cliente confirme la satisfacción del servicio. Solo entonces 
-            se libera el pago al Prestador (menos la comisión aplicable).
+            Los pagos de planes de visibilidad se procesan únicamente a través de pasarelas
+            autorizadas (Webpay de Transbank o Mercado Pago). RedMecánica nunca solicita
+            ni almacena los datos de tu tarjeta en su sitio.
           </p>
         </section>
 
@@ -252,8 +253,8 @@ const Terms: React.FC<TermsProps> = ({ onClose }) => {
             <li>Pérdida de datos por fallas técnicas o ataques informáticos</li>
           </ul>
           <p className="mt-3">
-            La responsabilidad total de RedMecánica nunca excederá el monto de la comisión 
-            cobrada por el servicio en cuestión.
+            La responsabilidad total de RedMecánica nunca excederá el monto pagado por el
+            Prestador en concepto de suscripción de visibilidad durante los 12 meses previos.
           </p>
         </section>
 

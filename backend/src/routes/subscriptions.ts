@@ -54,7 +54,7 @@ export const SUBSCRIPTION_PLANS = {
       'Soporte dedicado 24/7',
       'Dashboard analytics',
       'API access',
-      '优先匹配送位置',
+      'Posicionamiento prioritario nacional',
     ],
   },
 };

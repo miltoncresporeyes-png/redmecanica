@@ -72,10 +72,10 @@ const ProviderBenefits: React.FC<ProviderBenefitsProps> = ({
 
           <div className="bg-white border-2 border-purple-200 rounded-lg p-6 hover:shadow-lg transition-shadow">
             <div className="text-4xl mb-3">💳</div>
-            <h3 className="text-xl font-bold text-gray-900 mb-2">Pagos Seguros</h3>
+            <h3 className="text-xl font-bold text-gray-900 mb-2">Cobra Directo</h3>
             <p className="text-gray-600">
-              Sistema de pago con escrow que protege tu dinero. Recibe el pago completo 
-              una vez que el cliente confirme la satisfacción del servicio.
+              Sin comisiones ni retenciones: el conductor te paga a ti por tu medio favorito.
+              Y si el trabajo nace en la plataforma, puedes usar el pago protegido.
             </p>
           </div>
 
@@ -113,27 +113,27 @@ const ProviderBenefits: React.FC<ProviderBenefitsProps> = ({
         <h2 className="text-2xl font-bold text-gray-900 mb-6">Beneficios según tu Plan</h2>
         
         <div className="grid md:grid-cols-2 gap-6">
-          {/* Plan Básico */}
+          {/* Vitrina Gratis */}
           <div className="bg-gradient-to-br from-blue-50 to-blue-100 border border-blue-300 rounded-lg p-6">
             <div className="flex items-center mb-4">
               <div className="text-3xl mr-3">🚀</div>
               <div>
-                <h3 className="text-xl font-bold text-gray-900">Plan Básico (Gratuito)</h3>
+                <h3 className="text-xl font-bold text-gray-900">Vitrina Gratis</h3>
                 <p className="text-sm text-gray-600">Perfecto para empezar</p>
               </div>
             </div>
             <ul className="space-y-2">
               <li className="flex items-start">
                 <span className="text-green-600 mr-2">✓</span>
-                <span className="text-sm">Perfil básico en la plataforma</span>
+                <span className="text-sm">Vitrina pública con tus servicios</span>
               </li>
               <li className="flex items-start">
                 <span className="text-green-600 mr-2">✓</span>
-                <span className="text-sm">10 cotizaciones al mes</span>
+                <span className="text-sm">Apareces en tu comuna base</span>
               </li>
               <li className="flex items-start">
                 <span className="text-green-600 mr-2">✓</span>
-                <span className="text-sm">Zona geográfica local</span>
+                <span className="text-sm">Contacto directo por WhatsApp</span>
               </li>
               <li className="flex items-start">
                 <span className="text-green-600 mr-2">✓</span>
@@ -142,12 +142,12 @@ const ProviderBenefits: React.FC<ProviderBenefitsProps> = ({
             </ul>
             <div className="mt-4 pt-4 border-t border-blue-300">
               <p className="text-sm text-gray-700">
-                <strong>Comisión:</strong> 15% por servicio completado
+                <strong>Sin comisión</strong> por contacto: el trato es directo contigo
               </p>
             </div>
           </div>
 
-          {/* Plan Profesional */}
+          {/* Destacado */}
           <div className="bg-gradient-to-br from-purple-50 to-purple-100 border-2 border-purple-400 rounded-lg p-6 relative">
             <div className="absolute -top-3 right-4 bg-yellow-400 text-yellow-900 px-3 py-1 rounded-full text-xs font-bold">
               MÁS POPULAR
@@ -155,14 +155,14 @@ const ProviderBenefits: React.FC<ProviderBenefitsProps> = ({
             <div className="flex items-center mb-4">
               <div className="text-3xl mr-3">⭐</div>
               <div>
-                <h3 className="text-xl font-bold text-gray-900">Plan Profesional</h3>
-                <p className="text-sm text-gray-600">$14.900/mes</p>
+                <h3 className="text-xl font-bold text-gray-900">Destacado</h3>
+                <p className="text-sm text-gray-600">$15.000/mes o $150.000/año</p>
               </div>
             </div>
             <ul className="space-y-2">
               <li className="flex items-start">
                 <span className="text-green-600 mr-2">✓</span>
-                <span className="text-sm"><strong>Cotizaciones ilimitadas</strong></span>
+                <span className="text-sm"><strong>Primeros lugares en tu comuna</strong></span>
               </li>
               <li className="flex items-start">
                 <span className="text-green-600 mr-2">✓</span>
@@ -170,15 +170,11 @@ const ProviderBenefits: React.FC<ProviderBenefitsProps> = ({
               </li>
               <li className="flex items-start">
                 <span className="text-green-600 mr-2">✓</span>
-                <span className="text-sm">Posicionamiento prioritario en búsquedas</span>
+                <span className="text-sm">Hasta 3 comunas de cobertura</span>
               </li>
               <li className="flex items-start">
                 <span className="text-green-600 mr-2">✓</span>
-                <span className="text-sm">Cobertura regional ampliada</span>
-              </li>
-              <li className="flex items-start">
-                <span className="text-green-600 mr-2">✓</span>
-                <span className="text-sm">Estadísticas detalladas</span>
+                <span className="text-sm">Estadísticas de visitas y contactos</span>
               </li>
               <li className="flex items-start">
                 <span className="text-green-600 mr-2">✓</span>
@@ -186,33 +182,33 @@ const ProviderBenefits: React.FC<ProviderBenefitsProps> = ({
               </li>
               <li className="flex items-start">
                 <span className="text-green-600 mr-2">✓</span>
-                <span className="text-sm">Certificados digitales para clientes</span>
+                <span className="text-sm">Sin comisión por contacto</span>
               </li>
             </ul>
             <div className="mt-4 pt-4 border-t border-purple-300">
               <p className="text-sm text-gray-700">
-                <strong>Comisión:</strong> Solo 10% por servicio
+                <strong>Sin comisión</strong> por contacto · $15.000/mes o $150.000/año
               </p>
             </div>
           </div>
 
-          {/* Plan Premium */}
+          {/* Taller Premium */}
           <div className="bg-gradient-to-br from-yellow-50 to-yellow-100 border border-yellow-300 rounded-lg p-6">
             <div className="flex items-center mb-4">
               <div className="text-3xl mr-3">👑</div>
               <div>
-                <h3 className="text-xl font-bold text-gray-900">Plan Premium</h3>
-                <p className="text-sm text-gray-600">$29.900/mes</p>
+                <h3 className="text-xl font-bold text-gray-900">Taller Premium</h3>
+                <p className="text-sm text-gray-600">$500.000/año</p>
               </div>
             </div>
             <ul className="space-y-2">
               <li className="flex items-start">
                 <span className="text-green-600 mr-2">✓</span>
-                <span className="text-sm">Todo lo del Plan Profesional, más:</span>
+                <span className="text-sm">Todo lo del plan Destacado, más:</span>
               </li>
               <li className="flex items-start">
                 <span className="text-green-600 mr-2">✓</span>
-                <span className="text-sm"><strong>Badge "Premium Elite"</strong></span>
+                <span className="text-sm"><strong>Badge "Premium"</strong></span>
               </li>
               <li className="flex items-start">
                 <span className="text-green-600 mr-2">✓</span>
@@ -220,7 +216,7 @@ const ProviderBenefits: React.FC<ProviderBenefitsProps> = ({
               </li>
               <li className="flex items-start">
                 <span className="text-green-600 mr-2">✓</span>
-                <span className="text-sm">Cobertura nacional</span>
+                <span className="text-sm">Cobertura regional y nacional</span>
               </li>
               <li className="flex items-start">
                 <span className="text-green-600 mr-2">✓</span>
@@ -228,7 +224,7 @@ const ProviderBenefits: React.FC<ProviderBenefitsProps> = ({
               </li>
               <li className="flex items-start">
                 <span className="text-green-600 mr-2">✓</span>
-                <span className="text-sm">Campañas promocionales incluidas</span>
+                <span className="text-sm">Dashboard con analytics</span>
               </li>
               <li className="flex items-start">
                 <span className="text-green-600 mr-2">✓</span>
@@ -241,7 +237,7 @@ const ProviderBenefits: React.FC<ProviderBenefitsProps> = ({
             </ul>
             <div className="mt-4 pt-4 border-t border-yellow-300">
               <p className="text-sm text-gray-700">
-                <strong>Comisión:</strong> Solo 7% por servicio
+                <strong>Sin comisión</strong> por contacto · $500.000/año
               </p>
             </div>
           </div>
@@ -291,7 +287,7 @@ const ProviderBenefits: React.FC<ProviderBenefitsProps> = ({
             </ul>
             <div className="mt-4 pt-4 border-t border-green-300">
               <p className="text-sm text-gray-700">
-                <strong>Comisión:</strong> Desde 5% (negociable)
+                <strong>Sin comisión</strong> por contacto · precio a medida
               </p>
             </div>
           </div>

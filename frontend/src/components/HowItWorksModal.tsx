@@ -75,23 +75,23 @@ const HowItWorksModal: React.FC<HowItWorksModalProps> = ({ onClose }) => {
                     <p className="text-gray-700 text-sm"><strong>Recibe contacto directo:</strong> sin comisión por mensaje. Destaca si quieres.</p>
                   </div>
                 </div>
-                <div className="mt-6 pt-6 border-t border-purple-200 space-y-3">
-                  <p className="text-xs text-purple-800 font-semibold mb-2">Modelo de Suscripción:</p>
+                <div className="mt-6 pt-6 border-t border-emerald-200 space-y-3">
+                  <p className="text-xs text-emerald-800 font-semibold mb-2">Visibilidad para tu negocio:</p>
                   <div className="flex items-center justify-between text-xs">
-                    <span className="text-gray-600">Plan Básico</span>
-                    <span className="font-bold text-purple-700">Gratis (15% Comisión)</span>
+                    <span className="text-gray-600">Vitrina Gratis</span>
+                    <span className="font-bold text-emerald-700">$0 · sin comisión</span>
                   </div>
                   <div className="flex items-center justify-between text-xs">
-                    <span className="text-gray-600">Plan Profesional</span>
-                    <span className="font-bold text-purple-700">$14.900/mes (10% Comisión)</span>
+                    <span className="text-gray-600">Destacado</span>
+                    <span className="font-bold text-emerald-700">$15.000/mes · sin comisión</span>
                   </div>
                   <div className="flex items-center justify-between text-xs">
-                    <span className="text-gray-600">Plan Premium</span>
-                    <span className="font-bold text-purple-700">$29.900/mes (7% Comisión)</span>
+                    <span className="text-gray-600">Taller Premium</span>
+                    <span className="font-bold text-emerald-700">$500.000/año · sin comisión</span>
                   </div>
                   <div className="flex items-center justify-between text-xs">
-                    <span className="text-gray-600">Plan Empresarial</span>
-                    <span className="font-bold text-purple-700">A medida (Desde 5% Comisión)</span>
+                    <span className="text-gray-600">Empresarial</span>
+                    <span className="font-bold text-emerald-700">A medida · sin comisión</span>
                   </div>
                 </div>
               </div>
