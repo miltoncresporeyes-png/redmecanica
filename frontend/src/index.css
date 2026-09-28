@@ -76,28 +76,120 @@
   }
   body {
     @apply bg-background text-foreground font-sans antialiased overflow-x-hidden text-slate-800;
+    text-rendering: optimizeLegibility;
   }
-  
-  /* Escala de Títulos Simétricos y Responsivos */
-  h1 {
-    @apply text-2xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight leading-tight;
+
+  /* Escala tipográfica marketplace — mobile-first, simétrica */
+  h1, .h1 {
+    @apply font-heading text-[1.65rem] leading-[1.15] sm:text-4xl lg:text-[2.75rem] font-extrabold tracking-tight;
   }
-  h2 {
-    @apply text-xl sm:text-3xl lg:text-4xl font-bold tracking-tight leading-snug;
+  h2, .h2 {
+    @apply font-heading text-xl leading-snug sm:text-2xl lg:text-3xl font-extrabold tracking-tight;
   }
-  h3 {
-    @apply text-lg sm:text-2xl font-semibold leading-snug;
+  h3, .h3 {
+    @apply font-heading text-base sm:text-lg font-bold leading-snug;
   }
-  
+  p {
+    @apply leading-relaxed;
+  }
+
+  ::selection {
+    background: #facc15;
+    color: #0f172a;
+  }
+
+  /* Foco visible accesible y consistente */
+  :focus-visible {
+    outline: 2px solid #2563eb;
+    outline-offset: 2px;
+    border-radius: 6px;
+  }
+
   /* Prevención de zoom automático en iOS inputs y touch-target estándar */
   input[type="text"],
   input[type="email"],
   input[type="tel"],
   input[type="password"],
   input[type="number"],
+  input[type="search"],
   select,
   textarea {
     @apply text-base sm:text-sm min-h-[44px];
+  }
+
+  /* Respeta movimiento reducido */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@layer components {
+  /* Botones marketplace — un solo lenguaje en toda la app */
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 font-extrabold rounded-xl transition-all active:scale-[0.98] min-h-[44px] px-5 py-2.5 text-sm;
+  }
+  .btn-primary {
+    @apply btn bg-blue-600 text-white hover:bg-blue-700 shadow-md hover:shadow-lg;
+  }
+  .btn-accent {
+    @apply btn bg-gradient-to-r from-yellow-400 to-yellow-500 text-blue-950 hover:from-yellow-300 hover:to-yellow-400 shadow-md;
+  }
+  .btn-dark {
+    @apply btn bg-slate-900 text-white hover:bg-slate-800 shadow-sm;
+  }
+  .btn-whatsapp {
+    @apply btn bg-emerald-600 text-white hover:bg-emerald-700 shadow-md;
+  }
+  .btn-ghost {
+    @apply btn border border-slate-200 bg-white text-slate-700 hover:border-blue-300 hover:text-blue-700 shadow-sm;
+  }
+  .btn-ghost-light {
+    @apply btn border border-white/25 text-white hover:bg-white/10;
+  }
+
+  /* Inputs marketplace */
+  .input-market {
+    @apply w-full border border-slate-300 rounded-xl px-4 py-2.5 text-sm bg-white outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow placeholder:text-slate-400;
+  }
+
+  /* Chips y badges */
+  .chip {
+    @apply inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold border transition-all;
+  }
+  .chip-active {
+    @apply bg-blue-600 text-white border-blue-600 shadow-md;
+  }
+  .chip-idle {
+    @apply bg-white text-slate-600 border-slate-200 hover:border-blue-300;
+  }
+  .badge-free {
+    @apply inline-flex items-center gap-1.5 bg-emerald-50 text-emerald-700 border border-emerald-100 text-[11px] font-extrabold px-3 py-1 rounded-full uppercase tracking-wider;
+  }
+  .badge-commune {
+    @apply inline-flex items-center gap-1 bg-blue-50 text-blue-700 border border-blue-100 text-[11px] font-extrabold px-2.5 py-1 rounded uppercase tracking-wider;
+  }
+  .badge-verified {
+    @apply inline-flex items-center gap-1 bg-green-50 text-green-700 border border-green-100 text-[11px] font-extrabold px-2.5 py-1 rounded uppercase tracking-wider;
+  }
+
+  /* Títulos de sección simétricos */
+  .section-head {
+    @apply mb-4 sm:mb-6 px-1;
+  }
+  .section-title {
+    @apply font-heading font-extrabold text-gray-900 text-lg sm:text-xl tracking-tight;
+  }
+  .section-sub {
+    @apply text-xs sm:text-sm text-slate-500 mt-0.5;
+  }
+
+  /* Card vitrina */
+  .card-market {
+    @apply bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-lg hover:border-blue-100 transition-all;
   }
 }
 

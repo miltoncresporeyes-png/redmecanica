@@ -338,15 +338,26 @@ router.get('/me/dashboard', authenticateToken, async (req: AuthRequest, res) => 
       }
     });
 
+    // Tasa de finalización real: trabajos cerrados sobre total asignado
+    const closedCount = await prisma.job.count({
+      where: {
+        providerId: provider.id,
+        status: 'CLOSED'
+      }
+    });
+
+    const totalJobs = provider._count.jobs || 0;
+
     return res.json({
       provider,
       stats: {
         totalEarnings: earnings._sum.estimatedCost || 0,
         monthEarnings: monthEarnings._sum.estimatedCost || 0,
-        completedJobs: provider._count.jobs,
+        completedJobs: closedCount,
+        totalJobs,
         avgRating: provider.rating,
-        responseTime: "15 min", // Mock por ahora
-        completionRate: 100 // Mock por ahora
+        responseTime: null, // Se calculará cuando exista historial real de respuestas
+        completionRate: totalJobs > 0 ? Math.round((closedCount / totalJobs) * 100) : null
       }
     });
   } catch (error) {

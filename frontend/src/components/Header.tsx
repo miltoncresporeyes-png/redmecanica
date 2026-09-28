@@ -4,35 +4,12 @@ import { Link, useNavigate } from 'react-router';
 import { useAuth } from '../app/providers';
 import LoginModal from '../features/auth/LoginModal';
 import { SkipToContent } from './common/Accessibility';
-import { getPlatformStatus, type PlatformStatus } from '../services/api';
 
 const Header: React.FC = () => {
   const { user, logout, updateUser } = useAuth();
   const navigate = useNavigate();
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [platformStatus, setPlatformStatus] = useState<PlatformStatus | null>(null);
-
-  useEffect(() => {
-    let active = true;
-    const loadStatus = async () => {
-      try {
-        const data = await getPlatformStatus();
-        if (active) setPlatformStatus(data);
-      } catch {
-        if (active) setPlatformStatus(null);
-      }
-    };
-    loadStatus();
-    const interval = window.setInterval(loadStatus, 60000);
-    const onFocus = () => loadStatus();
-    window.addEventListener('focus', onFocus);
-    return () => {
-      active = false;
-      window.clearInterval(interval);
-      window.removeEventListener('focus', onFocus);
-    };
-  }, []);
 
   useEffect(() => {
     if (isMobileMenuOpen) {
@@ -63,37 +40,6 @@ const Header: React.FC = () => {
   return (
     <>
       <SkipToContent />
-      {platformStatus && platformStatus.demoMode ? (
-        <div className="safe-top bg-amber-600 text-white text-[11px] sm:text-xs py-2 px-3 sm:px-4 text-center font-medium relative z-50 flex items-center justify-center gap-1.5 shadow-sm leading-tight" role="status">
-          <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-          </svg>
-          <span>
-            <strong>Modo Demostración (transitorio):</strong> los talleres, profesionales, cotizaciones y pagos que ves actualmente son{' '}
-            <strong>simulados</strong> para que conozcas cómo funciona. Este aviso desaparece automáticamente en cuanto se inscriban los primeros talleres y profesionales reales.
-          </span>
-        </div>
-      ) : platformStatus && !platformStatus.demoMode ? (
-        <div className="safe-top bg-emerald-600 text-white text-[11px] sm:text-xs py-2 px-3 sm:px-4 text-center font-medium relative z-50 flex items-center justify-center gap-1.5 shadow-sm leading-tight" role="status">
-          <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-          </svg>
-          <span>
-            <strong>RedMecánica en operación:</strong> la plataforma ya cuenta con{' '}
-            <strong>{platformStatus.realProviderCount} {platformStatus.realProviderCount === 1 ? 'taller o profesional real' : 'talleres y profesionales reales'}</strong>{' '}
-            inscritos. Tus solicitudes se gestionarán con prestadores reales verificados.
-          </span>
-        </div>
-      ) : (
-        <div className="safe-top bg-amber-600 text-white text-[11px] sm:text-xs py-2 px-3 sm:px-4 text-center font-medium relative z-50 flex items-center justify-center gap-1.5 shadow-sm leading-tight" role="status">
-          <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-          </svg>
-          <span>
-            <strong>Modo Demostración (transitorio):</strong> los datos actuales son simulados. Este aviso desaparece automáticamente cuando se inscriban talleres y profesionales reales.
-          </span>
-        </div>
-      )}
       <header className="bg-white shadow-sm border-b border-slate-100 relative z-50 sticky top-0" role="banner">
         <nav className="container mx-auto px-4 sm:px-6 py-3 sm:py-4 flex justify-between items-center" aria-label="Navegación principal">
           <Link
@@ -118,10 +64,16 @@ const Header: React.FC = () => {
               </Link>
             )}
             <Link
-              to="/about"
+              to="/search"
+              className="text-sm font-bold text-blue-700 hover:text-blue-800 transition-colors"
+            >
+              🔍 Buscar prestadores
+            </Link>
+            <Link
+              to="/unete"
               className="text-sm font-medium text-gray-600 hover:text-blue-600 transition-colors"
             >
-              Quiénes somos
+              Publica tu negocio
             </Link>
             <Link
               to="/how-it-works"
@@ -133,13 +85,7 @@ const Header: React.FC = () => {
               to="/pricing"
               className="text-sm font-medium text-gray-600 hover:text-blue-600 transition-colors"
             >
-              Planes y precios
-            </Link>
-            <Link
-              to="/onboarding"
-              className="hidden lg:inline-block text-sm font-medium text-gray-600 hover:text-blue-600 transition-colors"
-            >
-              Registra tu negocio
+              Precios prestadores
             </Link>
 
             <div className="flex items-center gap-2">
@@ -227,6 +173,22 @@ const Header: React.FC = () => {
               </Link>
             )}
             <Link
+              to="/search"
+              onClick={closeMobileMenu}
+              className="flex items-center gap-3 px-4 py-3 text-sm font-bold text-blue-700 bg-blue-50 hover:bg-blue-100 rounded-xl transition-colors"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+              Buscar prestadores gratis
+            </Link>
+            <Link
+              to="/unete"
+              onClick={closeMobileMenu}
+              className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-xl transition-colors"
+            >
+              <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path></svg>
+              Publica tu negocio
+            </Link>
+            <Link
               to="/about"
               onClick={closeMobileMenu}
               className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-xl transition-colors"
@@ -248,23 +210,7 @@ const Header: React.FC = () => {
               className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-xl transition-colors"
             >
               <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-              Planes y precios
-            </Link>
-            <Link
-              to="/onboarding"
-              onClick={closeMobileMenu}
-              className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-xl transition-colors"
-            >
-              <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path></svg>
-              Registra tu negocio
-            </Link>
-            <Link
-              to="/search"
-              onClick={closeMobileMenu}
-              className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-xl transition-colors"
-            >
-              <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-              Buscar servicios
+              Precios prestadores
             </Link>
 
             {/* Divider */}

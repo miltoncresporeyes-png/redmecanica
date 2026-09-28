@@ -53,12 +53,11 @@ class WebpayService {
       this.environment = process.env.NODE_ENV === 'production' 
         ? Environment.Production 
         : Environment.Integration;
-      console.log('✅ Webpay configurado en modo:', this.isConfigured ? (process.env.NODE_ENV === 'production' ? 'PRODUCCIÓN' : 'INTEGRACIÓN') : 'NO CONFIGURADO');
+      console.log('✅ Webpay configurado en modo:', process.env.NODE_ENV === 'production' ? 'PRODUCCIÓN' : 'INTEGRACIÓN');
     } else {
-      console.warn('⚠️ Webpay no configurado. Usando modo simulación.');
+      this.isConfigured = false;
       this.environment = Environment.Integration;
-      this.commerceCode = '597055555532';
-      this.apiKey = '579B532A4D93CB346FF21B291E2A0FF17937CCAS';
+      console.error('❌ Webpay NO configurado: define WEBPAY_COMMERCE_CODE y WEBPAY_API_KEY. Los pagos fallarán de forma explícita hasta configurarlo.');
     }
   }
 
@@ -78,7 +77,7 @@ class WebpayService {
     finalUrl: string
   ): Promise<CreateTransactionResult> {
     if (!this.isConfigured) {
-      return this.simulateCreateTransaction(buyOrder, sessionId, amount);
+      throw new Error('Webpay no está configurado (WEBPAY_COMMERCE_CODE / WEBPAY_API_KEY).');
     }
 
     try {
@@ -105,7 +104,7 @@ class WebpayService {
 
   async commitTransaction(token: string): Promise<CommitTransactionResult> {
     if (!this.isConfigured) {
-      return this.simulateCommitTransaction(token);
+      throw new Error('Webpay no está configurado (WEBPAY_COMMERCE_CODE / WEBPAY_API_KEY).');
     }
 
     try {
@@ -137,7 +136,7 @@ class WebpayService {
     buyOrder: string
   ): Promise<any> {
     if (!this.isConfigured) {
-      return this.simulateRefundTransaction(token, amount);
+      throw new Error('Webpay no está configurado (WEBPAY_COMMERCE_CODE / WEBPAY_API_KEY).');
     }
 
     try {
@@ -249,50 +248,6 @@ class WebpayService {
     const regex = new RegExp(`<${tag}[^>]*>([^<]*)</${tag}>`, 'i');
     const match = xml.match(regex);
     return match ? match[1].trim() : '';
-  }
-
-  private simulateCreateTransaction(
-    buyOrder: string,
-    sessionId: string,
-    amount: number
-  ): CreateTransactionResult {
-    const mockToken = `mock_token_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-    
-    return {
-      token: mockToken,
-      url: this.environment + '/webpayserver/v3.cgi',
-      buyOrder,
-      sessionId,
-      amount
-    };
-  }
-
-  private simulateCommitTransaction(token: string): CommitTransactionResult {
-    return {
-      vci: 'TSN',
-      amount: 0,
-      status: 'AUTHORIZED',
-      buyOrder: token.split('_')[2] || 'mock_order',
-      sessionId: token.split('_')[3] || 'mock_session',
-      cardDetail: {
-        card_number: '**** **** **** 1234'
-      },
-      accountingDate: new Date().toISOString().slice(0, 10).replace(/-/g, ''),
-      transactionDate: new Date().toISOString(),
-      authorizationCode: '123456',
-      paymentTypeCode: 'CO',
-      responseCode: 0
-    };
-  }
-
-  private simulateRefundTransaction(token: string, amount: number): any {
-    return {
-      token,
-      authorizationCode: '123456',
-      nullifiedAmount: amount,
-      responseCode: 0,
-      description: 'Reembolso procesado (simulación)'
-    };
   }
 }
 

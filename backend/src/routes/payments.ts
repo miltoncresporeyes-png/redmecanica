@@ -42,37 +42,38 @@ async function createMercadoPagoCheckout(params: {
 router.post('/create', authenticateToken, async (req: AuthRequest, res) => {
   try {
     const { jobId, amount, paymentMethod } = req.body;
-    let existingJob: any = null;
 
     if (!jobId || !amount) {
       return res.status(400).json({ error: 'Job ID y monto son requeridos' });
     }
 
-    // Para demos o pruebas, permitir jobId especial
-    const isDemo = jobId === 'demo' || jobId.startsWith('demo-');
-
-    if (!isDemo) {
-      existingJob = await prisma.job.findUnique({
-        where: { id: jobId },
-        include: { 
-          request: { include: { user: true, vehicle: true } }
-        }
-      });
-
-      if (!existingJob) {
-        return res.status(404).json({ error: 'Job no encontrado' });
+    const existingJob: any = await prisma.job.findUnique({
+      where: { id: jobId },
+      include: {
+        request: { include: { user: true, vehicle: true } }
       }
+    });
 
-      if (existingJob.customerId !== req.user?.id && req.user?.role !== 'ADMIN' && req.user?.role !== 'SUPER_ADMIN') {
-        return res.status(403).json({ error: 'Acceso denegado: No tienes permiso para pagar por este trabajo' });
-      }
+    if (!existingJob) {
+      return res.status(404).json({ error: 'Job no encontrado' });
+    }
+
+    if (existingJob.customerId !== req.user?.id && req.user?.role !== 'ADMIN' && req.user?.role !== 'SUPER_ADMIN') {
+      return res.status(403).json({ error: 'Acceso denegado: No tienes permiso para pagar por este trabajo' });
     }
 
     const normalizedPaymentMethod = String(paymentMethod || '').toLowerCase();
 
     if (normalizedPaymentMethod === 'webpay') {
-      const buyOrder = isDemo ? `RM-DEMO-${Date.now()}` : `RM-${jobId}-${Date.now()}`;
-      const sessionId = isDemo ? 'demo-session' : 'sessionId';
+      if (!webpayService.isWebpayConfigured()) {
+        return res.status(503).json({
+          error: 'La pasarela Webpay no está configurada',
+          hint: 'Define WEBPAY_COMMERCE_CODE y WEBPAY_API_KEY en el backend'
+        });
+      }
+
+      const buyOrder = `RM-${jobId}-${Date.now()}`;
+      const sessionId = 'sessionId';
 
       const webpayData = await webpayService.createTransaction(
         buyOrder,
@@ -97,9 +98,7 @@ router.post('/create', authenticateToken, async (req: AuthRequest, res) => {
         payment: paymentOrder,
         token: webpayData.token,
         url: webpayData.url,
-        message: webpayService.isWebpayConfigured() 
-          ? 'Redirigir a Webpay para completar pago'
-          : 'Modo simulación - token generado'
+        message: 'Redirigir a Webpay para completar pago'
       });
     }
 
@@ -111,12 +110,10 @@ router.post('/create', authenticateToken, async (req: AuthRequest, res) => {
         });
       }
 
-      const title = isDemo ? 'Servicio RedMecánica' : `Pago de trabajo ${jobId}`;
-      const description = isDemo
-        ? 'Pago demo para pruebas'
-        : `Pago del trabajo ${jobId} en RedMecánica`;
+      const title = `Pago de trabajo ${jobId}`;
+      const description = `Pago del trabajo ${jobId} en RedMecánica`;
 
-      const payerEmail = isDemo ? undefined : existingJob?.request?.user?.email;
+      const payerEmail = existingJob?.request?.user?.email;
 
       const preference = await createMercadoPagoCheckout({
         jobId,
@@ -144,14 +141,12 @@ router.post('/create', authenticateToken, async (req: AuthRequest, res) => {
       });
     }
 
-    if (!isDemo) {
-      const job = await prisma.job.findUnique({
-        where: { id: jobId }
-      });
+    const job = await prisma.job.findUnique({
+      where: { id: jobId }
+    });
 
-      if (!job) {
-        return res.status(404).json({ error: 'Job no encontrado' });
-      }
+    if (!job) {
+      return res.status(404).json({ error: 'Job no encontrado' });
     }
 
     const paymentOrder = {
@@ -585,7 +580,7 @@ router.post('/confirm', authenticateToken, async (req: AuthRequest, res) => {
               total: amount
             }
           ]),
-          notes: 'Los fondos simulados han sido retenidos en custodia de RedMecánica. Se liberarán al técnico una vez finalizado y aprobado el trabajo.'
+          notes: 'Los fondos han sido retenidos en custodia de RedMecánica. Se liberarán al prestador una vez finalizado y aprobado el trabajo.'
         }
       });
 

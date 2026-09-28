@@ -11,7 +11,7 @@ const Footer: React.FC = () => {
           <div>
             <h3 className="text-white font-bold text-lg mb-3 tracking-tight">RedMecánica</h3>
             <p className="hidden sm:block text-xs sm:text-sm text-slate-400 leading-relaxed">
-              La plataforma líder en Chile para conectar conductores con los mejores servicios automotrices de confianza cerca de ti.
+              El marketplace automotriz de Chile: prestadores promocionan sus servicios y conductores buscan gratis por comuna, sin cuenta y con contacto directo.
             </p>
             <div className="flex space-x-3">
               <a href="https://facebook.com/redmecanicacl" target="_blank" rel="noopener noreferrer" className="touch-target p-2 text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 rounded-lg transition-colors" aria-label="Facebook">
@@ -28,31 +28,36 @@ const Footer: React.FC = () => {
 
           {/* Columna 2: Servicios */}
           <div>
-            <h3 className="text-white font-bold text-base mb-3 tracking-tight">Servicios</h3>
+            <h3 className="text-white font-bold text-base mb-3 tracking-tight">Busca gratis</h3>
             <ul className="space-y-2.5">
+              <li>
+                <Link to="/search" className="text-xs sm:text-sm hover:text-white transition-colors py-1 inline-block">
+                  🔍 Directorio de prestadores
+                </Link>
+              </li>
+              <li>
+                <Link to="/search?category=mecanico" className="text-xs sm:text-sm hover:text-white transition-colors py-1 inline-block">
+                  Mecánicos a domicilio
+                </Link>
+              </li>
+              <li>
+                <Link to="/search?category=taller" className="text-xs sm:text-sm hover:text-white transition-colors py-1 inline-block">
+                  Talleres por comuna
+                </Link>
+              </li>
+              <li>
+                <Link to="/search?category=grua" className="text-xs sm:text-sm hover:text-white transition-colors py-1 inline-block">
+                  Grúas y auxilio
+                </Link>
+              </li>
+              <li>
+                <Link to="/search?category=vulcanizacion" className="text-xs sm:text-sm hover:text-white transition-colors py-1 inline-block">
+                  Vulcanizaciones
+                </Link>
+              </li>
               <li>
                 <Link to="/how-it-works" className="text-xs sm:text-sm hover:text-white transition-colors py-1 inline-block">
                   ¿Cómo funciona?
-                </Link>
-              </li>
-              <li>
-                <Link to="/search?type=MECHANIC" className="text-xs sm:text-sm hover:text-white transition-colors py-1 inline-block">
-                  Buscar mecánicos
-                </Link>
-              </li>
-              <li>
-                <Link to="/search?type=WORKSHOP" className="text-xs sm:text-sm hover:text-white transition-colors py-1 inline-block">
-                  Talleres certificados
-                </Link>
-              </li>
-              <li>
-                <Link to="/search?type=TOWING" className="text-xs sm:text-sm hover:text-white transition-colors py-1 inline-block">
-                  Servicios de grúa
-                </Link>
-              </li>
-              <li>
-                <Link to="/search?emergency=true" className="text-xs sm:text-sm hover:text-white transition-colors py-1 inline-block">
-                  Emergencias 24/7
                 </Link>
               </li>
             </ul>
@@ -63,13 +68,13 @@ const Footer: React.FC = () => {
             <h3 className="text-white font-bold text-base mb-3 tracking-tight">Prestadores</h3>
             <ul className="space-y-2.5">
               <li>
-                <Link to="/onboarding" className="text-xs sm:text-sm hover:text-white transition-colors py-1 inline-block">
-                  Registra tu negocio
+                <Link to="/unete" className="text-xs sm:text-sm hover:text-white transition-colors py-1 inline-block">
+                  Publica tu negocio gratis
                 </Link>
               </li>
               <li>
                 <Link to="/pricing" className="text-xs sm:text-sm hover:text-white transition-colors py-1 inline-block">
-                  Planes y precios
+                  Precios para destacar
                 </Link>
               </li>
               <li>

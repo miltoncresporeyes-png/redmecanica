@@ -28,51 +28,21 @@ const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
   const [activeTab, setActiveTab] = useState<'profile' | 'vehicles' | 'history' | 'payments'>('profile');
   const [editMode, setEditMode] = useState(false);
 
-  // Mock data - en producción vendría del API
+  // Datos reales del usuario: parten vacíos y se completan desde el perfil.
+  // Sin datos de ejemplo.
   const [userData, setUserData] = useState({
-    name: 'Juan Pérez',
-    email: 'juan.perez@example.com',
-    phone: '+56 9 83414730',
-    rut: '12.345.678-5',
-    address: 'Av. Providencia 1234, Providencia',
-    region: 'Metropolitana',
-    commune: 'Providencia'
+    name: '',
+    email: '',
+    phone: '',
+    rut: '',
+    address: '',
+    region: '',
+    commune: ''
   });
 
-  const [vehicles, setVehicles] = useState<Vehicle[]>([
-    { id: '1', make: 'Toyota', model: 'Corolla', year: 2020, licensePlate: 'ABCD-12' },
-    { id: '2', make: 'Chevrolet', model: 'Spark', year: 2018, licensePlate: 'WXYZ-34' }
-  ]);
+  const [vehicles, setVehicles] = useState<Vehicle[]>([]);
 
-  const serviceHistory: ServiceHistory[] = [
-    {
-      id: '1',
-      date: '2026-01-15',
-      service: 'Cambio de aceite',
-      provider: 'Taller Express',
-      cost: 35000,
-      rating: 5,
-      status: 'COMPLETED'
-    },
-    {
-      id: '2',
-      date: '2025-12-20',
-      service: 'Revisión técnica',
-      provider: 'AutoCheck',
-      cost: 18000,
-      rating: 4.5,
-      status: 'COMPLETED'
-    },
-    {
-      id: '3',
-      date: '2025-11-10',
-      service: 'Cambio de pastillas de freno',
-      provider: 'Frenos Rápidos',
-      cost: 65000,
-      rating: 4.8,
-      status: 'COMPLETED'
-    }
-  ];
+  const serviceHistory: ServiceHistory[] = [];
 
   const handleSaveProfile = () => {
     // Aquí iría la llamada al API

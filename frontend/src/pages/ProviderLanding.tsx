@@ -1,328 +1,262 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router';
 import SEO from '../components/SEO';
+import { MARKETPLACE_CATEGORIES } from '../data/marketplace';
+import { COMUNAS_POR_REGION } from '../data/autocompleteData';
 
-interface ProviderLandingProps {
-  onClose?: () => void;
-}
+const ALL_COMUNAS: string[] = Array.from(new Set(Object.values(COMUNAS_POR_REGION).flat())).sort((a, b) =>
+  a.localeCompare(b, 'es')
+);
 
-const ProviderLanding: React.FC<ProviderLandingProps> = ({ onClose }) => {
+const ProviderLanding: React.FC = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    name: '',
+    businessName: '',
+    categorySlug: '',
+    commune: '',
     phone: '',
     email: '',
-    serviceType: '',
-    commune: '',
-    experience: ''
+    services: '',
   });
-  const [submitted, setSubmitted] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [communeFocus, setCommuneFocus] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    
-    setTimeout(() => {
-      setSubmitted(true);
-      setLoading(false);
-    }, 1000);
-  };
+  const filteredComunas = useMemo(() => {
+    const q = formData.commune.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    if (!q) return ALL_COMUNAS.slice(0, 8);
+    return ALL_COMUNAS.filter((c) =>
+      c.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').includes(q)
+    ).slice(0, 8);
+  }, [formData.commune]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-    setFormData(prev => ({
-      ...prev,
-      [e.target.name]: e.target.value
-    }));
+    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  if (submitted) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-700 flex items-center justify-center p-4">
-        <div className="bg-white rounded-3xl shadow-2xl p-8 max-w-md w-full text-center">
-          <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-            <span className="text-5xl">✅</span>
-          </div>
-          <h2 className="text-3xl font-black text-gray-900 mb-4">¡Te contactaremos pronto!</h2>
-          <p className="text-gray-600 mb-6">
-            Gracias por interés en RedMecánica. Un agente comercial te contactará en menos de 24 horas para guiarte en el proceso de registro.
-          </p>
-          <div className="bg-blue-50 rounded-xl p-4 mb-6">
-            <p className="text-sm text-blue-800 font-medium">
-              📞 ¿Prefieres que te llamemos ahora?
-            </p>
-            <p className="text-2xl font-bold text-blue-600 mt-2">+56 9 83414730</p>
-          </div>
-          <button
-            onClick={() => navigate('/')}
-            className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-4 rounded-xl font-bold hover:opacity-90 transition-opacity"
-          >
-            Volver al Inicio
-          </button>
-        </div>
-      </div>
-    );
-  }
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    if (!formData.businessName.trim()) return setError('Ponle nombre a tu vitrina (tu taller, vulca, grúa…).');
+    if (!formData.categorySlug) return setError('Elige tu categoría principal.');
+    if (!formData.commune.trim()) return setError('Indica tu comuna base para aparecer en búsquedas.');
+    if (!formData.phone.trim() || formData.phone.replace(/\D/g, '').length < 9)
+      return setError('Agrega tu WhatsApp para recibir contactos directos.');
+
+    // Guardar borrador real y pasar al onboarding con precarga
+    localStorage.setItem('provider_draft', JSON.stringify({ ...formData, createdAt: new Date().toISOString() }));
+    const params = new URLSearchParams({
+      businessName: formData.businessName,
+      category: formData.categorySlug,
+      commune: formData.commune,
+      phone: formData.phone,
+      ...(formData.email ? { email: formData.email } : {}),
+      ...(formData.services ? { services: formData.services } : {}),
+    });
+    navigate(`/onboarding?${params.toString()}`);
+  };
+
+  const selectedCategory = MARKETPLACE_CATEGORIES.find((c) => c.slug === formData.categorySlug);
 
   return (
     <>
       <SEO
-        title="Únete a RedMecánica | Registro de Prestadores"
-        description="¿Eres mecánico, taller o grúa? Únete a RedMecánica y aumenta tus ingresos. Miles de clientes buscando servicios automotrices en Chile."
-        keywords="trabajar como mecánico, registrarme como taller, ganar dinero mecánico, prestador autos Chile"
+        title="Publica tu negocio gratis | RedMecánica marketplace automotriz"
+        description="Crea tu vitrina en 2 minutos: talleres, mecánicos, grúas, vulcanizaciones, eléctricos y más. Aparece cuando busquen en tu comuna y recibe contactos directos por WhatsApp. Sin comisión por contacto."
+        keywords="publicar taller mecánico, registrar vulcanización, ofrecer servicios grúa, vitrina automotriz gratis Chile"
         canonicalUrl="https://redmecanica.cl/unete"
       />
-      <div className="min-h-screen bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-700">
-        {/* Header */}
-      <header className="container mx-auto px-4 py-6">
-        <div className="flex justify-between items-center">
-          <div 
-            className="flex items-center space-x-2 cursor-pointer"
-            onClick={() => navigate('/')}
-          >
-            <svg className="w-10 h-10 text-white" viewBox="0 0 24 24" fill="currentColor">
-              <circle cx="6" cy="12" r="3" />
-              <circle cx="18" cy="6" r="3" />
-              <circle cx="18" cy="18" r="3" />
-              <path d="M6 12L18 6M6 12L18 18" stroke="white" strokeWidth="2" />
-            </svg>
-            <span className="text-2xl font-bold text-white">
-              Red<span className="text-yellow-300">Mecánica</span>
-            </span>
-          </div>
-          {onClose && (
-            <button onClick={onClose} className="text-white/80 hover:text-white">
-              <span className="text-3xl">&times;</span>
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 -m-4 sm:-m-0 sm:rounded-2xl overflow-hidden">
+        <header className="container mx-auto px-4 py-6">
+          <div className="flex justify-between items-center">
+            <button onClick={() => navigate('/')} className="flex items-center space-x-2" aria-label="Volver al inicio">
+              <span className="text-2xl">🔧</span>
+              <span className="text-2xl font-bold text-white">
+                Red<span className="text-yellow-300">Mecánica</span>
+              </span>
             </button>
-          )}
-        </div>
-      </header>
+            <button onClick={() => navigate('/search')} className="text-white/70 hover:text-white text-sm font-semibold">
+              Ver directorio →
+            </button>
+          </div>
+        </header>
 
-      {/* Main Content */}
-      <main className="container mx-auto px-4 py-8">
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
-          {/* Left - Value Proposition */}
-          <div className="text-white relative z-10">
-            <div className="inline-block bg-yellow-400 text-yellow-900 px-4 py-2 rounded-full font-black text-xs mb-8 shadow-xl shadow-yellow-400/30 animate-bounce-subtle">
-              🚀 LANZAMIENTO - Primeros 50 prestadores sin comisión
-            </div>
-            <h1 className="text-3xl sm:text-5xl lg:text-7xl font-black mb-8 leading-[1.05] tracking-tighter drop-shadow-2xl">
-              Convierte tu taller en una<br className="hidden sm:block"/>
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-yellow-500">máquina de clientes</span>
-            </h1>
-            <p className="text-xl opacity-90 mb-12 max-w-lg leading-relaxed font-medium">
-              Únete a la plataforma de servicios automotrices #1 en Chile. 
-              Sin costo de registro, sin permanencia.
-            </p>
-            
-            <div className="space-y-6 mb-12">
-              {[
-                { icon: '🎯', title: 'Clientes garantizados', desc: 'Te conectamos con conductores que necesitan servicios', color: 'bg-gradient-to-br from-pink-500 to-rose-600' },
-                { icon: '💳', title: 'Pagos seguros', desc: 'Sistema de escrow protege tu dinero', color: 'bg-gradient-to-br from-blue-500 to-indigo-600' },
-                { icon: '📱', title: 'Gestión digital', desc: 'Administra todo desde tu panel', color: 'bg-gradient-to-br from-slate-700 to-slate-900' }
-              ].map((item, idx) => (
-                <div key={idx} className="flex items-center gap-5 group cursor-default">
-                  <div className={`w-14 h-14 ${item.color} rounded-2xl flex items-center justify-center text-3xl shadow-2xl transition-all duration-500 group-hover:scale-110 group-hover:rotate-3`}>
-                    {item.icon}
-                  </div>
-                  <div>
-                    <h3 className="font-black text-xl tracking-tight group-hover:text-yellow-300 transition-colors">{item.title}</h3>
-                    <p className="opacity-80 text-base leading-snug">{item.desc}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
+        <main className="container mx-auto px-4 pb-10">
+          <div className="grid lg:grid-cols-2 gap-8 items-start max-w-6xl mx-auto">
+            {/* Propuesta */}
+            <div className="text-white pt-2">
+              <div className="inline-block bg-emerald-400/15 text-emerald-300 border border-emerald-300/20 px-4 py-1.5 rounded-full font-bold text-xs mb-5">
+                VITRINA GRATUITA · PUBLICA EN 2 MINUTOS
+              </div>
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black mb-4 leading-tight tracking-tight">
+                Aparece cuando busquen{' '}
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-yellow-500">
+                  en tu comuna
+                </span>
+              </h1>
+              <p className="text-blue-100/90 mb-6 max-w-lg text-sm sm:text-base leading-relaxed">
+                Los conductores buscan gratis por comuna y categoría. Tú promocionas tus servicios
+                y recibes el contacto <strong className="text-white">directo por WhatsApp</strong>, sin intermediarios ni comisión por contacto.
+              </p>
 
-            <div className="flex items-center gap-6 bg-white/10 backdrop-blur-xl p-4 rounded-3xl border border-white/20 shadow-2xl">
-              <div className="flex -space-x-3">
+              <div className="space-y-3 mb-6">
                 {[
-                  'from-orange-400 to-pink-500',
-                  'from-blue-400 to-indigo-500',
-                  'from-purple-400 to-fuchsia-500'
-                ].map((gradient, i) => (
-                  <div key={i} className={`w-10 h-10 bg-gradient-to-br ${gradient} rounded-full border-2 border-white/50 flex items-center justify-center text-[10px] font-black shadow-lg`}>
-                    {i + 1}
+                  { n: '1', t: 'Crea tu vitrina', d: 'Nombre, categoría, comuna, WhatsApp y servicios. 2 minutos.' },
+                  { n: '2', t: 'Aparece en el directorio', d: 'Te ordenamos primero en tu comuna cuando busquen tu categoría.' },
+                  { n: '3', t: 'Recibe contactos directos', d: 'El conductor te escribe por WhatsApp o te llama. Tú cierras el trato.' },
+                ].map((s) => (
+                  <div key={s.n} className="flex gap-3 bg-white/5 border border-white/10 rounded-2xl p-4">
+                    <div className="w-8 h-8 shrink-0 bg-yellow-400 text-blue-950 font-black rounded-full flex items-center justify-center text-sm">
+                      {s.n}
+                    </div>
+                    <div>
+                      <p className="font-extrabold text-sm">{s.t}</p>
+                      <p className="text-blue-100/70 text-xs sm:text-sm">{s.d}</p>
+                    </div>
                   </div>
                 ))}
               </div>
-              <p className="text-base font-bold text-white/90">
-                <span className="font-black text-yellow-400">FASE 1</span> • LANZAMIENTO 2026
-              </p>
-            </div>
-          </div>
 
-          {/* Right - Form */}
-          <div className="bg-white rounded-3xl shadow-2xl p-8">
-            <div className="text-center mb-6">
-              <h2 className="text-2xl font-black text-gray-900">Regístrate ahora</h2>
-              <p className="text-gray-500">Completa tus datos y te contactaremos</p>
+              <div className="bg-white/5 border border-white/10 rounded-2xl p-4 text-xs sm:text-sm text-blue-100/80">
+                💰 <strong className="text-white">Modelo honesto:</strong> publicar y aparecer es gratis.
+                Si quieres destacar sobre tu competencia, hay planes de posicionamiento. Nunca pagas por cada contacto.
+              </div>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <label className="block text-sm font-bold text-gray-700 mb-1">Nombre completo</label>
-                <input
-                  type="text"
-                  name="name"
-                  required
-                  value={formData.name}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:outline-none transition-colors"
-                  placeholder="Juan Pérez"
-                />
-              </div>
+            {/* Form borrador */}
+            <div className="bg-white rounded-3xl shadow-2xl p-6 sm:p-8">
+              <h2 className="text-xl font-black text-gray-900">Crea tu borrador de vitrina</h2>
+              <p className="text-sm text-gray-500 mb-5">Te tomará 2 minutos. Después completas verificación.</p>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {error && (
+                <div className="bg-red-50 border border-red-100 text-red-700 text-sm font-bold rounded-xl p-3 mb-4">
+                  ⚠️ {error}
+                </div>
+              )}
+
+              <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-1">Teléfono</label>
+                  <label className="block text-sm font-bold text-gray-700 mb-1">Nombre de tu negocio *</label>
                   <input
-                    type="tel"
-                    name="phone"
-                    required
-                    value={formData.phone}
+                    name="businessName"
+                    value={formData.businessName}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:outline-none transition-colors"
-                    placeholder="+56 9 83414730"
+                    placeholder="Ej: Vulca El Rayo, Taller Martínez, Grúas Sur"
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:outline-none"
                   />
                 </div>
-                <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-1">Email</label>
-                  <input
-                    type="email"
-                    name="email"
-                    required
-                    value={formData.email}
-                    onChange={handleChange}
-                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:outline-none transition-colors"
-                    placeholder="tu@email.com"
-                  />
-                </div>
-              </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-1">Tipo de servicio</label>
-                  <select
-                    name="serviceType"
-                    required
-                    value={formData.serviceType}
-                    onChange={handleChange}
-                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:outline-none transition-colors bg-white"
-                  >
-                    <option value="">Seleccionar...</option>
-                    <option value="mechanic">Mecánico</option>
-                    <option value="workshop">Taller</option>
-                    <option value="towing">Grúa</option>
-                    <option value="insurance">Seguro</option>
-                  </select>
+                  <label className="block text-sm font-bold text-gray-700 mb-1">Categoría principal *</label>
+                  <div className="grid grid-cols-2 gap-2">
+                    {MARKETPLACE_CATEGORIES.map((cat) => (
+                      <button
+                        key={cat.slug}
+                        type="button"
+                        onClick={() => setFormData((p) => ({ ...p, categorySlug: cat.slug }))}
+                        className={`text-left px-3 py-2 rounded-xl border-2 text-sm font-bold transition-all ${
+                          formData.categorySlug === cat.slug
+                            ? 'border-blue-600 bg-blue-50 text-blue-800'
+                            : 'border-gray-100 hover:border-blue-200 text-gray-600'
+                        }`}
+                      >
+                        {cat.icon} {cat.label}
+                      </button>
+                    ))}
+                  </div>
+                  {selectedCategory && (
+                    <p className="text-xs text-blue-600 font-semibold mt-1">✓ {selectedCategory.shortDesc}</p>
+                  )}
                 </div>
-                <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-1">Comuna</label>
-                  <select
+
+                <div className="relative">
+                  <label className="block text-sm font-bold text-gray-700 mb-1">Comuna base *</label>
+                  <input
                     name="commune"
-                    required
                     value={formData.commune}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:outline-none transition-colors bg-white"
-                  >
-                    <option value="">Seleccionar...</option>
-                    <option value="santiago">Santiago</option>
-                    <option value="las_condes">Las Condes</option>
-                    <option value="providencia">Providencia</option>
-                    <option value="maipu">Maipú</option>
-                    <option value="puente_alto">Puente Alto</option>
-                    <option value="la_florida">La Florida</option>
-                    <option value="vitacura">Vitacura</option>
-                    <option value="nunoa">Ñuñoa</option>
-                    <option value="otro">Otra</option>
-                  </select>
+                    onFocus={() => setCommuneFocus(true)}
+                    onBlur={() => setTimeout(() => setCommuneFocus(false), 150)}
+                    placeholder="Ej: Maipú"
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:outline-none"
+                    autoComplete="off"
+                  />
+                  {communeFocus && (
+                    <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-100 rounded-xl shadow-xl z-10 overflow-hidden">
+                      {filteredComunas.map((c) => (
+                        <button
+                          key={c}
+                          type="button"
+                          onMouseDown={() => setFormData((p) => ({ ...p, commune: c }))}
+                          className="w-full text-left px-4 py-2 hover:bg-blue-50 text-sm font-medium text-gray-700"
+                        >
+                          📍 {c}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                  <p className="text-xs text-gray-400 mt-1">Aparecerás primero cuando busquen en {formData.commune || 'tu comuna'}.</p>
                 </div>
-              </div>
 
-              <div>
-                <label className="block text-sm font-bold text-gray-700 mb-1">Años de experiencia</label>
-                <select
-                  name="experience"
-                  required
-                  value={formData.experience}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:outline-none transition-colors bg-white"
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-bold text-gray-700 mb-1">WhatsApp *</label>
+                    <input
+                      name="phone"
+                      value={formData.phone}
+                      onChange={handleChange}
+                      placeholder="+56 9 1234 5678"
+                      className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:outline-none"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-bold text-gray-700 mb-1">Email</label>
+                    <input
+                      name="email"
+                      type="email"
+                      value={formData.email}
+                      onChange={handleChange}
+                      placeholder="tu@negocio.cl"
+                      className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:outline-none"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-bold text-gray-700 mb-1">¿Qué servicios promocionas?</label>
+                  <textarea
+                    name="services"
+                    value={formData.services}
+                    onChange={handleChange}
+                    rows={3}
+                    placeholder="Ej: pinchazos, cambio de neumáticos, balanceo, frenos…"
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:outline-none"
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-xl font-black transition-all shadow-lg active:scale-[0.99]"
                 >
-                  <option value="">Seleccionar...</option>
-                  <option value="0-1">Menos de 1 año</option>
-                  <option value="1-3">1-3 años</option>
-                  <option value="3-5">3-5 años</option>
-                  <option value="5-10">5-10 años</option>
-                  <option value="10+">Más de 10 años</option>
-                </select>
-              </div>
+                  Continuar → completar verificación
+                </button>
+                <p className="text-[11px] text-center text-gray-400">
+                  Al continuar aceptas términos y verificación de identidad. Sin tarjeta.
+                </p>
+              </form>
 
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full bg-violet-600 text-white py-4 rounded-xl font-black text-xl hover:bg-violet-700 transition-all shadow-xl shadow-violet-200 disabled:opacity-50 flex items-center justify-center gap-2 active:scale-[0.98]"
-              >
-                {loading ? (
-                  <>
-                    <span className="w-6 h-6 border-3 border-white/30 border-t-white rounded-full animate-spin"></span>
-                    Enviando...
-                  </>
-                ) : (
-                  <>
-                    🚀 Registrarme gratis
-                  </>
-                )}
-              </button>
-
-              <p className="text-[10px] uppercase tracking-widest text-center text-slate-400 font-bold">
-                Al registrarte aceptas nuestros términos y condiciones
-              </p>
-            </form>
-
-            <div className="mt-8 pt-6 border-t border-slate-100 text-center">
-              <p className="text-[10px] font-black text-slate-400 mb-6 uppercase tracking-[0.2em]">O contáctanos directamente</p>
-              <div className="flex justify-center gap-4">
-                <a 
-                  href="https://wa.me/56983414730" 
-                  className="flex-1 flex items-center justify-center gap-3 bg-[#25D366] text-white px-6 py-4 rounded-2xl font-black hover:bg-[#20bd5a] transition-all shadow-xl shadow-green-100 active:scale-95 group"
-                >
-                  <span className="text-2xl group-hover:animate-pulse">💬</span> WhatsApp
-                </a>
-                <a 
-                  href="tel:+56983414730" 
-                  className="flex-1 flex items-center justify-center gap-3 bg-blue-600 text-white px-6 py-4 rounded-2xl font-black hover:bg-blue-700 transition-all shadow-xl shadow-blue-100 active:scale-95 group"
-                >
-                  <span className="text-2xl group-hover:animate-bounce-subtle">📞</span> Llamar
+              <div className="mt-4 pt-4 border-t border-gray-100 text-center">
+                <a href="https://wa.me/56983414730" className="text-sm font-bold text-emerald-600 hover:text-emerald-700">
+                  💬 ¿Dudas? Escríbenos por WhatsApp
                 </a>
               </div>
             </div>
           </div>
-        </div>
-      </main>
+        </main>
 
-      <style dangerouslySetInnerHTML={{ __html: `
-        @keyframes bounce-subtle {
-          0%, 100% { transform: translateY(0); }
-          50% { transform: translateY(-5px); }
-        }
-        .animate-bounce-subtle {
-          animation: bounce-subtle 2s infinite ease-in-out;
-        }
-      `}} />
-
-      {/* Footer */}
-      <footer className="container mx-auto px-4 py-12 text-center text-white/60 text-sm border-t border-white/10 mt-12">
-        <div className="flex flex-col md:flex-row justify-center items-center gap-6 mb-4">
-          <a href="mailto:contacto@redmecanica.cl" className="hover:text-yellow-400 transition-colors flex items-center gap-2">
-            <span>📧</span> contacto@redmecanica.cl
-          </a>
-          <a href="https://wa.me/56983414730" target="_blank" rel="noopener noreferrer" className="hover:text-yellow-400 transition-colors flex items-center gap-2 font-bold">
-            <span>💬</span> +56 9 83414730
-          </a>
-        </div>
-        <p>© 2026 RedMecánica. La plataforma de servicios automotrices líder en Chile para prestadores y conductores.</p>
-      </footer>
-    </div>
+        <footer className="container mx-auto px-4 py-8 text-center text-white/50 text-xs border-t border-white/10">
+          © 2026 RedMecánica · Marketplace automotriz de Chile · contacto@redmecanica.cl
+        </footer>
+      </div>
     </>
   );
 };

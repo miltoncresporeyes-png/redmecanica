@@ -92,9 +92,9 @@ const MainLayout: React.FC = () => {
   return (
     <div className="min-h-dvh bg-gray-50 font-sans text-gray-800 flex flex-col">
       <Header />
-      <main id="main-content" className="flex-1 container mx-auto px-4 py-8" tabIndex={-1}>
+      <main id="main-content" className="flex-1 w-full max-w-6xl mx-auto px-4 py-6 sm:py-8" tabIndex={-1}>
         <Routes>
-            <Route path="/" element={<div className="space-y-8 sm:space-y-10"><Hero /><Suspense fallback={null}><PitchBanners /><Testimonials /></Suspense></div>} />
+            <Route path="/" element={<div className="space-y-6 sm:space-y-10"><Hero /><Suspense fallback={null}><PitchBanners /><Testimonials /></Suspense></div>} />
            <Route path="/onboarding" element={<LazyRoute><ProviderOnboarding onComplete={() => navigate('/provider-dashboard')} onCancel={() => navigate('/')} /></LazyRoute>} />
            <Route path="/search" element={<LazyRoute><ProviderSearch /></LazyRoute>} />
            <Route path="/triage" element={<LazyRoute><TriageChatbot /></LazyRoute>} />
@@ -119,11 +119,15 @@ const MainLayout: React.FC = () => {
            <Route path="/payment/return" element={<LazyRoute><PaymentStatusPage /></LazyRoute>} />
            <Route path="/payment/final" element={<LazyRoute><PaymentStatusPage /></LazyRoute>} />
            
-           {/* Service + City directory pages for SEO density */}
-           <Route path="/mecanicos/:citySlug" element={<LazyRoute><ServiceCityPage /></LazyRoute>} />
-           <Route path="/gruas/:citySlug" element={<LazyRoute><ServiceCityPage /></LazyRoute>} />
-           <Route path="/talleres/:citySlug" element={<LazyRoute><ServiceCityPage /></LazyRoute>} />
-           <Route path="/electricos/:citySlug" element={<LazyRoute><ServiceCityPage /></LazyRoute>} />
+            {/* Service + City directory pages for SEO density */}
+            <Route path="/mecanicos/:citySlug" element={<LazyRoute><ServiceCityPage /></LazyRoute>} />
+            <Route path="/gruas/:citySlug" element={<LazyRoute><ServiceCityPage /></LazyRoute>} />
+            <Route path="/talleres/:citySlug" element={<LazyRoute><ServiceCityPage /></LazyRoute>} />
+            <Route path="/electricos/:citySlug" element={<LazyRoute><ServiceCityPage /></LazyRoute>} />
+            <Route path="/vulcanizaciones/:citySlug" element={<LazyRoute><ServiceCityPage /></LazyRoute>} />
+            <Route path="/hojalateria/:citySlug" element={<LazyRoute><ServiceCityPage /></LazyRoute>} />
+            <Route path="/climatizacion/:citySlug" element={<LazyRoute><ServiceCityPage /></LazyRoute>} />
+            <Route path="/detailing/:citySlug" element={<LazyRoute><ServiceCityPage /></LazyRoute>} />
            
            {/* Programmatic SEO dynamic URL landing page */}
            <Route path="/:seoSlug" element={<LazyRoute><ProgrammaticLandingPage /></LazyRoute>} />

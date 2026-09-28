@@ -9,13 +9,19 @@ interface SEOProps {
   ogUrl?: string;
   canonicalUrl?: string;
   noIndex?: boolean;
-  schema?: object;
+  schema?: object | object[];
 }
 
+const DEFAULT_TITLE = 'RedMecánica — Marketplace automotriz de Chile | Prestadores en tu comuna gratis';
+const DEFAULT_DESC =
+  'Directorio gratuito de prestadores automotrices en Chile: mecánicos, talleres, grúas, vulcanizaciones, electricidad, hojalatería y más. Busca por comuna, compara vitrinas y contacta directo por WhatsApp. Sin cuenta, sin costo.';
+const DEFAULT_KEYS =
+  'marketplace automotriz Chile, buscar mecánico por comuna, talleres en mi comuna, grúas Chile, vulcanización, eléctrico automotriz, directorio automotriz gratuito';
+
 const SEO: React.FC<SEOProps> = ({
-  title = 'Mecánicos en Santiago y Regiones | Encuentra Talleres y Grúas Cerca de Ti',
-  description = 'Encuentra mecánicos, talleres y grúas en Santiago y Regiones. Compara servicios, precios y disponibilidad en minutos.',
-  keywords = 'mecánico a domicilio, taller mecánico Chile, servicios automotrices',
+  title = DEFAULT_TITLE,
+  description = DEFAULT_DESC,
+  keywords = DEFAULT_KEYS,
   ogImage = 'https://redmecanica.cl/og-image.jpg',
   ogUrl,
   canonicalUrl,
@@ -23,44 +29,46 @@ const SEO: React.FC<SEOProps> = ({
   schema,
 }) => {
   const fullTitle = title.includes('RedMecánica') ? title : `${title} | RedMecánica`;
+  const schemas = schema ? (Array.isArray(schema) ? schema : [schema]) : [];
 
   return (
     <Helmet>
-      {/* Basic Meta Tags */}
       <title>{fullTitle}</title>
       <meta name="description" content={description} />
       <meta name="keywords" content={keywords} />
-      
-      {/* Robots */}
+
       {noIndex ? (
         <meta name="robots" content="noindex, nofollow" />
       ) : (
-        <meta name="robots" content="index, follow" />
+        <meta name="robots" content="index, follow, max-image-preview:large" />
       )}
-      
-      {/* Canonical URL */}
+
       {canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
-      
-      {/* Open Graph / Facebook */}
+
+      {/* Open Graph */}
       <meta property="og:type" content="website" />
+      <meta property="og:site_name" content="RedMecánica" />
       <meta property="og:title" content={fullTitle} />
       <meta property="og:description" content={description} />
       <meta property="og:image" content={ogImage} />
       <meta property="og:locale" content="es_CL" />
       {ogUrl && <meta property="og:url" content={ogUrl} />}
-      
-      {/* Twitter Card */}
+      {(canonicalUrl || ogUrl) && <meta property="og:url" content={ogUrl || canonicalUrl} />}
+
+      {/* Twitter */}
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:title" content={fullTitle} />
       <meta name="twitter:description" content={description} />
       <meta name="twitter:image" content={ogImage} />
-      
-      {/* JSON-LD Structured Data */}
-      {schema && (
-        <script type="application/ld+json">
-          {JSON.stringify(schema)}
+
+      {/* Idioma / región */}
+      <meta httpEquiv="content-language" content="es-CL" />
+
+      {schemas.map((s, i) => (
+        <script key={i} type="application/ld+json">
+          {JSON.stringify(s)}
         </script>
-      )}
+      ))}
     </Helmet>
   );
 };

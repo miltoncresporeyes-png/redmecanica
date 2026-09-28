@@ -62,6 +62,37 @@ export const COMUNAS_POR_REGION: { [key: string]: string[] } = {
   'Antofagasta': [
     'Antofagasta', 'Mejillones', 'Sierra Gorda', 'Taltal',
     'Calama', 'Ollagüe', 'San Pedro de Atacama', 'Tocopilla', 'María Elena'
+  ],
+  "O'Higgins": [
+    'Rancagua', 'Machalí', 'Graneros', 'San Fernando', 'Rengo',
+    'Santa Cruz', 'Pichilemu', 'San Vicente'
+  ],
+  'Maule': [
+    'Talca', 'Curicó', 'Linares', 'Cauquenes', 'Constitución', 'Molina'
+  ],
+  'Ñuble': [
+    'Chillán', 'Chillán Viejo', 'San Carlos', 'Bulnes'
+  ],
+  'Araucanía': [
+    'Temuco', 'Padre Las Casas', 'Villarrica', 'Pucón', 'Angol', 'Victoria'
+  ],
+  'Los Ríos': [
+    'Valdivia', 'La Unión', 'Panguipulli', 'Río Bueno'
+  ],
+  'Los Lagos': [
+    'Puerto Montt', 'Osorno', 'Puerto Varas', 'Castro', 'Ancud', 'Quellón'
+  ],
+  'Coquimbo': [
+    'La Serena', 'Coquimbo', 'Ovalle', 'Illapel', 'Vicuña'
+  ],
+  'Atacama': [
+    'Copiapó', 'Vallenar', 'Caldera'
+  ],
+  'Magallanes': [
+    'Punta Arenas', 'Puerto Natales'
+  ],
+  'Aysén': [
+    'Coyhaique', 'Aysén'
   ]
   // Se pueden agregar más regiones según sea necesario
 };

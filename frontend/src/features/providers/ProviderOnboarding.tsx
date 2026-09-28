@@ -1,8 +1,10 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
+import { useSearchParams } from 'react-router';
 import Card from '../../components/common/Card';
 import { registerProvider } from '../../services/api';
 import AutocompleteInput from '../../components/common/AutocompleteInput';
 import { COMUNAS_POR_REGION, CALLES_COMUNES, REGIONES } from '../../data/autocompleteData';
+import { MARKETPLACE_CATEGORIES, getCategoryBySlug } from '../../data/marketplace';
 import { validarRUT, formatearRUT } from '../../utils/rutValidator';
 import { useAuth } from '../../app/providers';
 import LoginModal from '../auth/LoginModal';
@@ -43,7 +45,9 @@ const VEHICLE_BRANDS = [
 
 const ProviderOnboarding: React.FC<ProviderOnboardingProps> = ({ onComplete, onCancel }) => {
   const { user, updateUser } = useAuth();
+  const [searchParams] = useSearchParams();
   const [step, setStep] = useState(1);
+  const [draftLoaded, setDraftLoaded] = useState(false);
   const [formData, setFormData] = useState<any>({
     userId: '', 
     businessName: '', 
@@ -72,13 +76,45 @@ const ProviderOnboarding: React.FC<ProviderOnboardingProps> = ({ onComplete, onC
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [pendingSubmit, setPendingSubmit] = useState(false);
 
+  // Precarga desde /unete (borrador de vitrina en 2 minutos)
+  useEffect(() => {
+    const draftRaw = localStorage.getItem('provider_draft');
+    const draft = draftRaw ? JSON.parse(draftRaw) : {};
+    const categorySlug = searchParams.get('category') || draft.categorySlug || '';
+    const cat = getCategoryBySlug(categorySlug);
+    const servicesRaw = searchParams.get('services') || draft.services || '';
+    const prefilledSpecs = servicesRaw
+      ? servicesRaw.split(/[,;\n]+/).map((s: string) => s.trim()).filter(Boolean).slice(0, 6)
+      : [];
+    const hasPrefill =
+      searchParams.get('businessName') || draft.businessName || categorySlug || searchParams.get('commune') || draft.commune;
+    if (hasPrefill) {
+      setFormData((prev: any) => ({
+        ...prev,
+        businessName: searchParams.get('businessName') || draft.businessName || prev.businessName,
+        categorySlug: categorySlug || prev.categorySlug,
+        type: cat?.backendType || prev.type,
+        commune: searchParams.get('commune') || draft.commune || prev.commune,
+        phone: searchParams.get('phone') || draft.phone || prev.phone,
+        bio: prefilledSpecs.length > 0 ? `Servicios: ${prefilledSpecs.join(', ')}.` : prev.bio,
+        specialties: prefilledSpecs.length > 0 ? prefilledSpecs : prev.specialties,
+      }));
+      setDraftLoaded(true);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const specialtyOptions = [
-    { id: 'MECHANIC', label: 'Mecánica General' },
+    { id: 'MEC_GENERAL', label: 'Mecánica General' },
     { id: 'ELECTRICITY', label: 'Electricidad / Electrónica' },
     { id: 'BRAKES', label: 'Frenos y Suspensión' },
+    { id: 'VULCA', label: 'Vulcanización' },
     { id: 'PAINT', label: 'Hojalatería y Pintura' },
     { id: 'AC', label: 'Aire Acondicionado' },
-    { id: 'ALIGMENT', label: 'Alineación y Balanceo' }
+    { id: 'ALIGMENT', label: 'Alineación y Balanceo' },
+    { id: 'DIAG', label: 'Diagnóstico / Scanner' },
+    { id: 'DETAIL', label: 'Detailing / Lavado' },
+    { id: 'TOW', label: 'Grúa y Auxilio' },
   ];
 
   const toggleSpecialty = (specLabel: string) => {
@@ -99,6 +135,12 @@ const ProviderOnboarding: React.FC<ProviderOnboardingProps> = ({ onComplete, onC
 
   const validateStep = () => {
     setError(null);
+    if (step === 1) {
+      if (!formData.type && !formData.categorySlug) {
+        setError('Elige la categoría de tu vitrina para continuar.');
+        return false;
+      }
+    }
     if (step === 2) {
       if (!formData.businessName.trim()) {
         setError('El nombre de fantasía es obligatorio.');
@@ -221,6 +263,7 @@ const ProviderOnboarding: React.FC<ProviderOnboardingProps> = ({ onComplete, onC
         vehicle: vehicleValue
       };
       await registerProvider(payload);
+      localStorage.removeItem('provider_draft');
       
       const savedPlan = localStorage.getItem('selectedPlan');
       if (savedPlan) {
@@ -256,25 +299,24 @@ const ProviderOnboarding: React.FC<ProviderOnboardingProps> = ({ onComplete, onC
 
   const renderStep1_Type = () => (
     <div className="space-y-4">
-      <h3 className="text-xl font-black text-slate-800">Selecciona tu tipo de servicio</h3>
-      <div className="grid grid-cols-2 gap-4">
-        {[
-          { id: 'MECHANIC', label: 'Mecánico a Domicilio', icon: '🔧' },
-          { id: 'WORKSHOP', label: 'Taller Establecido', icon: '🏭' },
-          { id: 'TOWING', label: 'Servicio de Grúa', icon: '🚛' },
-          { id: 'INSURANCE', label: 'Aseguradora', icon: '🛡️' }
-        ].map((type) => (
+      <h3 className="text-xl font-black text-slate-800">¿Qué servicios promocionas?</h3>
+      <p className="text-sm text-slate-500">Tu vitrina aparecerá cuando busquen esta categoría en tu comuna.</p>
+      <div className="grid grid-cols-2 gap-3">
+        {MARKETPLACE_CATEGORIES.map((cat) => (
           <button
-            key={type.id}
-            onClick={() => setFormData({ ...formData, type: type.id, specialties: [] })}
-            className={`p-6 border-2 rounded-2xl flex flex-col items-center justify-center space-y-3 transition-all ${
-              formData.type === type.id 
-                ? 'border-blue-600 bg-blue-50 text-blue-700 shadow-lg shadow-blue-100' 
+            key={cat.slug}
+            onClick={() => setFormData({ ...formData, categorySlug: cat.slug, type: cat.backendType, specialties: [] })}
+            className={`p-4 border-2 rounded-2xl flex items-center gap-3 transition-all text-left ${
+              (formData.categorySlug === cat.slug || (!formData.categorySlug && formData.type === cat.backendType))
+                ? 'border-blue-600 bg-blue-50 text-blue-700 shadow-lg shadow-blue-100'
                 : 'border-slate-100 hover:border-blue-200 bg-white shadow-sm'
             }`}
           >
-            <span className="text-4xl">{type.icon}</span>
-            <span className="font-bold text-sm tracking-tight">{type.label}</span>
+            <span className="text-3xl">{cat.icon}</span>
+            <span>
+              <span className="font-bold text-sm tracking-tight block">{cat.label}</span>
+              <span className="text-[11px] text-slate-400 block">{cat.shortDesc}</span>
+            </span>
           </button>
         ))}
       </div>
@@ -536,9 +578,14 @@ const ProviderOnboarding: React.FC<ProviderOnboardingProps> = ({ onComplete, onC
     <Card className="max-w-2xl mx-auto p-8 shadow-2xl rounded-3xl animate-fadeIn">
       <div className="mb-8">
         <div className="flex items-center justify-between mb-3">
-           <h2 className="text-2xl font-black text-slate-800 tracking-tight">Registro de Prestadores</h2>
+           <h2 className="text-2xl font-black text-slate-800 tracking-tight">Crea tu vitrina</h2>
            <span className="bg-slate-100 text-slate-500 px-3 py-1 rounded-full text-xs font-black">Paso {step} de 4</span>
         </div>
+        {draftLoaded && (
+          <div className="bg-emerald-50 border border-emerald-100 text-emerald-800 text-sm font-bold rounded-xl p-3 mb-3">
+            ✅ Borrador cargado desde “Publica tu negocio”. Revisa y completa verificación para aparecer en el directorio.
+          </div>
+        )}
         <div className="w-full bg-slate-100 rounded-full h-2 overflow-hidden shadow-inner">
           <div className="bg-gradient-to-r from-blue-600 to-indigo-600 h-full transition-all duration-500 ease-out" style={{ width: `${(step / 4) * 100}%` }}></div>
         </div>

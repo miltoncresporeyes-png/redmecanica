@@ -1,84 +1,86 @@
 import React from 'react';
+import { useNavigate } from 'react-router';
 import Card from '../common/Card';
 
+// Sin testimonios inventados: la reputación real se construye con
+// prestadores y conductores reales. Esta sección explica el valor
+// para cada lado del marketplace.
 const Testimonials: React.FC = () => {
-  const testimonials = [
+  const navigate = useNavigate();
+
+  const cards = [
     {
-      id: 1,
-      name: 'María González',
-      role: 'Conductora',
-      content: 'Excelente servicio. El mecánico llegó en 15 minutos y solucionó mi problema de batería al instante. 100% recomendado.',
-      rating: 5,
-      avatar: '👩'
+      icon: '🔍',
+      title: 'Conductores',
+      text: 'Busca por comuna y categoría, compara vitrinas con servicios y reputación, y contacta directo por WhatsApp. Gratis y sin cuenta.',
+      cta: 'Buscar en mi comuna',
+      to: '/search',
     },
     {
-      id: 2,
-      name: 'Carlos Pérez',
-      role: 'Conductor de Uber',
-      content: 'Como conductor, necesito soluciones rápidas. RedMecánica me ha salvado varias veces. ¡Servicio de primera!',
-      rating: 5,
-      avatar: '👨'
+      icon: '🏭',
+      title: 'Prestadores',
+      text: 'Publica tu vitrina en 2 minutos con tus servicios, cobertura y contacto. Apareces cuando tus vecinos busquen tu categoría.',
+      cta: 'Publicar mi negocio',
+      to: '/unete',
     },
     {
-      id: 3,
-      name: 'Andrea Silva',
-      role: 'Dueña de flota',
-      content: 'Manejo una flota de 10 vehículos. Con RedMecánica encontré talleres certificados y precios justos. Muy profesional.',
-      rating: 5,
-      avatar: '👩‍💼'
-    }
+      icon: '⭐',
+      title: 'Reputación real',
+      text: 'Sin reseñas inventadas: la calificación de cada vitrina se construye solo con servicios completados y verificados en la plataforma.',
+      cta: 'Cómo funciona',
+      to: '/how-it-works',
+    },
   ];
 
-  const renderStars = (rating: number) => {
-    return Array(rating).fill(0).map((_, i) => (
-      <span key={i} className="text-yellow-500">★</span>
-    ));
-  };
-
   return (
-    <section className="py-10 sm:py-12 bg-gray-50">
-      <div className="container mx-auto px-4">
-        <div className="text-center mb-8 sm:mb-10">
-          <h2 className="text-3xl font-bold text-gray-800 mb-3">Lo que dicen nuestros usuarios</h2>
-          <p className="text-gray-600">Estamos construyendo la red de mecánicos más confiable de Chile</p>
+    <section className="py-8 sm:py-12">
+      <div className="max-w-6xl mx-auto px-1 sm:px-0">
+        <div className="section-head text-center max-w-2xl mx-auto">
+          <p className="badge-free mx-auto mb-2"> marketplace en marcha </p>
+          <h2 className="section-title">Conductores buscan gratis · prestadores se promocionan</h2>
+          <p className="section-sub">Un directorio por comuna, con contacto directo y reputación verificada</p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {testimonials.map((testimonial) => (
-            <Card key={testimonial.id} className="p-6 hover:shadow-lg transition-shadow">
-              <div className="flex items-center mb-4">
-                <div className="text-4xl mr-3">{testimonial.avatar}</div>
-                <div>
-                  <h3 className="font-bold text-gray-800">{testimonial.name}</h3>
-                  <p className="text-sm text-gray-500">{testimonial.role}</p>
-                </div>
-              </div>
-              
-              <div className="mb-3 text-lg">
-                {renderStars(testimonial.rating)}
-              </div>
-              
-              <p className="text-gray-600 italic">"{testimonial.content}"</p>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4">
+          {cards.map((c) => (
+            <Card key={c.title} className="card-market p-5 sm:p-6 flex flex-col">
+              <div className="text-3xl mb-3" aria-hidden>{c.icon}</div>
+              <h3 className="font-bold text-gray-800 text-base mb-2">{c.title}</h3>
+              <p className="text-sm text-gray-600 leading-relaxed flex-1">{c.text}</p>
+              <button
+                onClick={() => navigate(c.to)}
+                className="mt-4 text-sm font-extrabold text-blue-700 hover:text-blue-900 text-left min-h-[44px]"
+              >
+                {c.cta} →
+              </button>
             </Card>
           ))}
         </div>
 
-        <div className="text-center mt-10">
-          <div className="inline-flex items-center space-x-8 text-gray-700">
+        <div className="mt-6 sm:mt-8 bg-slate-900 rounded-2xl px-5 py-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
+          <div className="flex items-center gap-6 sm:gap-8 text-white">
             <div>
-              <p className="text-3xl font-bold text-blue-600">---</p>
-              <p className="text-sm">Servicios Realizados</p>
+              <p className="font-heading text-xl sm:text-2xl font-extrabold text-yellow-300">Gratis</p>
+              <p className="text-[11px] sm:text-xs text-slate-300">buscar y contactar</p>
             </div>
-            <div className="h-12 w-px bg-gray-300"></div>
+            <div className="h-10 w-px bg-white/15" />
             <div>
-              <p className="text-3xl font-bold text-blue-600">---</p>
-              <p className="text-sm">Calificación Promedio</p>
+              <p className="font-heading text-xl sm:text-2xl font-extrabold text-yellow-300">2 min</p>
+              <p className="text-[11px] sm:text-xs text-slate-300">publicar tu vitrina</p>
             </div>
-            <div className="h-12 w-px bg-gray-300"></div>
+            <div className="h-10 w-px bg-white/15" />
             <div>
-              <p className="text-3xl font-bold text-blue-600">100%</p>
-              <p className="text-sm">Compromiso</p>
+              <p className="font-heading text-xl sm:text-2xl font-extrabold text-yellow-300">Directo</p>
+              <p className="text-[11px] sm:text-xs text-slate-300">WhatsApp sin intermediarios</p>
             </div>
+          </div>
+          <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+            <button onClick={() => navigate('/search')} className="btn-accent w-full sm:w-auto">
+              🔍 Buscar en mi comuna
+            </button>
+            <button onClick={() => navigate('/unete')} className="btn-ghost-light w-full sm:w-auto">
+              Publicar mi negocio
+            </button>
           </div>
         </div>
       </div>

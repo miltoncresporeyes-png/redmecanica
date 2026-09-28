@@ -51,6 +51,42 @@ export const SEO_SERVICES: Record<string, SEOServiceInfo> = {
     specialty: 'Electricidad / Electrónica',
     icon: '⚡',
     keywords: ['eléctrico automotriz', 'cambio de batería', 'escaner automotriz', 'corto circuito auto']
+  },
+  'vulcanizacion': {
+    slug: 'vulcanizacion',
+    name: 'Vulcanización',
+    pluralName: 'Vulcanizaciones',
+    type: 'WORKSHOP',
+    specialty: 'Vulcanización',
+    icon: '🛞',
+    keywords: ['vulcanización cerca de mi', 'pinchazo neumático', 'balanceo y alineación', 'cambio de neumáticos']
+  },
+  'hojalateria': {
+    slug: 'hojalateria',
+    name: 'Hojalatería',
+    pluralName: 'Hojalatería y Pintura',
+    type: 'WORKSHOP',
+    specialty: 'Hojalatería y Pintura',
+    icon: '🎨',
+    keywords: ['hojalatería y pintura', 'desabolladura', 'pintura automotriz', 'choque auto']
+  },
+  'aire-acondicionado': {
+    slug: 'aire-acondicionado',
+    name: 'Aire Acondicionado',
+    pluralName: 'Climatización Vehicular',
+    type: 'WORKSHOP',
+    specialty: 'Aire Acondicionado',
+    icon: '❄️',
+    keywords: ['aire acondicionado auto', 'recarga aire acondicionado', 'climatización vehicular']
+  },
+  'detailing': {
+    slug: 'detailing',
+    name: 'Detailing',
+    pluralName: 'Detailing y Lavado',
+    type: 'WORKSHOP',
+    specialty: 'Detailing',
+    icon: '✨',
+    keywords: ['detailing auto', 'lavado premium', 'pulido faros', 'limpieza interior']
   }
 };
 

@@ -7,12 +7,16 @@ const OUT_DIR = join(__dirname, '..', 'public');
 const SITE = 'https://redmecanica.cl';
 const NOW = new Date().toISOString().split('T')[0];
 
-// ── Data (sync with communesData.ts) ──────────────────────────
+// ── Data (sync with communesData.ts + marketplace.ts) ─────────
 const SERVICES = [
   { slug: 'mecanico', plural: 'mecanicos', category: 'mecanicos' },
   { slug: 'grua',     plural: 'gruas',     category: 'gruas' },
   { slug: 'taller',   plural: 'talleres',  category: 'talleres' },
   { slug: 'electrico',plural: 'electricos',category: 'electricos' },
+  { slug: 'vulcanizacion', plural: 'vulcanizaciones', category: 'vulcanizaciones' },
+  { slug: 'hojalateria',   plural: 'hojalateria',     category: 'hojalateria' },
+  { slug: 'aire-acondicionado', plural: 'climatizacion', category: 'climatizacion' },
+  { slug: 'detailing', plural: 'detailing', category: 'detailing' },
 ];
 
 const CITIES = [

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate, Link } from 'react-router';
+import { useParams, useNavigate, useLocation, Link } from 'react-router';
 import { Helmet } from 'react-helmet-async';
 import { SEO_SERVICES, SEO_COMMUNES } from '../data/communesData';
 import { searchNearbyProviders } from '../services/api';
@@ -11,16 +11,23 @@ const SERVICE_PLURAL_MAP: Record<string, string> = {
   'mecanicos': 'mecanico',
   'gruas': 'grua',
   'talleres': 'taller',
-  'electricos': 'electrico'
+  'electricos': 'electrico',
+  'vulcanizaciones': 'vulcanizacion',
+  'hojalateria': 'hojalateria',
+  'climatizacion': 'aire-acondicionado',
+  'detailing': 'detailing'
 };
 
 const ServiceCityPage: React.FC = () => {
-  const { servicePlural, citySlug } = useParams<{ servicePlural: string; citySlug: string }>();
+  const { citySlug } = useParams<{ citySlug: string }>();
+  const location = useLocation();
   const navigate = useNavigate();
   const [providers, setProviders] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [filterCertified, setFilterCertified] = useState(false);
 
+  // La ruta es /<plural>/<ciudad>, ej: /vulcanizaciones/maipu
+  const servicePlural = location.pathname.split('/').filter(Boolean)[0];
   const serviceSlug = servicePlural ? SERVICE_PLURAL_MAP[servicePlural] : undefined;
   const serviceInfo = serviceSlug ? SEO_SERVICES[serviceSlug] : undefined;
   const communeInfo = citySlug ? SEO_COMMUNES[citySlug] : undefined;
@@ -62,8 +69,8 @@ const ServiceCityPage: React.FC = () => {
     return <LoadingSpinner fullScreen />;
   }
 
-  const pageTitle = `${serviceInfo.pluralName} en ${communeInfo.name} | RedMecánica`;
-  const pageDesc = `¿Buscas ${serviceInfo.pluralName.toLowerCase()} en ${communeInfo.name}? Encuentra los mejores servicios, compara precios, lee reseñas y solicita atención a domicilio o en taller.`;
+  const pageTitle = `${serviceInfo.pluralName} en ${communeInfo.name} | Directorio gratuito RedMecánica`;
+  const pageDesc = `¿Buscas ${serviceInfo.pluralName.toLowerCase()} en ${communeInfo.name}? Directorio gratuito: compara vitrinas por comuna, revisa servicios y contacta directo por WhatsApp. Sin cuenta, sin costo.`;
   const canonicalUrl = `https://redmecanica.cl/${servicePlural}/${citySlug}`;
 
   const displayedProviders = filterCertified
@@ -76,11 +83,11 @@ const ServiceCityPage: React.FC = () => {
 
     const contentMap: Record<string, { title: string; paragraphs: string[]; features: string[] }> = {
       'mecanico': {
-        title: `Mecánicos a domicilio en ${city}: profesionales certificados cerca de ti`,
+        title: `Mecánicos a domicilio en ${city}: vitrinas verificadas cerca de ti`,
         paragraphs: [
-          `¿Necesitas un mecánico de confianza en ${city}? En RedMecánica reunimos a los mejores profesionales automotrices de la Región ${region} para ofrecerte servicios de calidad sin que tengas que moverte de tu casa. Ya sea que requieras un cambio de aceite, una reparación de frenos, un diagnóstico computarizado o una mantención completa, nuestros técnicos certificados están listos para atenderte.`,
-          `La Región ${region} concentra una de las flotas vehiculares más grandes de Chile, con miles de autos circulando a diario. Mantener tu vehículo en óptimas condiciones no solo alarga su vida útil, sino que garantiza tu seguridad y la de tu familia en la ruta. Por eso, todos los mecánicos registrados en nuestra plataforma pasan por un riguroso proceso de verificación que incluye validación de identidad, certificaciones técnicas, inspección de herramientas y evaluación práctica.`,
-          `En ${city}, nuestros servicios de mecánica a domicilio cubren desde mantenciones básicas hasta reparaciones complejas. Recibe hasta 4 cotizaciones en minutos, compara precios, elige al profesional con mejor evaluación y agenda el servicio en el horario que más te convenga. Sin desplazamientos, sin esperas, sin sorpresas.`
+          `¿Necesitas un mecánico de confianza en ${city}? En RedMecánica comparas vitrinas de profesionales automotrices de la Región ${region}: servicios publicados, comuna de cobertura, reputación y contacto directo por WhatsApp.`,
+          `La búsqueda es gratuita y sin cuenta. Filtra por especialidad (cambio de aceite, frenos, diagnóstico OBD2, mantención por kilometraje), revisa la experiencia publicada y escríbele directo al prestador que te convenza.`,
+          `Todos los perfiles destacados pasan por verificación de identidad en la plataforma. El trato y el pago los coordinas directo con el prestador, sin intermediarios.`
         ],
         features: [
           'Cambio de aceite y filtro con repuestos de calidad certificada',
@@ -92,11 +99,11 @@ const ServiceCityPage: React.FC = () => {
         ]
       },
       'grua': {
-        title: `Servicios de grúa en ${city}: asistencia 24/7 para tu vehículo`,
+        title: `Grúas en ${city}: compara auxilio cercano y contacta directo`,
         paragraphs: [
-          `Quedarse varado en ${city} o en sus alrededores es una experiencia que nadie quiere vivir. Por eso, en RedMecánica disponemos de una red de operadores de grúas profesionales listos para asistirte las 24 horas del día, los 7 días de la semana, incluyendo fines de semana y festivos.`,
-          `Nuestros servicios de grúa en la Región ${region} cubren desde rescates en autopistas urbanas hasta traslados entre comunas. Todos nuestros operadores cuentan con seguros de carga vigentes, camillas hidráulicas de plataforma para proteger la transmisión de tu vehículo, y conductores capacitados para maniobrar en espacios reducidos como estacionamientos subterráneos o calles angostas.`,
-          `Al solicitar una grúa a través de RedMecánica, recibirás una cotización transparente con tarifa base y costo por kilómetro adicional, sin cargos ocultos. Puedes hacer seguimiento GPS en tiempo real de la unidad que se dirige hacia ti y pagar de forma segura a través de la plataforma una vez completado el servicio.`
+          `Quedarse varado en ${city} es estresante. En RedMecánica comparas operadores de grúa cercanos con comuna, servicios y teléfono visible para llamar o escribir por WhatsApp de inmediato.`,
+          `Filtra en la Región ${region} por tipo de rescate (plataforma, remolque, auxilio con batería o neumático) y revisa la reputación publicada antes de contactar.`,
+          `Coordina tarifa y destino directo con el operador por mensaje. La búsqueda en el directorio es gratuita y sin cuenta.`
         ],
         features: [
           'Grúa de plataforma para vehículos automáticos y 4x4',
@@ -128,7 +135,7 @@ const ServiceCityPage: React.FC = () => {
         paragraphs: [
           `Los automóviles modernos son verdaderas computadoras sobre ruedas, y cuando falla un sensor, la centralita o el sistema eléctrico, necesitas un especialista que entienda de electrónica automotriz. En RedMecánica conectamos a los conductores de ${city} con los mejores técnicos eléctricos automotrices de la Región ${region}.`,
           `Nuestros especialistas en electricidad automotriz están capacitados para diagnosticar y reparar fallas complejas: desde luces del tablero encendidas y problemas de arranque, hasta cortocircuitos intermitentes, fallas de sensores, y reparación de módulos electrónicos (ECU, BCM, ABS). Cada técnico cuenta con equipos de diagnóstico de última generación y años de experiencia en la industria.`,
-          `En ${city}, ofrecemos servicio a domicilio para diagnósticos eléctricos y reparaciones menores, o la opción de llevar tu vehículo a talleres especializados para trabajos más complejos como reparación de tableros, cambio de centralitas o instalación de accesorios eléctricos. Todo con precios transparentes y garantía incluida.`
+          `En ${city}, compara vitrinas con servicios, reputación y contacto directo. Escríbeles por WhatsApp sin crear cuenta y cierra el trato directo con el prestador.`
         ],
         features: [
           'Diagnóstico de fallas eléctricas con escáner profesional',
@@ -137,6 +144,70 @@ const ServiceCityPage: React.FC = () => {
           'Reparación y codificación de módulos electrónicos',
           'Instalación de accesorios eléctricos y sensores',
           'Diagnóstico de sistemas Start-Stop y vehículos híbridos'
+        ]
+      },
+      'vulcanizacion': {
+        title: `Vulcanizaciones en ${city}: pinchazos, neumáticos y balanceo cerca de ti`,
+        paragraphs: [
+          `¿Pinchazo en ${city}? En RedMecánica encuentras vulcanizaciones con atención inmediata, cambio de neumáticos, reparación de llantas, alineación y balanceo. Todo publicado en vitrinas con comuna, servicios y contacto directo.`,
+          `Compara prestadores de la Región ${region} por reputación y cercanía. La búsqueda es gratuita y sin cuenta: eliges tu vulca favorita y la contactas por WhatsApp en un toque.`,
+          `Muchas vulcanizaciones ofrecen atención a domicilio y rescate en ruta dentro de ${city}. Revisa su cobertura publicada y confirma disponibilidad por mensaje directo.`
+        ],
+        features: [
+          'Reparación de pinchazos y cambio de neumáticos',
+          'Alineación y balanceo computarizado',
+          'Reparación de llantas y válvulas',
+          'Rotación de neumáticos por kilometraje',
+          'Atención a domicilio y rescate en ruta',
+          'Venta de neumáticos nuevos y usados'
+        ]
+      },
+      'hojalateria': {
+        title: `Hojalatería y pintura en ${city}: desabolladura y color exacto`,
+        paragraphs: [
+          `Un choque o rayón baja el valor de tu auto. En ${city} reunimos talleres de hojalatería y pintura con fotos de trabajos, servicios detallados y contacto directo para cotizar por WhatsApp.`,
+          `Compara en la Región ${region} por especialidad (desabolladura sin pintura, pintura al horno, pulido) y reputación verificada. Sin intermediarios: tú hablas directo con el taller.`,
+          `Pide siempre fotos del antes/después y garantía escrita de color. Los prestadores destacados publican sus coberturas por comuna.`
+        ],
+        features: [
+          'Desabolladura tradicional y sin pintura (PDR)',
+          'Pintura al horno con igualación de color',
+          'Reparación de parachoques y focos',
+          'Pulido y corrección de pintura',
+          'Cuadratura y soldadura',
+          'Garantía escrita de taller'
+        ]
+      },
+      'aire-acondicionado': {
+        title: `Aire acondicionado vehicular en ${city}: diagnóstico y recarga`,
+        paragraphs: [
+          `Si tu aire no enfría en ${city}, encuentra especialistas en climatización vehicular con recarga de gas, detección de fugas, cambio de compresor y limpieza de circuito.`,
+          `En la Región ${region} compara vitrinas por servicios y reputación, y contacta directo por WhatsApp. La búsqueda es gratuita y sin cuenta.`,
+          `Un buen diagnóstico evita recargas innecesarias: pide revisión de presiones y prueba de fugas antes de aprobar el servicio.`
+        ],
+        features: [
+          'Recarga de gas R134a / R1234yf',
+          'Detección y reparación de fugas',
+          'Cambio de compresor y condensador',
+          'Limpieza de circuito y filtro de cabina',
+          'Diagnóstico de presiones y sensores',
+          'Calefacción y desempañado'
+        ]
+      },
+      'detailing': {
+        title: `Detailing y lavado premium en ${city}: estética profesional`,
+        paragraphs: [
+          `Devuélvele el brillo a tu auto en ${city} con detailing profesional: lavado premium, descontaminado, pulido, cerámico, limpieza interior y restauración de focos.`,
+          `Compara en la Región ${region} por portafolio de servicios y reputación. Agenda directo por WhatsApp, sin cuenta ni comisión para ti.`,
+          `Para trabajos a domicilio confirma acceso a agua y electricidad en tu mensaje inicial y acelera tu cotización.`
+        ],
+        features: [
+          'Lavado premium y descontaminado férrico',
+          'Pulido en 1-3 etapas y sellado cerámico',
+          'Limpieza interior profunda y ozono',
+          'Restauración de focos y plásticos',
+          'Limpieza de motor a vapor',
+          'Atención a domicilio y en local'
         ]
       }
     };
@@ -165,17 +236,13 @@ const ServiceCityPage: React.FC = () => {
           ¿Cómo funciona RedMecánica en {city}?
         </h3>
         <p>
-          Usar RedMecánica es muy simple. Solo describe tu problema o necesidad automotriz,
-          recibe cotizaciones detalladas de profesionales verificados cerca de {city},
-          compara precios, calificaciones y reseñas de otros conductores, y elige al
-          profesional que mejor se ajuste a tus necesidades. El pago se realiza solo cuando
-          el servicio está completo y estás 100% satisfecho.
+          Busca gratis por comuna y categoría, compara vitrinas con servicios,
+          reputación y cobertura en {city}, y contacta directo por WhatsApp o teléfono.
+          Sin cuenta, sin intermediarios y sin comisión para ti como conductor.
         </p>
         <p>
-          Todos los servicios realizados a través de nuestra plataforma en {city} incluyen
-          garantía mínima de 30 días sobre la mano de obra y los repuestos instalados.
-          Además, cada transacción queda registrada con un historial digital que puedes
-          consultar en cualquier momento desde tu cuenta.
+          ¿Tienes un negocio en {city}? Publica tu vitrina gratis y aparece cuando
+          tus vecinos busquen tu categoría. Solo pagas si quieres destacar sobre tu competencia.
         </p>
       </div>
     );
@@ -183,23 +250,29 @@ const ServiceCityPage: React.FC = () => {
 
   const schemaJson = {
     '@context': 'https://schema.org',
-    '@type': 'LocalBusiness',
-    'name': `RedMecánica - ${serviceInfo.pluralName} en ${communeInfo.name}`,
-    'description': pageDesc,
-    'url': canonicalUrl,
-    'telephone': '+56912345678',
-    'address': {
-      '@type': 'PostalAddress',
-      'addressLocality': communeInfo.name,
-      'addressRegion': communeInfo.region,
-      'addressCountry': 'CL'
+    '@type': 'CollectionPage',
+    name: `RedMecánica - ${serviceInfo.pluralName} en ${communeInfo.name}`,
+    description: pageDesc,
+    url: canonicalUrl,
+    mainEntity: {
+      '@type': 'ItemList',
+      itemListElement: displayedProviders.slice(0, 10).map((p: any, i: number) => ({
+        '@type': 'ListItem',
+        position: i + 1,
+        item: {
+          '@type': 'AutoRepair',
+          name: p.businessName || p.name || p.user?.name || `${serviceInfo.name} en ${communeInfo.name}`,
+          url: `https://redmecanica.cl/proveedor/${p.id}`,
+          telephone: p.phone,
+          address: {
+            '@type': 'PostalAddress',
+            addressLocality: p.commune || communeInfo.name,
+            addressRegion: p.region || communeInfo.region,
+            addressCountry: 'CL',
+          },
+        },
+      })),
     },
-    'geo': {
-      '@type': 'GeoCoordinates',
-      'latitude': communeInfo.latitude,
-      'longitude': communeInfo.longitude
-    },
-    'priceRange': '$$'
   };
 
   const otherServices = Object.keys(SERVICE_PLURAL_MAP).filter(s => s !== servicePlural);
@@ -229,44 +302,44 @@ const ServiceCityPage: React.FC = () => {
       </Helmet>
 
       {/* Breadcrumb */}
-      <nav className="text-sm text-gray-500 mb-6" aria-label="Breadcrumb">
-        <ol className="flex items-center gap-2">
-          <li><Link to="/" className="hover:text-blue-600 transition-colors">Inicio</Link></li>
+      <nav className="text-xs sm:text-sm text-gray-500 mb-4 sm:mb-6" aria-label="Breadcrumb">
+        <ol className="flex flex-wrap items-center gap-2">
+          <li><Link to="/" className="hover:text-blue-600 transition-colors min-h-[44px] inline-flex items-center">Inicio</Link></li>
           <li className="text-gray-300">/</li>
-          <li><Link to="/blog" className="hover:text-blue-600 transition-colors">Servicios</Link></li>
+          <li><Link to="/search" className="hover:text-blue-600 transition-colors min-h-[44px] inline-flex items-center">Directorio</Link></li>
           <li className="text-gray-300">/</li>
           <li className="text-gray-800 font-semibold">{serviceInfo.pluralName} en {communeInfo.name}</li>
         </ol>
       </nav>
 
       {/* Hero */}
-      <div className="relative rounded-3xl overflow-hidden mb-10 bg-gradient-to-br from-slate-900 via-blue-950 to-slate-900 text-white shadow-2xl p-8 md:p-12">
+      <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden mb-6 sm:mb-10 bg-gradient-to-br from-slate-900 via-blue-950 to-slate-900 text-white shadow-2xl p-6 sm:p-8 md:p-12">
         <div className="absolute inset-0 bg-grid-white opacity-5 pointer-events-none"></div>
         <div className="relative z-10 max-w-3xl">
-          <span className="inline-block bg-blue-600/30 text-blue-400 border border-blue-500/20 text-xs px-3 py-1.5 rounded-full font-bold uppercase tracking-wider mb-4">
-            {serviceInfo.icon} {serviceInfo.name} Profesional
+          <span className="inline-block bg-emerald-400/15 text-emerald-300 border border-emerald-300/20 text-[11px] sm:text-xs px-3 py-1.5 rounded-full font-bold uppercase tracking-wider mb-4">
+            {serviceInfo.icon} Directorio gratuito · {communeInfo.name}
           </span>
-          <h1 className="text-3xl md:text-5xl font-extrabold mb-4 leading-tight tracking-tight">
-            Los mejores <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-300">{serviceInfo.pluralName}</span> en {communeInfo.name}
+          <h1 className="font-heading font-extrabold mb-3 sm:mb-4 leading-tight tracking-tight text-2xl sm:text-4xl md:text-5xl">
+            {serviceInfo.pluralName} <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-yellow-500">en {communeInfo.name}</span>
           </h1>
-          <p className="text-lg text-slate-300 mb-8 leading-relaxed">
+          <p className="text-sm sm:text-lg text-slate-300 mb-6 sm:mb-8 leading-relaxed">
             {serviceInfo.slug === 'grua'
-              ? `Asistencia 24/7 en ${communeInfo.name}. Cotiza tu grúa al instante y recibe ayuda sin demora.`
-              : `Compara profesionales calificados en ${communeInfo.name}. Cotiza en línea con precios transparentes y garantía incluida.`}
+              ? `Asistencia en ${communeInfo.name}: compara grúas cercanas y contacta directo por WhatsApp, sin cuenta.`
+              : `Compara vitrinas en ${communeInfo.name}: servicios, reputación y contacto directo. Búsqueda 100% gratuita.`}
           </p>
-          <div className="flex flex-wrap gap-4">
-            <Link
-              to={`/solicitar?service=${serviceInfo.slug}&commune=${communeInfo.slug}`}
-              className="bg-blue-600 hover:bg-blue-700 text-white font-extrabold px-6 py-3.5 rounded-xl transition-all shadow-lg hover:shadow-blue-500/20 shadow-blue-500/10 active:scale-95"
-            >
-              Solicitar Servicio Ahora
-            </Link>
+          <div className="flex flex-col sm:flex-row gap-3">
             <a
               href="#prestadores"
-              className="bg-white/10 hover:bg-white/20 border border-white/10 text-white font-semibold px-6 py-3.5 rounded-xl transition-all backdrop-blur"
+              className="btn-accent"
             >
-              Ver Proveedores ({providers.length})
+              Ver vitrinas ({providers.length})
             </a>
+            <Link
+              to={`/search?commune=${encodeURIComponent(communeInfo.name)}`}
+              className="btn-ghost-light"
+            >
+              🔍 Buscar en el directorio
+            </Link>
           </div>
         </div>
       </div>
@@ -303,22 +376,29 @@ const ServiceCityPage: React.FC = () => {
             {loading ? (
               <div className="py-20"><LoadingSpinner /></div>
             ) : displayedProviders.length === 0 ? (
-              <Card className="p-10 text-center border border-dashed border-gray-300 text-gray-500 rounded-2xl">
+              <Card className="p-8 sm:p-10 text-center border border-dashed border-gray-300 text-gray-500 rounded-2xl">
                 <span className="text-4xl block mb-3">{serviceInfo.icon}</span>
                 <p className="font-bold text-gray-800 text-lg">
-                  Próximamente: {serviceInfo.pluralName} en {communeInfo.name}
+                  Sé el primero: {serviceInfo.pluralName} en {communeInfo.name}
                 </p>
                 <p className="text-sm mt-1 mb-6">
-                  Estamos expandiendo nuestra red de profesionales en {communeInfo.name}.
-                  Mientras tanto, puedes solicitar un servicio con cobertura extendida
-                  o agendar una atención programada.
+                  Aún no hay vitrinas publicadas en {communeInfo.name}.
+                  Busca en comunas cercanas o publica tu negocio gratis y aparece aquí primero.
                 </p>
-                <Link
-                  to="/solicitar"
-                  className="bg-blue-600 text-white px-6 py-2.5 rounded-xl font-bold shadow-md hover:bg-blue-700 transition-all inline-block"
-                >
-                  Solicitar Servicio
-                </Link>
+                <div className="flex flex-col sm:flex-row justify-center gap-2">
+                  <Link
+                    to={`/search?commune=${encodeURIComponent(communeInfo.name)}`}
+                    className="btn-primary"
+                  >
+                    🔍 Buscar cerca
+                  </Link>
+                  <Link
+                    to="/unete"
+                    className="btn-ghost"
+                  >
+                    Publicar mi negocio gratis
+                  </Link>
+                </div>
               </Card>
             ) : (
               <div className="space-y-4">
@@ -338,16 +418,22 @@ const ServiceCityPage: React.FC = () => {
         </div>
 
         <div className="space-y-6">
-          <Card className="p-6 bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100 shadow-sm rounded-2xl">
-            <h3 className="font-bold text-lg text-blue-900 mb-2">Cotizador Express</h3>
-            <p className="text-sm text-blue-800/80 mb-6">
-              Recibe hasta 4 cotizaciones en menos de 30 minutos de profesionales locales calificados.
+          <Card className="p-6 bg-gradient-to-br from-emerald-50 to-teal-50 border border-emerald-100 shadow-sm rounded-2xl">
+            <h3 className="font-bold text-lg text-emerald-900 mb-2">🔍 Directorio gratuito</h3>
+            <p className="text-sm text-emerald-800/80 mb-4">
+              Filtra por comuna y categoría, compara vitrinas y contacta directo por WhatsApp. Sin cuenta.
             </p>
             <Link
-              to={`/solicitar?service=${serviceInfo.slug}`}
-              className="w-full text-center block bg-blue-600 hover:bg-blue-700 text-white font-extrabold py-3.5 rounded-xl transition-all shadow-md"
+              to={`/search?commune=${encodeURIComponent(communeInfo.name)}`}
+              className="btn-whatsapp w-full"
             >
-              Comenzar Solicitud
+              Explorar directorio
+            </Link>
+            <Link
+              to="/unete"
+              className="mt-2 w-full text-center block text-xs font-extrabold text-emerald-700 hover:text-emerald-900 py-2"
+            >
+              ¿Tienes negocio en {communeInfo.name}? Publícalo gratis →
             </Link>
           </Card>
 

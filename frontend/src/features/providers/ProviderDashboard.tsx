@@ -336,16 +336,16 @@ const ProviderDashboard: React.FC<ProviderDashboardProps> = ({ onClose }) => {
                 <div>
                   <div className="flex justify-between text-sm mb-1">
                     <span className="text-gray-500">Tasa de completado</span>
-                    <span className="font-bold">{stats.completionRate || 95}%</span>
+                    <span className="font-bold">{stats.completionRate != null ? `${stats.completionRate}%` : 'Sin datos aún'}</span>
                   </div>
                   <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
-                    <div className="h-full bg-green-500 rounded-full" style={{ width: `${stats.completionRate || 95}%` }}></div>
+                    <div className="h-full bg-green-500 rounded-full" style={{ width: `${stats.completionRate ?? 0}%` }}></div>
                   </div>
                 </div>
                 <div>
                   <div className="flex justify-between text-sm mb-1">
                     <span className="text-gray-500">Tiempo de respuesta</span>
-                    <span className="font-bold">{stats.responseTime || '< 30 min'}</span>
+                    <span className="font-bold">{stats.responseTime ?? 'Sin datos aún'}</span>
                   </div>
                 </div>
                 <div>

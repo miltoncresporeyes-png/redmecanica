@@ -335,60 +335,26 @@ const ProviderBenefits: React.FC<ProviderBenefitsProps> = ({
         </div>
       </div>
 
-      {/* Testimonios */}
+      {/* Primeros prestadores: sin historias inventadas */}
       <div className="mb-8">
-        <h2 className="text-2xl font-bold text-gray-900 mb-6">Lo que dicen nuestros Prestadores</h2>
+        <h2 className="text-2xl font-bold text-gray-900 mb-3">Sé de los primeros en tu comuna</h2>
+        <p className="text-gray-600 mb-6 max-w-3xl text-sm sm:text-base">
+          Estamos poblando el directorio con prestadores reales verificados. Sin testimonios inventados:
+          las primeras historias de crecimiento se publicarán aquí con negocios reales, cuando completen
+          sus primeros servicios a través de la plataforma.
+        </p>
         <div className="grid md:grid-cols-3 gap-6">
-          <div className="bg-white border border-gray-200 rounded-lg p-6">
-            <div className="flex items-center mb-3">
-              <div className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold mr-3">
-                JM
-              </div>
-              <div>
-                <h4 className="font-bold text-gray-900">Juan Morales</h4>
-                <p className="text-xs text-gray-500">Mecánico Móvil</p>
-              </div>
+          {[
+            { icon: '📍', title: 'Posiciónate primero', desc: 'Las primeras vitrinas verificadas de cada comuna aparecen al tope del directorio.' },
+            { icon: '⭐', title: 'Construye reputación real', desc: 'Cada servicio completado suma a tu calificación. Nada simulado.' },
+            { icon: '💬', title: 'Recibe contacto directo', desc: 'WhatsApp y teléfono visibles. El conductor te escribe a ti, sin intermediarios.' },
+          ].map((c) => (
+            <div key={c.title} className="bg-white border border-gray-200 rounded-lg p-6">
+              <div className="text-4xl mb-3" aria-hidden>{c.icon}</div>
+              <h3 className="font-bold text-gray-900 mb-1">{c.title}</h3>
+              <p className="text-sm text-gray-600">{c.desc}</p>
             </div>
-            <div className="text-yellow-500 mb-2">⭐⭐⭐⭐⭐</div>
-            <p className="text-sm text-gray-600 italic">
-              "En 3 meses pasé de 10 clientes al mes a más de 80. El sistema de verificación 
-              me ha dado mucha credibilidad."
-            </p>
-          </div>
-
-          <div className="bg-white border border-gray-200 rounded-lg p-6">
-            <div className="flex items-center mb-3">
-              <div className="w-12 h-12 bg-purple-600 rounded-full flex items-center justify-center text-white font-bold mr-3">
-                TE
-              </div>
-              <div>
-                <h4 className="font-bold text-gray-900">Taller Express</h4>
-                <p className="text-xs text-gray-500">Taller Certificado</p>
-              </div>
-            </div>
-            <div className="text-yellow-500 mb-2">⭐⭐⭐⭐⭐</div>
-            <p className="text-sm text-gray-600 italic">
-              "La mejor decisión para mi taller. Los pagos son seguros y puntuales, 
-              y la plataforma es muy fácil de usar."
-            </p>
-          </div>
-
-          <div className="bg-white border border-gray-200 rounded-lg p-6">
-            <div className="flex items-center mb-3">
-              <div className="w-12 h-12 bg-green-600 rounded-full flex items-center justify-center text-white font-bold mr-3">
-                GS
-              </div>
-              <div>
-                <h4 className="font-bold text-gray-900">Grúas Sur</h4>
-                <p className="text-xs text-gray-500">Servicio de Grúa</p>
-              </div>
-            </div>
-            <div className="text-yellow-500 mb-2">⭐⭐⭐⭐⭐</div>
-            <p className="text-sm text-gray-600 italic">
-              "Las emergencias 24/7 han duplicado nuestros ingresos nocturnos. 
-              Excelente plataforma, soporte de primera clase."
-            </p>
-          </div>
+          ))}
         </div>
       </div>
 

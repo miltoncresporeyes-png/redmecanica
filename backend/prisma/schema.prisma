@@ -73,8 +73,10 @@ model ServiceProvider {
   trustScore         Float    @default(0.0)  // 0-100
   canAcceptHighValueJobs Boolean @default(false)
   
-  // Distingue datos precargados de demostración de prestadores reales
-  isDemo   Boolean  @default(true)
+  // Antigüedad del registro: los prestadores creados por el flujo real
+  // de registro quedan con isDemo en false. Columna conservada solo por
+  // compatibilidad con datos históricos.
+  isDemo   Boolean  @default(false)
   
   subscription  Subscription?
   jobs         Job[]

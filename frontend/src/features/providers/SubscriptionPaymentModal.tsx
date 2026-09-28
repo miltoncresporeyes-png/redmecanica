@@ -9,17 +9,10 @@ interface SubscriptionPaymentModalProps {
 }
 
 const SubscriptionPaymentModal: React.FC<SubscriptionPaymentModalProps> = ({ providerId, onClose, onSuccess }) => {
-  const [step, setStep] = useState<'plan' | 'payment' | 'processing' | 'success'>('plan');
+  const [step, setStep] = useState<'plan' | 'processing' | 'success'>('plan');
   const [selectedPlan, setSelectedPlan] = useState<'MONTHLY' | 'YEARLY' | 'PROFESSIONAL'>('MONTHLY');
   const [submitting, setSubmitting] = useState(false);
-  const [subId, setSubId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-
-  // Card input states
-  const [cardNumber, setCardNumber] = useState('');
-  const [cardName, setCardName] = useState('');
-  const [cardExpiry, setCardExpiry] = useState('');
-  const [cardCvv, setCardCvv] = useState('');
 
   const plans = {
     MONTHLY: { name: 'Plan Mensual', price: 15000, description: 'Hasta 20 trabajos al mes' },
@@ -27,11 +20,26 @@ const SubscriptionPaymentModal: React.FC<SubscriptionPaymentModalProps> = ({ pro
     PROFESSIONAL: { name: 'Plan Profesional', price: 500000, description: 'Trabajos ilimitados + destacado' }
   };
 
+  // Redirige al portal real de Webpay mediante POST con token_ws.
+  // Nunca pedimos ni tocamos los datos de tu tarjeta en este sitio.
+  const redirectToWebpay = (url: string, token: string) => {
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = url;
+    const input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = 'token_ws';
+    input.value = token;
+    form.appendChild(input);
+    document.body.appendChild(form);
+    form.submit();
+  };
+
   const handleSelectPlan = async () => {
     setSubmitting(true);
     setError(null);
     try {
-      // 1. Crear la suscripción pendiente en el backend
+      // 1. Crear la suscripción pendiente en el backend (real)
       const res = await api.post('/subscriptions', {
         providerId,
         plan: selectedPlan,
@@ -39,54 +47,25 @@ const SubscriptionPaymentModal: React.FC<SubscriptionPaymentModalProps> = ({ pro
         autoRenew: true
       });
 
-      if (res.data && res.data.subscription) {
-        setSubId(res.data.subscription.id);
-        setStep('payment');
+      const payment = res.data?.payment;
+      if (res.data?.subscription && payment?.url && payment?.token) {
+        setStep('processing');
+        // 2. Ir al pago real en Webpay
+        redirectToWebpay(payment.url, payment.token);
       } else {
-        throw new Error('No se pudo inicializar la suscripción.');
+        throw new Error('No se pudo inicializar el pago en Webpay.');
       }
     } catch (err: any) {
       console.error(err);
-      setError(err.response?.data?.error || 'Error al iniciar suscripción');
+      const status = err.response?.status;
+      setError(
+        err.response?.data?.error ||
+        (status === 503
+          ? 'La pasarela de pago no está disponible en este momento. Inténtalo más tarde o escríbenos a contacto@redmecanica.cl.'
+          : 'No se pudo iniciar el pago. Inténtalo de nuevo.')
+      );
     } finally {
       setSubmitting(false);
-    }
-  };
-
-  const handlePay = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!subId) return;
-
-    if (cardNumber.length < 16 || cardExpiry.length < 5 || cardCvv.length < 3 || !cardName) {
-      setError('Por favor, rellene todos los campos de tarjeta válidos.');
-      return;
-    }
-
-    setStep('processing');
-    setError(null);
-
-    try {
-      // 2. Simular llamada a confirmación de Webpay en el backend
-      const res = await api.post('/payments/confirm', {
-        subscriptionId: subId,
-        paymentMethod: 'webpay',
-        token: `mock_token_${Date.now()}`
-      });
-
-      if (res.data && res.data.subscription) {
-        // 3. Reactivar al proveedor si estaba suspendido
-        await api.put(`/providers/${providerId}`, {
-          status: 'ACTIVE'
-        });
-
-        setStep('success');
-      } else {
-        throw new Error('Pago rechazado por el banco.');
-      }
-    } catch (err: any) {
-      console.error(err);
-      setError(err.response?.data?.error || 'Transacción denegada por Webpay');
-      setStep('payment');
     }
   };
 
@@ -165,149 +144,42 @@ const SubscriptionPaymentModal: React.FC<SubscriptionPaymentModalProps> = ({ pro
                   Procesando...
                 </>
               ) : (
-                'Confirmar y Continuar al Pago'
+                'Pagar con Webpay'
               )}
             </button>
+            <p className="text-xs text-zinc-500 text-center">
+              Serás redirigido al portal seguro de Transbank. Nunca te pediremos tu tarjeta aquí.
+            </p>
           </div>
         )}
 
-        {/* STEP 2: PAYMENT FORM (WEBPAY SIMULATOR) */}
-        {step === 'payment' && (
-          <form onSubmit={handlePay} className="space-y-6">
-            <div className="text-center">
-              <h3 className="text-2xl font-black mb-2">Pasarela Segura Webpay</h3>
-              <p className="text-zinc-400 text-sm">Simula tu pago recurrente de mensualidad con tarjeta de débito/crédito chilena.</p>
-            </div>
-
-            {/* Credit Card Graphic */}
-            <div className="relative h-44 bg-gradient-to-br from-zinc-900 to-zinc-950 border border-zinc-800 rounded-3xl p-5 overflow-hidden shadow-lg flex flex-col justify-between">
-              <div className="flex justify-between items-start">
-                <span className="text-zinc-500 font-black tracking-widest text-xs">REDMECÁNICA</span>
-                <span className="text-green-400 font-bold text-sm tracking-wider">WebpayPlus</span>
-              </div>
-              
-              <div className="space-y-1">
-                <span className="block font-mono text-zinc-400 tracking-widest text-lg">
-                  {cardNumber ? cardNumber.replace(/(\d{4})/g, '$1 ').trim() : '•••• •••• •••• ••••'}
-                </span>
-                <div className="flex justify-between font-mono text-xs text-zinc-500">
-                  <span>{cardName || 'TITULAR DE LA TARJETA'}</span>
-                  <span>{cardExpiry || 'MM/AA'}</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Card Inputs */}
-            <div className="space-y-4">
-              <div>
-                <label className="block text-xs font-bold text-zinc-400 mb-1 tracking-wider uppercase">Número de Tarjeta</label>
-                <input 
-                  type="text" 
-                  maxLength={16}
-                  placeholder="4507 9821 3412 8790"
-                  value={cardNumber}
-                  onChange={(e) => setCardNumber(e.target.value.replace(/\D/g, ''))}
-                  className="w-full p-4 bg-zinc-900/60 border border-zinc-800 rounded-2xl text-white font-mono placeholder-zinc-600 focus:outline-none focus:border-green-500 transition-colors"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-zinc-400 mb-1 tracking-wider uppercase">Nombre del Titular</label>
-                <input 
-                  type="text" 
-                  placeholder="Juan Pérez Silva"
-                  value={cardName}
-                  onChange={(e) => setCardName(e.target.value.toUpperCase())}
-                  className="w-full p-4 bg-zinc-900/60 border border-zinc-800 rounded-2xl text-white placeholder-zinc-600 focus:outline-none focus:border-green-500 transition-colors"
-                  required
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-bold text-zinc-400 mb-1 tracking-wider uppercase">Vencimiento (MM/AA)</label>
-                  <input 
-                    type="text" 
-                    maxLength={5}
-                    placeholder="12/28"
-                    value={cardExpiry}
-                    onChange={(e) => {
-                      let val = e.target.value;
-                      if (val.length === 2 && !val.includes('/')) val += '/';
-                      setCardExpiry(val);
-                    }}
-                    className="w-full p-4 bg-zinc-900/60 border border-zinc-800 rounded-2xl text-white font-mono placeholder-zinc-600 focus:outline-none focus:border-green-500 transition-colors"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-zinc-400 mb-1 tracking-wider uppercase">CVV / CVN</label>
-                  <input 
-                    type="password" 
-                    maxLength={4}
-                    placeholder="•••"
-                    value={cardCvv}
-                    onChange={(e) => setCardCvv(e.target.value.replace(/\D/g, ''))}
-                    className="w-full p-4 bg-zinc-900/60 border border-zinc-800 rounded-2xl text-white font-mono placeholder-zinc-600 focus:outline-none focus:border-green-500 transition-colors"
-                    required
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div className="flex gap-3 pt-2">
-              <button
-                type="button"
-                onClick={() => setStep('plan')}
-                className="flex-1 bg-zinc-900 border border-zinc-800 text-white py-4 rounded-2xl font-black hover:bg-zinc-800 transition-colors"
-              >
-                Atrás
-              </button>
-              <button
-                type="submit"
-                className="px-2 flex-[2] bg-gradient-to-r from-green-500 to-emerald-600 text-black text-sm sm:text-base py-4 rounded-2xl font-black whitespace-nowrap hover:from-green-400 hover:to-emerald-500 transition-all shadow-[0_0_30px_rgba(34,197,94,0.2)] hover:scale-[1.01]"
-              >
-                Pagar {formatPrice(plans[selectedPlan].price)} CLP
-              </button>
-            </div>
-          </form>
-        )}
-
-        {/* STEP 3: PROCESSING PAYMENT */}
+        {/* STEP 2: REDIRECTING TO REAL WEBPAY */}
         {step === 'processing' && (
           <div className="py-12 flex flex-col items-center justify-center space-y-6 text-center">
             <div className="relative w-24 h-24">
               <div className="absolute inset-0 border-4 border-zinc-800 rounded-full"></div>
               <div className="absolute inset-0 border-4 border-t-green-500 rounded-full animate-spin"></div>
-              <span className="absolute inset-0 flex items-center justify-center text-4xl">💳</span>
+              <span className="absolute inset-0 flex items-center justify-center text-4xl">🔒</span>
             </div>
             <div className="space-y-2">
-              <h3 className="text-xl font-black">Procesando Transacción Segura...</h3>
-              <p className="text-zinc-500 text-sm">Estableciendo túnel de encriptación con Webpay (Transbank)...</p>
+              <h3 className="text-xl font-black">Redirigiendo a Webpay…</h3>
+              <p className="text-zinc-500 text-sm">Completarás tu pago en el portal seguro de Transbank. No ingreses tu tarjeta en ningún otro sitio.</p>
             </div>
           </div>
         )}
 
-        {/* STEP 4: PAYMENT SUCCESS */}
+        {/* STEP 3: PAYMENT SUCCESS (confirmado por retorno de Webpay) */}
         {step === 'success' && (
           <div className="py-8 flex flex-col items-center justify-center space-y-6 text-center animate-scaleUp">
             <div className="w-20 h-20 bg-green-500/20 border border-green-500 rounded-full flex items-center justify-center text-green-400 text-4xl shadow-[0_0_30px_rgba(34,197,94,0.3)]">
               ✓
             </div>
             <div className="space-y-2">
-              <h3 className="text-2xl font-black text-green-400">Pago Aprobado</h3>
+              <h3 className="text-2xl font-black text-green-400">Pago recibido</h3>
               <p className="text-zinc-300 text-sm">
-                ¡Enhorabuena! Tu cuenta de mecánico ha sido reactivada. Se ha emitido la factura correspondiente y tu perfil ya está visible en las búsquedas geolocalizadas.
+                Tu suscripción al {plans[selectedPlan].name} ({formatPrice(plans[selectedPlan].price)} CLP) quedó registrada.
+                Revisa el estado en tu panel una vez que Webpay confirme la transacción.
               </p>
-            </div>
-
-            <div className="w-full bg-zinc-900 border border-zinc-800 rounded-2xl p-4 text-left text-xs font-mono space-y-1.5 text-zinc-400">
-              <div className="flex justify-between"><span className="text-zinc-500">ORDEN:</span> <span>RM-SUB-{Date.now().toString().substring(5)}</span></div>
-              <div className="flex justify-between"><span className="text-zinc-500">MÉTODO:</span> <span>WEBPAY RECURRENTE</span></div>
-              <div className="flex justify-between"><span className="text-zinc-500">PLAN:</span> <span className="font-bold text-white">{plans[selectedPlan].name}</span></div>
-              <div className="flex justify-between"><span className="text-zinc-500">TOTAL:</span> <span className="font-bold text-green-400">{formatPrice(plans[selectedPlan].price)} CLP</span></div>
-              <div className="flex justify-between"><span className="text-zinc-500">ESTADO:</span> <span className="text-green-500">APROBADO (AUT. 89212)</span></div>
             </div>
 
             <button

@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Job } from '../../types';
-import { getJobStatus, advanceJobStatus } from '../../services/api';
+import { getJobStatus } from '../../services/api';
 import Card from '../../components/common/Card';
 
 interface JobTrackingProps {
@@ -43,15 +43,6 @@ const JobTracking: React.FC<JobTrackingProps> = ({ job: initialJob, onComplete }
           return () => clearInterval(timer);
       }
   }, [job.status, eta]);
-
-  const handleSimulateAdvance = async () => {
-      try {
-          const updated = await advanceJobStatus(job.id);
-          setJob(updated);
-      } catch (e) {
-          console.error("Failed to advance job:", e);
-      }
-  };
 
   return (
     <Card className="max-w-2xl mx-auto">
@@ -102,20 +93,6 @@ const JobTracking: React.FC<JobTrackingProps> = ({ job: initialJob, onComplete }
           </div>
         </div>
         
-        {/* Simulation Controls for Demo */}
-        <div className="mt-8 pt-4 border-t border-gray-100">
-            <p className="text-xs text-center text-gray-400 mb-2 uppercase tracking-wide">Controles de Simulación (Demo)</p>
-            <div className="flex justify-center space-x-4">
-                {job.status !== 'Completed' && (
-                    <button 
-                        onClick={handleSimulateAdvance}
-                        className="px-4 py-2 bg-gray-800 text-white text-sm rounded hover:bg-gray-700 transition"
-                    >
-                        {job.status === 'En Route' ? 'Simular Llegada' : 'Simular Término'}
-                    </button>
-                )}
-            </div>
-        </div>
       </div>
     </Card>
   );
