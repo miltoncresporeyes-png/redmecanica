@@ -12,6 +12,7 @@ interface LoginModalProps {
 const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLoginSuccess, defaultMode = 'login', defaultRole = 'client' }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [name, setName] = useState('');
   const [isRegistering, setIsRegistering] = useState(defaultMode === 'register');
   const [isForgotPassword, setIsForgotPassword] = useState(false);
@@ -30,6 +31,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLoginSuccess
       setError('');
       setEmail('');
       setPassword('');
+      setConfirmPassword('');
       setName('');
     }
   }, [isOpen, defaultMode, defaultRole]);
@@ -58,6 +60,17 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLoginSuccess
       return handleForgotPasswordSubmit(e);
     }
 
+    if (isRegistering) {
+      if (password !== confirmPassword) {
+        setError('Las contraseñas no coinciden. Por favor verifícalas.');
+        return;
+      }
+      if (password.length < 6) {
+        setError('La contraseña debe tener al menos 6 caracteres.');
+        return;
+      }
+    }
+
     setLoading(true);
     setError('');
 
@@ -78,6 +91,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLoginSuccess
       // Reset form
       setEmail('');
       setPassword('');
+      setConfirmPassword('');
       setName('');
       setIsRegistering(false);
 
@@ -221,6 +235,39 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLoginSuccess
                     placeholder="••••••••"
                   />
                 </div>
+              </div>
+            )}
+
+            {isRegistering && !isForgotPassword && (
+              <div className="space-y-2 animate-fadeIn">
+                <label className="text-xs font-bold text-slate-400 uppercase tracking-widest ml-1">Repetir Contraseña</label>
+                <div className="relative group">
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors">🔒</span>
+                  <input 
+                    type="password"
+                    required={isRegistering}
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    className={`w-full pl-12 pr-4 py-4 bg-slate-50 border-2 rounded-2xl outline-none transition-all font-medium text-slate-700 ${
+                      confirmPassword && confirmPassword !== password 
+                        ? 'border-red-400 bg-red-50/30 focus:border-red-500' 
+                        : confirmPassword && confirmPassword === password
+                        ? 'border-emerald-400 bg-emerald-50/20 focus:border-emerald-500'
+                        : 'border-transparent focus:border-blue-500 focus:bg-white'
+                    }`}
+                    placeholder="••••••••"
+                  />
+                </div>
+                {confirmPassword && confirmPassword !== password && (
+                  <p className="text-[11px] text-red-500 font-semibold ml-1 animate-fadeIn">
+                    Las contraseñas no coinciden
+                  </p>
+                )}
+                {confirmPassword && confirmPassword === password && (
+                  <p className="text-[11px] text-emerald-600 font-semibold ml-1 animate-fadeIn">
+                    ✓ Las contraseñas coinciden
+                  </p>
+                )}
               </div>
             )}
 
