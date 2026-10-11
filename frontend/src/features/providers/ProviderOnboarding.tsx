@@ -5,7 +5,7 @@ import { registerProvider } from '../../services/api';
 import AutocompleteInput from '../../components/common/AutocompleteInput';
 import { COMUNAS_POR_REGION, CALLES_COMUNES, REGIONES } from '../../data/autocompleteData';
 import { MARKETPLACE_CATEGORIES, getCategoryBySlug } from '../../data/marketplace';
-import { validarRUT, formatearRUT } from '../../utils/rutValidator';
+import { validarRUT, formatearRUT, validarRUTDetalle } from '../../utils/rutValidator';
 import { useAuth } from '../../app/providers';
 import LoginModal from '../auth/LoginModal';
 
@@ -150,8 +150,9 @@ const ProviderOnboarding: React.FC<ProviderOnboardingProps> = ({ onComplete, onC
         setError('El RUT es obligatorio.');
         return false;
       }
-      if (!validarRUT(formData.rut)) {
-        setError('El RUT ingresado no es válido.');
+      const rutCheck = validarRUTDetalle(formData.rut);
+      if (!rutCheck.isValid) {
+        setError(rutCheck.error || 'El RUT ingresado no es válido según Módulo 11.');
         return false;
       }
       if (!formData.experience || parseInt(formData.experience) < 0) {
@@ -343,14 +344,34 @@ const ProviderOnboarding: React.FC<ProviderOnboardingProps> = ({ onComplete, onC
             />
           </div>
           <div>
-            <label className="block text-sm font-bold text-slate-600 mb-1">RUT (Personal o Empresa)</label>
+            <div className="flex justify-between items-center mb-1">
+              <label className="block text-sm font-bold text-slate-600">RUT (Personal o Empresa)</label>
+              {formData.rut && (
+                <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-full ${
+                  validarRUT(formData.rut) 
+                    ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' 
+                    : 'bg-rose-50 text-rose-700 border border-rose-200'
+                }`}>
+                  {validarRUT(formData.rut) ? '✓ DV Válido (Módulo 11)' : '⚠ DV Inválido'}
+                </span>
+              )}
+            </div>
             <input
               type="text"
               value={formData.rut}
               onChange={(e) => setFormData({ ...formData, rut: formatearRUT(e.target.value) })}
-              className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
+              className={`w-full px-4 py-3 bg-slate-50 border rounded-xl focus:ring-2 outline-none transition-all ${
+                formData.rut && !validarRUT(formData.rut)
+                  ? 'border-rose-400 bg-rose-50/20 focus:ring-rose-500'
+                  : 'border-slate-200 focus:ring-blue-500'
+              }`}
               placeholder="12.345.678-9"
             />
+            {formData.rut && !validarRUT(formData.rut) && (
+              <p className="text-xs text-rose-600 mt-1 font-medium flex items-center gap-1 animate-fadeIn">
+                <span>⚠️</span> {validarRUTDetalle(formData.rut).error}
+              </p>
+            )}
           </div>
         </div>
 
@@ -507,14 +528,21 @@ const ProviderOnboarding: React.FC<ProviderOnboardingProps> = ({ onComplete, onC
           />
         </div>
         <div className="col-span-2">
-          <label className="block text-sm font-bold text-slate-600 mb-1">Dirección</label>
+          <div className="flex justify-between items-center mb-1">
+            <label className="block text-sm font-bold text-slate-600">Dirección</label>
+            <span className="text-[11px] text-slate-400 font-medium">Escribe tu calle y número libremente</span>
+          </div>
           <AutocompleteInput
             value={formData.address}
             onChange={(value) => setFormData({ ...formData, address: value })}
             suggestions={CALLES_COMUNES}
-            placeholder="Calle, número..."
-            className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl"
+            placeholder="Ej: Av. Providencia 1234, Depto 402..."
+            suggestionsLabel="Avenidas sugeridas (puedes escribir cualquier calle y número):"
+            className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
           />
+          <p className="text-[11px] text-slate-400 mt-1">
+            Las opciones del menú son solo atajos. Puedes escribir cualquier dirección, pasaje o número.
+          </p>
         </div>
       </div>
     </div>

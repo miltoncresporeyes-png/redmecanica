@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Card from '../components/common/Card';
-import { validarRUT, formatearRUT } from '../utils/rutValidator';
+import { validarRUT, formatearRUT, validarRUTDetalle } from '../utils/rutValidator';
 
 interface ClientDashboardProps {
   onClose?: () => void;
@@ -46,9 +46,12 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ onClose }) => {
 
   const handleSaveProfile = () => {
     // Aquí iría la llamada al API
-    if (userData.rut && !validarRUT(userData.rut)) {
-      alert('Error: El RUT ingresado no es válido');
-      return;
+    if (userData.rut) {
+      const check = validarRUTDetalle(userData.rut);
+      if (!check.isValid) {
+        alert(`Error en validación de RUT:\n${check.error}`);
+        return;
+      }
     }
     setEditMode(false);
   };
@@ -106,14 +109,34 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ onClose }) => {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">RUT</label>
+          <div className="flex justify-between items-center mb-2">
+            <label className="block text-sm font-medium text-gray-700">RUT</label>
+            {editMode && userData.rut && (
+              <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-full ${
+                validarRUT(userData.rut) 
+                  ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' 
+                  : 'bg-rose-50 text-rose-700 border border-rose-200'
+              }`}>
+                {validarRUT(userData.rut) ? '✓ DV Válido' : '⚠ DV Inválido'}
+              </span>
+            )}
+          </div>
           <input
             type="text"
             value={userData.rut}
             onChange={(e) => setUserData({ ...userData, rut: formatearRUT(e.target.value) })}
             disabled={!editMode}
-            className={`w-full p-3 border rounded-lg transition-colors ${editMode ? 'border-blue-300 bg-white' : 'border-gray-200 bg-gray-50'}`}
+            className={`w-full p-3 border rounded-lg transition-colors ${
+              editMode && userData.rut && !validarRUT(userData.rut)
+                ? 'border-rose-400 bg-rose-50/20'
+                : editMode ? 'border-blue-300 bg-white' : 'border-gray-200 bg-gray-50'
+            }`}
           />
+          {editMode && userData.rut && !validarRUT(userData.rut) && (
+            <p className="text-xs text-rose-600 mt-1 font-medium">
+              ⚠️ {validarRUTDetalle(userData.rut).error}
+            </p>
+          )}
         </div>
 
         <div>
