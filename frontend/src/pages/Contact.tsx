@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import SEO from '../components/SEO';
 import { sendContactMessage } from '../services/api';
+import { formatearWhatsAppChile, validarWhatsAppChile } from '../utils/phoneValidator';
 
 interface ContactProps {
   onClose: () => void;
@@ -10,7 +11,7 @@ const Contact: React.FC<ContactProps> = ({ onClose }) => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    phone: '',
+    phone: '+56 ',
     subject: 'general',
     message: ''
   });
@@ -21,13 +22,22 @@ const Contact: React.FC<ContactProps> = ({ onClose }) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
     setError(null);
+
+    if (formData.phone && formData.phone.trim() !== '+56' && formData.phone.trim() !== '+56 ') {
+      const check = validarWhatsAppChile(formData.phone);
+      if (!check.isValid) {
+        setError(check.error || 'Número de WhatsApp inválido.');
+        return;
+      }
+    }
+
+    setLoading(true);
     
     try {
       await sendContactMessage(formData);
       setSubmitted(true);
-      setFormData({ name: '', email: '', phone: '', subject: 'general', message: '' });
+      setFormData({ name: '', email: '', phone: '+56 ', subject: 'general', message: '' });
     } catch (err: any) {
       console.error('Error al enviar mensaje:', err);
       setError('Hubo un error al enviar el mensaje. Por favor, intenta de nuevo o contáctanos por WhatsApp.');
@@ -37,10 +47,18 @@ const Contact: React.FC<ContactProps> = ({ onClose }) => {
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
+    const { name, value } = e.target;
+    if (name === 'phone') {
+      setFormData({
+        ...formData,
+        phone: formatearWhatsAppChile(value)
+      });
+    } else {
+      setFormData({
+        ...formData,
+        [name]: value
+      });
+    }
   };
 
   return (
@@ -118,17 +136,42 @@ const Contact: React.FC<ContactProps> = ({ onClose }) => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Teléfono
-                  </label>
+                  <div className="flex justify-between items-center mb-1">
+                    <label className="block text-sm font-medium text-gray-700">
+                      WhatsApp / Teléfono
+                    </label>
+                    {formData.phone && formData.phone.trim() !== '+56' && formData.phone.trim() !== '+56 ' && (
+                      <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-full ${
+                        validarWhatsAppChile(formData.phone).isValid
+                          ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                          : 'bg-rose-50 text-rose-700 border border-rose-200'
+                      }`}>
+                        {validarWhatsAppChile(formData.phone).isValid ? '✓ Válido (+56 9)' : '⚠ 9 dígitos requeridos'}
+                      </span>
+                    )}
+                  </div>
                   <input
                     type="tel"
                     name="phone"
                     value={formData.phone}
                     onChange={handleChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="+56 9 83414730"
+                    onFocus={() => {
+                      if (!formData.phone || formData.phone.trim() === '') {
+                        setFormData((prev) => ({ ...prev, phone: '+56 ' }));
+                      }
+                    }}
+                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:outline-none transition-all ${
+                      formData.phone && formData.phone.trim() !== '+56' && !validarWhatsAppChile(formData.phone).isValid
+                        ? 'border-rose-400 bg-rose-50/20 focus:ring-rose-500'
+                        : 'border-gray-300 focus:ring-blue-500 focus:border-transparent'
+                    }`}
+                    placeholder="+56 9 8341 4730"
                   />
+                  {formData.phone && formData.phone.trim() !== '+56' && !validarWhatsAppChile(formData.phone).isValid && (
+                    <p className="text-xs text-rose-600 mt-1 font-medium animate-fadeIn">
+                      ⚠️ {validarWhatsAppChile(formData.phone).error}
+                    </p>
+                  )}
                 </div>
 
                 <div>

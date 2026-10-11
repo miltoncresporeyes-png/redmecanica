@@ -6,6 +6,7 @@ import AutocompleteInput from '../../components/common/AutocompleteInput';
 import { COMUNAS_POR_REGION, CALLES_COMUNES, REGIONES } from '../../data/autocompleteData';
 import { MARKETPLACE_CATEGORIES, getCategoryBySlug } from '../../data/marketplace';
 import { validarRUT, formatearRUT, validarRUTDetalle } from '../../utils/rutValidator';
+import { formatearWhatsAppChile, validarWhatsAppChile } from '../../utils/phoneValidator';
 import { useAuth } from '../../app/providers';
 import LoginModal from '../auth/LoginModal';
 
@@ -64,7 +65,7 @@ const ProviderOnboarding: React.FC<ProviderOnboardingProps> = ({ onComplete, onC
     address: '',
     commune: '',
     region: 'Metropolitana',
-    phone: '',
+    phone: '+56 ',
     website: '',
     paymentMethods: 'CASH,TRANSFER',
     backgroundCheckUrl: '',
@@ -186,8 +187,9 @@ const ProviderOnboarding: React.FC<ProviderOnboardingProps> = ({ onComplete, onC
         setError('La comuna es obligatoria.');
         return false;
       }
-      if (!formData.phone.trim() || formData.phone.length < 9) {
-        setError('Debes ingresar un número de teléfono válido.');
+      const phoneCheck = validarWhatsAppChile(formData.phone);
+      if (!phoneCheck.isValid) {
+        setError(phoneCheck.error || 'Debes ingresar un número de WhatsApp válido.');
         return false;
       }
       if (!formData.address.trim()) {
@@ -518,14 +520,44 @@ const ProviderOnboarding: React.FC<ProviderOnboardingProps> = ({ onComplete, onC
           />
         </div>
         <div>
-          <label className="block text-sm font-bold text-slate-600 mb-1">Teléfono</label>
-          <input
-            type="tel"
-            value={formData.phone}
-            onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-            className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl"
-            placeholder="+56 9 83414730"
-          />
+          <div className="flex justify-between items-center mb-1">
+            <label className="block text-sm font-bold text-slate-600">WhatsApp / Teléfono</label>
+            {formData.phone && formData.phone.trim() !== '+56' && formData.phone.trim() !== '+56 ' && (
+              <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-full ${
+                validarWhatsAppChile(formData.phone).isValid
+                  ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                  : 'bg-rose-50 text-rose-700 border border-rose-200'
+              }`}>
+                {validarWhatsAppChile(formData.phone).isValid ? '✓ Válido (+56 9)' : '⚠ 9 dígitos requeridos'}
+              </span>
+            )}
+          </div>
+          <div className="relative">
+            <input
+              type="tel"
+              value={formData.phone}
+              onChange={(e) => setFormData({ ...formData, phone: formatearWhatsAppChile(e.target.value) })}
+              onFocus={() => {
+                if (!formData.phone || formData.phone.trim() === '') {
+                  setFormData({ ...formData, phone: '+56 ' });
+                }
+              }}
+              className={`w-full px-4 py-3 bg-slate-50 border rounded-xl focus:ring-2 outline-none font-medium transition-all ${
+                formData.phone && formData.phone.trim() !== '+56' && !validarWhatsAppChile(formData.phone).isValid
+                  ? 'border-rose-400 bg-rose-50/20 focus:ring-rose-500'
+                  : 'border-slate-200 focus:ring-blue-500'
+              }`}
+              placeholder="+56 9 8341 4730"
+            />
+          </div>
+          {formData.phone && formData.phone.trim() !== '+56' && !validarWhatsAppChile(formData.phone).isValid && (
+            <p className="text-xs text-rose-600 mt-1 font-medium animate-fadeIn">
+              ⚠️ {validarWhatsAppChile(formData.phone).error}
+            </p>
+          )}
+          <p className="text-[11px] text-slate-400 mt-1">
+            Formato nacional: +56 seguido de 9 dígitos iniciando en 9.
+          </p>
         </div>
         <div className="col-span-2">
           <div className="flex justify-between items-center mb-1">

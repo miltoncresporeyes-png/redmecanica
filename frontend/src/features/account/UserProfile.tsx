@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Card from '../../components/common/Card';
 import { validarRUT, formatearRUT, validarRUTDetalle } from '../../utils/rutValidator';
+import { formatearWhatsAppChile, validarWhatsAppChile } from '../../utils/phoneValidator';
 
 interface UserProfileProps {
   onClose?: () => void;
@@ -50,6 +51,13 @@ const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
       const check = validarRUTDetalle(userData.rut);
       if (!check.isValid) {
         alert(`Error en validación de RUT:\n${check.error}`);
+        return;
+      }
+    }
+    if (userData.phone && userData.phone.trim() !== '+56' && userData.phone.trim() !== '+56 ') {
+      const phoneCheck = validarWhatsAppChile(userData.phone);
+      if (!phoneCheck.isValid) {
+        alert(`Error en WhatsApp / Teléfono:\n${phoneCheck.error}`);
         return;
       }
     }
@@ -151,14 +159,40 @@ const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Teléfono</label>
+          <div className="flex justify-between items-center mb-2">
+            <label className="block text-sm font-medium text-gray-700">WhatsApp / Teléfono</label>
+            {editMode && userData.phone && userData.phone.trim() !== '+56' && userData.phone.trim() !== '+56 ' && (
+              <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-full ${
+                validarWhatsAppChile(userData.phone).isValid
+                  ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                  : 'bg-rose-50 text-rose-700 border border-rose-200'
+              }`}>
+                {validarWhatsAppChile(userData.phone).isValid ? '✓ Válido (+56 9)' : '⚠ 9 dígitos requeridos'}
+              </span>
+            )}
+          </div>
           <input
             type="tel"
             value={userData.phone}
-            onChange={(e) => setUserData({ ...userData, phone: e.target.value })}
+            onChange={(e) => setUserData({ ...userData, phone: formatearWhatsAppChile(e.target.value) })}
+            onFocus={() => {
+              if (editMode && (!userData.phone || userData.phone.trim() === '')) {
+                setUserData((prev) => ({ ...prev, phone: '+56 ' }));
+              }
+            }}
             disabled={!editMode}
-            className={`w-full p-3 border rounded-lg ${editMode ? 'border-blue-300' : 'border-gray-200 bg-gray-50'}`}
+            placeholder="+56 9 8341 4730"
+            className={`w-full p-3 border rounded-lg transition-colors ${
+              editMode && userData.phone && userData.phone.trim() !== '+56' && !validarWhatsAppChile(userData.phone).isValid
+                ? 'border-rose-400 bg-rose-50/20'
+                : editMode ? 'border-blue-300' : 'border-gray-200 bg-gray-50'
+            }`}
           />
+          {editMode && userData.phone && userData.phone.trim() !== '+56' && !validarWhatsAppChile(userData.phone).isValid && (
+            <p className="text-xs text-rose-600 mt-1 font-medium">
+              ⚠️ {validarWhatsAppChile(userData.phone).error}
+            </p>
+          )}
         </div>
 
         <div className="md:col-span-2">

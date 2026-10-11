@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router';
 import SEO from '../components/SEO';
 import { MARKETPLACE_CATEGORIES } from '../data/marketplace';
 import { COMUNAS_POR_REGION } from '../data/autocompleteData';
+import { formatearWhatsAppChile, validarWhatsAppChile } from '../utils/phoneValidator';
 
 const ALL_COMUNAS: string[] = Array.from(new Set(Object.values(COMUNAS_POR_REGION).flat())).sort((a, b) =>
   a.localeCompare(b, 'es')
@@ -14,7 +15,7 @@ const ProviderLanding: React.FC = () => {
     businessName: '',
     categorySlug: '',
     commune: '',
-    phone: '',
+    phone: '+56 ',
     email: '',
     services: '',
   });
@@ -30,7 +31,12 @@ const ProviderLanding: React.FC = () => {
   }, [formData.commune]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+    const { name, value } = e.target;
+    if (name === 'phone') {
+      setFormData((prev) => ({ ...prev, phone: formatearWhatsAppChile(value) }));
+    } else {
+      setFormData((prev) => ({ ...prev, [name]: value }));
+    }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -39,8 +45,11 @@ const ProviderLanding: React.FC = () => {
     if (!formData.businessName.trim()) return setError('Ponle nombre a tu vitrina (tu taller, vulca, grúa…).');
     if (!formData.categorySlug) return setError('Elige tu categoría principal.');
     if (!formData.commune.trim()) return setError('Indica tu comuna base para aparecer en búsquedas.');
-    if (!formData.phone.trim() || formData.phone.replace(/\D/g, '').length < 9)
-      return setError('Agrega tu WhatsApp para recibir contactos directos.');
+    
+    const phoneCheck = validarWhatsAppChile(formData.phone);
+    if (!phoneCheck.isValid) {
+      return setError(phoneCheck.error || 'Agrega tu WhatsApp (+56 9...) para recibir contactos directos.');
+    }
 
     // Guardar borrador real y pasar al onboarding con precarga
     localStorage.setItem('provider_draft', JSON.stringify({ ...formData, createdAt: new Date().toISOString() }));
@@ -199,14 +208,39 @@ const ProviderLanding: React.FC = () => {
 
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-bold text-gray-700 mb-1">WhatsApp *</label>
+                    <div className="flex justify-between items-center mb-1">
+                      <label className="block text-sm font-bold text-gray-700">WhatsApp *</label>
+                      {formData.phone && formData.phone.trim() !== '+56' && formData.phone.trim() !== '+56 ' && (
+                        <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-full ${
+                          validarWhatsAppChile(formData.phone).isValid
+                            ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                            : 'bg-rose-50 text-rose-700 border border-rose-200'
+                        }`}>
+                          {validarWhatsAppChile(formData.phone).isValid ? '✓ Válido' : '⚠ Incompleto'}
+                        </span>
+                      )}
+                    </div>
                     <input
                       name="phone"
                       value={formData.phone}
                       onChange={handleChange}
+                      onFocus={() => {
+                        if (!formData.phone || formData.phone.trim() === '') {
+                          setFormData((prev) => ({ ...prev, phone: '+56 ' }));
+                        }
+                      }}
                       placeholder="+56 9 1234 5678"
-                      className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:outline-none"
+                      className={`w-full px-4 py-3 border-2 rounded-xl focus:outline-none transition-all ${
+                        formData.phone && formData.phone.trim() !== '+56' && !validarWhatsAppChile(formData.phone).isValid
+                          ? 'border-rose-400 bg-rose-50/20 focus:border-rose-500'
+                          : 'border-gray-200 focus:border-blue-500'
+                      }`}
                     />
+                    {formData.phone && formData.phone.trim() !== '+56' && !validarWhatsAppChile(formData.phone).isValid && (
+                      <p className="text-xs text-rose-600 mt-1 font-medium animate-fadeIn">
+                        ⚠️ {validarWhatsAppChile(formData.phone).error}
+                      </p>
+                    )}
                   </div>
                   <div>
                     <label className="block text-sm font-bold text-gray-700 mb-1">Email</label>

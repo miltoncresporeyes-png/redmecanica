@@ -13,7 +13,7 @@
   "dependencies": {
     "@google/genai": "^1.40.0",
     "@redmecanica/shared": "file:../shared",
-    "axios": "^1.13.5",
+    "axios": "^1.20.0",
     "clsx": "^2.1.1",
     "cors": "^2.8.6",
     "framer-motion": "^12.34.0",
