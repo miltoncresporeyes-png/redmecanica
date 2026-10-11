@@ -3,6 +3,7 @@ import { prisma } from '../db.js';
 import bcrypt from 'bcrypt';
 import { generateTokens, verifyRefreshToken } from '../utils/auth.js';
 import { requireAuth as authenticateToken, AuthRequest } from '../middlewares/requireAuth.js';
+import { sendWelcomeRegistrationEmail } from '../services/email.js';
 
 const router = Router();
 
@@ -64,6 +65,15 @@ router.post('/register', async (req, res) => {
       sameSite: 'lax',
       maxAge: 7 * 24 * 60 * 60 * 1000
     });
+
+    // Enviar notificación de bienvenida y confirmación desde notificaciones@redmecanica.cl
+    void (async () => {
+      try {
+        await sendWelcomeRegistrationEmail(result.email, result.name || 'usuario', result.role as any);
+      } catch (emailErr: any) {
+        console.warn(`[AUTH] No se pudo enviar el correo de bienvenida a ${result.email}:`, emailErr.message);
+      }
+    })();
 
     const { password: _, ...userWithoutPassword } = result;
 

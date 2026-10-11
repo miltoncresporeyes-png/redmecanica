@@ -127,20 +127,85 @@ export const sendVerificationCodeEmail = async (
   verificationCode: string,
 ) => {
   const html = `
-    <h2>Verificación de correo - RedMecánica</h2>
-    <p>Hola ${escapeHtml(userName)}, recibimos un registro reciente. Usa este código de 6 dígitos una sola vez para validar tu correo:</p>
-    <p style="font-size: 18px; font-weight: 700; letter-spacing: 1px;">${escapeHtml(verificationCode)}</p>
-    <p>El código expira en 10 minutos y el sistema lo almacena cifrado con AES para proteger tu privacidad.</p>
-    <p>Si no solicitaste esta cuenta, puedes ignorar este mensaje.</p>
+    <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 580px; margin: 0 auto; padding: 24px; border: 1px solid #e2e8f0; border-radius: 12px; background-color: #ffffff;">
+      <div style="text-align: center; margin-bottom: 24px;">
+        <h1 style="color: #1e3a8a; margin: 0; font-size: 24px; font-weight: 800;">RedMecánica</h1>
+        <p style="color: #64748b; font-size: 13px; margin: 4px 0 0 0;">Notificaciones Oficiales</p>
+      </div>
+      <h2 style="color: #1e293b; font-size: 18px; margin-top: 0;">Verificación de correo electrónico</h2>
+      <p style="color: #334155; font-size: 14px; line-height: 1.6;">Hola <strong>${escapeHtml(userName)}</strong>, recibimos tu solicitud de registro. Ingresa el siguiente código de seguridad para validar tu cuenta:</p>
+      <div style="background-color: #f8fafc; border: 1px dashed #3b82f6; border-radius: 8px; padding: 16px; text-align: center; margin: 20px 0;">
+        <span style="font-size: 26px; font-weight: 800; letter-spacing: 4px; color: #1d4ed8;">${escapeHtml(verificationCode)}</span>
+      </div>
+      <p style="color: #64748b; font-size: 12px; line-height: 1.5;">Este código es de un solo uso y expira en 10 minutos. Si no intentaste crear una cuenta en RedMecánica, puedes desestimar este mensaje.</p>
+      <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 24px 0;" />
+      <div style="background-color: #eff6ff; border-left: 4px solid #3b82f6; padding: 12px; border-radius: 4px;">
+        <p style="color: #1e40af; font-size: 12px; margin: 0; line-height: 1.5;">
+          <strong>¿Tienes dudas o necesitas asistencia?</strong><br>
+          Este correo es generado por nuestra casilla automatizada <em>notificaciones@redmecanica.cl</em>. Para soporte, dudas o consultas comerciales, comunícate directamente con nuestro equipo a <a href="mailto:contacto@redmecanica.cl" style="color: #2563eb; font-weight: bold; text-decoration: underline;">contacto@redmecanica.cl</a> o a nuestro WhatsApp oficial +56 9 8341 4730.
+        </p>
+      </div>
+    </div>
   `;
 
   return sendEmail({
     to: userEmail,
-    subject: "Tu código de seguridad RedMecánica",
+    subject: "Tu código de seguridad - RedMecánica",
     html,
-    text: `Hola ${userName}. Tu código de seguridad para RedMecánica es: ${verificationCode}. Expira en 10 minutos.`,
+    text: `Hola ${userName}.\n\nTu código de verificación para RedMecánica es: ${verificationCode} (expira en 10 minutos).\n\nEste correo se envía desde notificaciones@redmecanica.cl. Para cualquier consulta o asistencia, contáctanos a contacto@redmecanica.cl.`,
+    from: `"RedMecánica Notificaciones" <${process.env.SMTP_USER || "notificaciones@redmecanica.cl"}>`,
+    replyTo: "contacto@redmecanica.cl",
   });
 };
+
+export const sendWelcomeRegistrationEmail = async (
+  userEmail: string,
+  userName: string,
+  userRole: "USER" | "MECHANIC" | "CLIENT" | "WORKSHOP" = "USER",
+) => {
+  const isProvider = userRole === "MECHANIC" || userRole === "WORKSHOP";
+  const portalName = isProvider ? "Portal de Talleres y Mecánicos" : "RedMecánica Automotriz";
+
+  const html = `
+    <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 580px; margin: 0 auto; padding: 24px; border: 1px solid #e2e8f0; border-radius: 12px; background-color: #ffffff;">
+      <div style="text-align: center; margin-bottom: 24px;">
+        <h1 style="color: #1e3a8a; margin: 0; font-size: 24px; font-weight: 800;">RedMecánica</h1>
+        <p style="color: #64748b; font-size: 13px; margin: 4px 0 0 0;">Notificaciones Oficiales</p>
+      </div>
+      <h2 style="color: #1e293b; font-size: 18px; margin-top: 0;">¡Bienvenido a ${escapeHtml(portalName)}!</h2>
+      <p style="color: #334155; font-size: 14px; line-height: 1.6;">Hola <strong>${escapeHtml(userName)}</strong>,</p>
+      <p style="color: #334155; font-size: 14px; line-height: 1.6;">
+        ${isProvider 
+          ? "Tu cuenta de prestador ha sido registrada exitosamente. Ya puedes acceder a configurar tus comunas de atención, servicios y comenzar a recibir solicitudes de clientes."
+          : "Tu cuenta de cliente ha sido registrada exitosamente. Ahora podrás cotizar con talleres mecánicos verificados, solicitar auxilio y agendar mantenciones con total transparencia."
+        }
+      </p>
+      <div style="text-align: center; margin: 24px 0;">
+        <a href="https://redmecanica.cl" style="background-color: #2563eb; color: #ffffff; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 700; font-size: 14px; display: inline-block;">Ingresar a RedMecánica</a>
+      </div>
+      <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 24px 0;" />
+      <div style="background-color: #eff6ff; border-left: 4px solid #3b82f6; padding: 12px; border-radius: 4px;">
+        <p style="color: #1e40af; font-size: 12px; margin: 0; line-height: 1.5;">
+          <strong>¿Tienes alguna consulta o necesitas ayuda?</strong><br>
+          Este aviso ha sido enviado automáticamente desde <em>notificaciones@redmecanica.cl</em>.<br>
+          Cualquier duda, consulta técnica o requerimiento comercial, por favor escríbenos directamente a <a href="mailto:contacto@redmecanica.cl" style="color: #2563eb; font-weight: bold; text-decoration: underline;">contacto@redmecanica.cl</a> o a nuestro WhatsApp oficial +56 9 8341 4730.
+        </p>
+      </div>
+    </div>
+  `;
+
+  return sendEmail({
+    to: userEmail,
+    subject: `¡Bienvenido a RedMecánica, ${userName}!`,
+    html,
+    text: `Hola ${userName}.\n\n¡Bienvenido a RedMecánica! Tu cuenta (${isProvider ? 'Prestador' : 'Cliente'}) ha sido registrada exitosamente.\n\nPuedes ingresar en https://redmecanica.cl\n\nEste correo fue enviado desde notificaciones@redmecanica.cl. Recuerda que para cualquier consulta debes escribirnos a contacto@redmecanica.cl.`,
+    from: `"RedMecánica Notificaciones" <${process.env.SMTP_USER || "notificaciones@redmecanica.cl"}>`,
+    replyTo: "contacto@redmecanica.cl",
+  });
+};
+
+export const NOTIFICATIONS_EMAIL = process.env.SMTP_USER || "notificaciones@redmecanica.cl";
+export const CONTACT_EMAIL = process.env.CONTACT_EMAIL || "contacto@redmecanica.cl";
 
 export const sendEmail = async (options: {
   to: string;
@@ -148,10 +213,12 @@ export const sendEmail = async (options: {
   text?: string;
   html?: string;
   from?: string;
+  replyTo?: string;
 }) => {
   const from =
     options.from ||
-    `"RedMecánica" <${process.env.SMTP_USER || "no-reply@redmecanica.cl"}>`;
+    `"RedMecánica Notificaciones" <${NOTIFICATIONS_EMAIL}>`;
+  const replyTo = options.replyTo || CONTACT_EMAIL;
 
   // In development/test environments or for RFC 2606 test domains (.test, .example), log and bypass real delivery
   if (options.to.endsWith('.test') || options.to.endsWith('.example') || process.env.NODE_ENV === 'test') {
@@ -192,6 +259,7 @@ export const sendEmail = async (options: {
 
   const mailOptions = {
     from,
+    replyTo,
     to: options.to,
     subject: options.subject,
     text: options.text,
