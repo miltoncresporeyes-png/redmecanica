@@ -298,24 +298,25 @@ const ProviderOnboarding: React.FC<ProviderOnboardingProps> = ({ onComplete, onC
   };
 
   const renderStep1_Type = () => (
-    <div className="space-y-4">
-      <h3 className="text-xl font-black text-slate-800">¿Qué servicios promocionas?</h3>
-      <p className="text-sm text-slate-500">Tu vitrina aparecerá cuando busquen esta categoría en tu comuna.</p>
-      <div className="grid grid-cols-2 gap-3">
+    <div className="space-y-4 min-w-0">
+      <h3 className="text-lg sm:text-xl font-black text-slate-800 break-words">¿Qué servicios promocionas?</h3>
+      <p className="text-xs sm:text-sm text-slate-500 break-words">Tu vitrina aparecerá cuando busquen esta categoría en tu comuna.</p>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3 min-w-0">
         {MARKETPLACE_CATEGORIES.map((cat) => (
           <button
             key={cat.slug}
+            type="button"
             onClick={() => setFormData({ ...formData, categorySlug: cat.slug, type: cat.backendType, specialties: [] })}
-            className={`p-4 border-2 rounded-2xl flex items-center gap-3 transition-all text-left ${
+            className={`p-3.5 sm:p-4 border-2 rounded-2xl flex items-center gap-3 transition-all text-left min-w-0 cursor-pointer ${
               (formData.categorySlug === cat.slug || (!formData.categorySlug && formData.type === cat.backendType))
-                ? 'border-blue-600 bg-blue-50 text-blue-700 shadow-lg shadow-blue-100'
-                : 'border-slate-100 hover:border-blue-200 bg-white shadow-sm'
+                ? 'border-blue-600 bg-blue-50 text-blue-700 shadow-md'
+                : 'border-slate-100 hover:border-blue-200 bg-white shadow-xs'
             }`}
           >
-            <span className="text-3xl">{cat.icon}</span>
-            <span>
-              <span className="font-bold text-sm tracking-tight block">{cat.label}</span>
-              <span className="text-[11px] text-slate-400 block">{cat.shortDesc}</span>
+            <span className="text-2xl sm:text-3xl shrink-0">{cat.icon}</span>
+            <span className="min-w-0 flex-1">
+              <span className="font-bold text-xs sm:text-sm tracking-tight block truncate">{cat.label}</span>
+              <span className="text-[10px] sm:text-[11px] text-slate-400 block truncate">{cat.shortDesc}</span>
             </span>
           </button>
         ))}
@@ -575,47 +576,49 @@ const ProviderOnboarding: React.FC<ProviderOnboardingProps> = ({ onComplete, onC
   );
 
   return (
-    <Card className="max-w-2xl mx-auto p-8 shadow-2xl rounded-3xl animate-fadeIn">
-      <div className="mb-8">
-        <div className="flex items-center justify-between mb-3">
-           <h2 className="text-2xl font-black text-slate-800 tracking-tight">Crea tu vitrina</h2>
-           <span className="bg-slate-100 text-slate-500 px-3 py-1 rounded-full text-xs font-black">Paso {step} de 4</span>
+    <Card className="w-full max-w-2xl mx-auto p-4 sm:p-8 shadow-2xl rounded-3xl animate-fadeIn overflow-hidden min-w-0">
+      <div className="mb-6 sm:mb-8">
+        <div className="flex items-center justify-between gap-2 mb-3 min-w-0">
+           <h2 className="text-xl sm:text-2xl font-black text-slate-800 tracking-tight truncate">Crea tu vitrina</h2>
+           <span className="bg-slate-100 text-slate-500 px-2.5 py-1 rounded-full text-[10px] sm:text-xs font-black shrink-0">Paso {step} de 4</span>
         </div>
         {draftLoaded && (
-          <div className="bg-emerald-50 border border-emerald-100 text-emerald-800 text-sm font-bold rounded-xl p-3 mb-3">
+          <div className="bg-emerald-50 border border-emerald-100 text-emerald-800 text-xs sm:text-sm font-bold rounded-xl p-3 mb-3 break-words">
             ✅ Borrador cargado desde “Publica tu negocio”. Revisa y completa verificación para aparecer en el directorio.
           </div>
         )}
-        <div className="w-full bg-slate-100 rounded-full h-2 overflow-hidden shadow-inner">
+        <div className="w-full bg-slate-100 rounded-full h-1.5 sm:h-2 overflow-hidden shadow-inner">
           <div className="bg-gradient-to-r from-blue-600 to-indigo-600 h-full transition-all duration-500 ease-out" style={{ width: `${(step / 4) * 100}%` }}></div>
         </div>
       </div>
 
       {error && (
-        <div className="bg-red-50 text-red-700 p-4 rounded-2xl mb-6 text-sm font-bold border border-red-100 animate-slideDown">
+        <div className="bg-red-50 text-red-700 p-3.5 sm:p-4 rounded-2xl mb-5 sm:mb-6 text-xs sm:text-sm font-bold border border-red-100 animate-slideDown break-words">
           ⚠️ {error}
         </div>
       )}
 
-      <div className="min-h-[400px]">
+      <div className="min-h-[300px] sm:min-h-[360px] min-w-0">
         {step === 1 && renderStep1_Type()}
         {step === 2 && renderStep2_Info()}
         {step === 3 && renderStep3_Location()}
         {step === 4 && renderStep4_Docs()}
       </div>
 
-      <div className="flex justify-between items-center mt-12 pt-6 border-t border-slate-100">
+      <div className="flex flex-wrap items-center justify-between gap-3 mt-8 sm:mt-12 pt-5 sm:pt-6 border-t border-slate-100 min-w-0">
         <button 
+          type="button"
           onClick={step > 1 ? handleBack : onCancel} 
-          className="px-6 py-3 text-slate-400 font-black hover:text-slate-800 transition-colors"
+          className="px-4 sm:px-6 py-2.5 sm:py-3 text-slate-400 font-black hover:text-slate-800 transition-colors text-xs sm:text-sm cursor-pointer"
         >
           {step > 1 ? 'Atrás' : 'Cancelar'}
         </button>
 
         <button 
+          type="button"
           onClick={step < 4 ? handleNext : handleSubmit} 
           disabled={loading}
-          className={`px-10 py-4 font-black rounded-2xl transition-all shadow-lg active:scale-95 disabled:opacity-50 ${
+          className={`flex-1 sm:flex-none px-6 sm:px-10 py-3 sm:py-4 font-black rounded-2xl transition-all shadow-lg active:scale-95 disabled:opacity-50 text-xs sm:text-sm text-center cursor-pointer ${
             step < 4 
               ? 'bg-blue-600 text-white hover:bg-blue-700 shadow-blue-200' 
               : 'bg-green-600 text-white hover:bg-green-700 shadow-green-200'

@@ -70,11 +70,13 @@ const SubscriptionPaymentModal: React.FC<SubscriptionPaymentModalProps> = ({ pro
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 overflow-y-auto">
-      <div className="relative w-full max-w-lg bg-zinc-950 border border-zinc-800 rounded-3xl overflow-hidden shadow-[0_0_50px_rgba(34,197,94,0.15)] p-6 md:p-8 text-white animate-scaleUp">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-3 sm:p-4 overflow-y-auto">
+      <div className="relative w-full max-w-lg bg-zinc-950 border border-zinc-800 rounded-3xl overflow-hidden shadow-[0_0_50px_rgba(34,197,94,0.15)] max-h-[92dvh] sm:max-h-[88dvh] flex flex-col my-auto text-white animate-scaleUp">
         
         {/* Neon Underglow and Corner Accents */}
-        <div className="absolute top-0 left-1/4 right-1/4 h-[2px] bg-gradient-to-r from-transparent via-green-500 to-transparent"></div>
+        <div className="absolute top-0 left-1/4 right-1/4 h-[2px] bg-gradient-to-r from-transparent via-green-500 to-transparent pointer-events-none"></div>
+        
+        <div className="p-4 sm:p-7 overflow-y-auto flex-1 min-h-0">
         
         {/* Header */}
         <div className="flex justify-between items-center mb-6">
@@ -194,6 +196,7 @@ const SubscriptionPaymentModal: React.FC<SubscriptionPaymentModalProps> = ({ pro
           </div>
         )}
 
+        </div>
       </div>
     </div>
   );

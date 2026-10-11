@@ -165,6 +165,20 @@ export const refresh = async (
   }
 };
 
+export const forgotPassword = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { email } = req.body;
+    const result = await authService.forgotPassword(email);
+    res.json(result);
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const me = async (req: Request, res: Response) => {
   // Logic from routes/auth.ts:182
   // req.user is populated by requireAuth middleware

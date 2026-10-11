@@ -14,6 +14,8 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLoginSuccess
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
   const [isRegistering, setIsRegistering] = useState(defaultMode === 'register');
+  const [isForgotPassword, setIsForgotPassword] = useState(false);
+  const [forgotSuccess, setForgotSuccess] = useState('');
   const [role, setRole] = useState<'client' | 'provider'>(defaultRole);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -22,6 +24,8 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLoginSuccess
   useEffect(() => {
     if (isOpen) {
       setIsRegistering(defaultMode === 'register');
+      setIsForgotPassword(false);
+      setForgotSuccess('');
       setRole(defaultRole);
       setError('');
       setEmail('');
@@ -32,8 +36,28 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLoginSuccess
 
   if (!isOpen) return null;
 
+  const handleForgotPasswordSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+    setForgotSuccess('');
+
+    try {
+      const { data } = await api.post('/auth/forgot-password', { email });
+      setForgotSuccess(data.message || 'Te enviamos las instrucciones de recuperación a tu correo.');
+    } catch (err: any) {
+      setError(err.response?.data?.error || 'Error al solicitar recuperación. Inténtalo nuevamente.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isForgotPassword) {
+      return handleForgotPasswordSubmit(e);
+    }
+
     setLoading(true);
     setError('');
 
@@ -67,27 +91,27 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLoginSuccess
     };
   
   return (
-    <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-md flex items-center justify-center z-[200] p-4 animate-fadeIn">
-      <div className="bg-white w-full max-w-md rounded-3xl shadow-2xl overflow-hidden relative border border-slate-100">
+    <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-md flex items-center justify-center z-[200] p-3 sm:p-4 animate-fadeIn overflow-y-auto">
+      <div className="bg-white w-full max-w-md rounded-3xl shadow-2xl overflow-hidden relative border border-slate-100 max-h-[92dvh] sm:max-h-[90dvh] flex flex-col my-auto">
         {/* Decorative Background */}
-        <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-br from-blue-600 to-indigo-700 -z-10 opacity-10 blur-3xl"></div>
+        <div className="absolute top-0 left-0 w-full h-24 bg-gradient-to-br from-blue-600 to-indigo-700 -z-10 opacity-10 blur-2xl pointer-events-none"></div>
         
-        <div className="p-8">
+        <div className="p-5 sm:p-7 overflow-y-auto flex-1 min-h-0">
           {/* Selector de Portal (Separación Principal) */}
-          <div className="bg-slate-100 p-1.5 rounded-2xl flex mb-8 animate-fadeIn">
+          <div className="bg-slate-100 p-1.5 rounded-2xl flex mb-5 sm:mb-6 animate-fadeIn">
             <button
               type="button"
               onClick={() => {
                 setRole('client');
                 setError('');
               }}
-              className={`flex-1 py-2.5 px-2 text-[11px] sm:text-xs font-black uppercase tracking-wide sm:tracking-widest rounded-xl transition-all flex items-center justify-center gap-2 leading-tight ${
+              className={`flex-1 py-2 sm:py-2.5 px-2 text-[10px] sm:text-xs font-black uppercase tracking-wide rounded-xl transition-all flex items-center justify-center gap-1.5 leading-tight cursor-pointer ${
                 role === 'client' 
                   ? 'bg-white text-blue-600 shadow-sm' 
                   : 'text-slate-400 hover:text-slate-600'
               }`}
             >
-              <span className="text-base sm:text-lg">👤</span>
+              <span className="text-sm sm:text-base">👤</span>
               Usuario
             </button>
             <button
@@ -96,40 +120,47 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLoginSuccess
                 setRole('provider');
                 setError('');
               }}
-              className={`flex-1 py-2.5 px-2 text-[11px] sm:text-xs font-black uppercase tracking-wide sm:tracking-widest rounded-xl transition-all flex items-center justify-center gap-2 leading-tight ${
+              className={`flex-1 py-2 sm:py-2.5 px-2 text-[10px] sm:text-xs font-black uppercase tracking-wide rounded-xl transition-all flex items-center justify-center gap-1.5 leading-tight cursor-pointer ${
                 role === 'provider' 
                   ? 'bg-white text-indigo-600 shadow-sm' 
                   : 'text-slate-400 hover:text-slate-600'
               }`}
             >
-              <span className="text-base sm:text-lg">🔧</span>
+              <span className="text-sm sm:text-base">🔧</span>
               Portal Prestadores
             </button>
           </div>
 
-          <div className="flex justify-between items-start mb-8">
-            <div>
-              <h2 className="text-3xl font-black text-slate-800 tracking-tight">
-                {isRegistering ? 'Crear Cuenta' : 'Bienvenido'}
+          <div className="flex justify-between items-start mb-5 sm:mb-6 gap-2">
+            <div className="min-w-0 flex-1">
+              <h2 className="text-2xl sm:text-3xl font-black text-slate-800 tracking-tight truncate">
+                {isForgotPassword 
+                  ? 'Recuperar Cuenta' 
+                  : (isRegistering ? 'Crear Cuenta' : 'Bienvenido')}
               </h2>
-              <p className="text-slate-500 font-medium">
-                {role === 'provider' 
-                  ? (isRegistering ? 'Regístrate como Cliente (Taller/Mecánico)' : 'Ingresa a tu cuenta de Prestador')
-                  : (isRegistering ? 'Únete como Usuario' : 'Ingresa a tu cuenta de Usuario')
+              <p className="text-xs sm:text-sm text-slate-500 font-medium break-words mt-0.5">
+                {isForgotPassword
+                  ? 'Ingresa tu correo y te enviaremos un enlace de recuperación'
+                  : (role === 'provider' 
+                      ? (isRegistering ? 'Regístrate como Taller / Mecánico' : 'Ingresa a tu cuenta de Prestador')
+                      : (isRegistering ? 'Únete como Usuario' : 'Ingresa a tu cuenta de Usuario')
+                    )
                 }
               </p>
             </div>
             <button 
+              type="button"
               onClick={onClose}
-              className="w-10 h-10 flex items-center justify-center rounded-full bg-slate-50 text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-all border border-slate-100"
+              aria-label="Cerrar modal"
+              className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-full bg-slate-50 text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-all border border-slate-100 shrink-0 cursor-pointer"
             >
-              <span className="text-2xl">&times;</span>
+              <span className="text-xl sm:text-2xl leading-none">&times;</span>
             </button>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
             
-            {isRegistering && (
+            {isRegistering && !isForgotPassword && (
               <div className="space-y-2 animate-fadeIn">
                 <label className="text-xs font-bold text-slate-400 uppercase tracking-widest ml-1">Nombre Completo</label>
                 <div className="relative group">
@@ -161,62 +192,105 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLoginSuccess
               </div>
             </div>
 
-            <div className="space-y-2">
-              <label className="text-xs font-bold text-slate-400 uppercase tracking-widest ml-1">Contraseña</label>
-              <div className="relative group">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors">🔒</span>
-                <input 
-                  type="password"
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full pl-12 pr-4 py-4 bg-slate-50 border-2 border-transparent focus:border-blue-500 focus:bg-white rounded-2xl outline-none transition-all font-medium text-slate-700"
-                  placeholder="••••••••"
-                />
+            {!isForgotPassword && (
+              <div className="space-y-2">
+                <div className="flex items-center justify-between ml-1">
+                  <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">Contraseña</label>
+                  {!isRegistering && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsForgotPassword(true);
+                        setError('');
+                        setForgotSuccess('');
+                      }}
+                      className="text-[11px] font-bold text-blue-600 hover:text-blue-800 hover:underline cursor-pointer"
+                    >
+                      ¿Olvidaste tu contraseña?
+                    </button>
+                  )}
+                </div>
+                <div className="relative group">
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors">🔒</span>
+                  <input 
+                    type="password"
+                    required
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="w-full pl-12 pr-4 py-4 bg-slate-50 border-2 border-transparent focus:border-blue-500 focus:bg-white rounded-2xl outline-none transition-all font-medium text-slate-700"
+                    placeholder="••••••••"
+                  />
+                </div>
               </div>
-            </div>
+            )}
 
             {error && (
-              <div className="bg-red-50 text-red-600 p-4 rounded-2xl text-sm font-bold flex items-center gap-3 animate-shake">
+              <div className="bg-red-50 text-red-600 p-4 rounded-2xl text-sm font-bold flex items-center gap-3 animate-shake break-words">
                 <span>⚠️</span> {error}
+              </div>
+            )}
+
+            {forgotSuccess && (
+              <div className="bg-emerald-50 text-emerald-700 border border-emerald-200 p-4 rounded-2xl text-xs sm:text-sm font-bold flex items-center gap-3 animate-fadeIn break-words">
+                <span className="text-lg">✅</span> {forgotSuccess}
               </div>
             )}
 
             <button 
               type="submit"
               disabled={loading}
-              className={`w-full text-white py-4 rounded-2xl font-bold shadow-xl hover:shadow-2xl hover:-translate-y-0.5 active:translate-y-0 transition-all disabled:opacity-50 flex items-center justify-center gap-2 ${
-                isRegistering && role === 'provider' 
-                  ? 'bg-gradient-to-r from-indigo-600 to-purple-600 shadow-indigo-200' 
-                  : 'bg-gradient-to-r from-blue-600 to-indigo-600 shadow-blue-200'
+              className={`w-full text-white py-3.5 sm:py-4 rounded-2xl font-bold shadow-xl hover:shadow-2xl hover:-translate-y-0.5 active:translate-y-0 transition-all disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer ${
+                isForgotPassword
+                  ? 'bg-gradient-to-r from-blue-600 to-indigo-600 shadow-blue-200'
+                  : (isRegistering && role === 'provider' 
+                      ? 'bg-gradient-to-r from-indigo-600 to-purple-600 shadow-indigo-200' 
+                      : 'bg-gradient-to-r from-blue-600 to-indigo-600 shadow-blue-200')
               }`}
             >
               {loading ? (
                 <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
               ) : (
-                isRegistering ? 'Crear Cuenta' : 'Iniciar Sesión'
+                isForgotPassword 
+                  ? 'Enviar Enlace de Recuperación' 
+                  : (isRegistering ? 'Crear Cuenta' : 'Iniciar Sesión')
               )}
             </button>
 
-            <p className="text-xs text-slate-400 text-center leading-relaxed">
-              Acceso seguro con tu correo registrado. Tus datos se usan solo para gestionar tu cuenta.
+            <p className="text-[11px] sm:text-xs text-slate-400 text-center leading-relaxed">
+              {isForgotPassword
+                ? 'Revisa tu bandeja de entrada o spam tras enviar la solicitud.'
+                : 'Acceso seguro con tu correo registrado. Tus datos se usan solo para gestionar tu cuenta.'}
             </p>
           </form>
 
-          <div className="mt-8 pt-8 border-t border-slate-50 text-center">
-            <p className="text-slate-500 text-sm font-medium">
-              {isRegistering ? '¿Ya tienes una cuenta?' : '¿No tienes una cuenta?'} <br />
-              <button 
+          <div className="mt-5 pt-5 sm:mt-6 sm:pt-6 border-t border-slate-100 text-center">
+            {isForgotPassword ? (
+              <button
                 type="button"
                 onClick={() => {
-                  setIsRegistering(!isRegistering);
+                  setIsForgotPassword(false);
                   setError('');
-                }} 
-                className="text-blue-600 font-bold hover:underline mt-2"
+                  setForgotSuccess('');
+                }}
+                className="text-blue-600 font-bold hover:underline text-xs sm:text-sm cursor-pointer"
               >
-                {isRegistering ? 'Inicia sesión aquí' : 'Regístrate gratis'}
+                ← Volver a Iniciar Sesión
               </button>
-            </p>
+            ) : (
+              <p className="text-slate-500 text-xs sm:text-sm font-medium">
+                {isRegistering ? '¿Ya tienes una cuenta?' : '¿No tienes una cuenta?'} <br />
+                <button 
+                  type="button"
+                  onClick={() => {
+                    setIsRegistering(!isRegistering);
+                    setError('');
+                  }} 
+                  className="text-blue-600 font-bold hover:underline mt-1.5 cursor-pointer"
+                >
+                  {isRegistering ? 'Inicia sesión aquí' : 'Regístrate gratis'}
+                </button>
+              </p>
+            )}
           </div>
         </div>
       </div>

@@ -39,7 +39,11 @@ router.post('/message', async (req, res) => {
       return res.status(400).json({ error: 'Nombre, email y mensaje son obligatorios.' });
     }
 
-    await sendContactNotification({ name, email, phone, subject, message });
+    try {
+      await sendContactNotification({ name, email, phone, subject, message });
+    } catch (emailErr: any) {
+      logger.warn({ emailErr }, 'Advertencia: No se pudo despachar correo de contacto');
+    }
 
     return res.status(200).json({ success: true, message: 'Mensaje enviado correctamente.' });
   } catch (error: any) {

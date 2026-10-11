@@ -33,6 +33,10 @@ export class AuthRepository {
             password,
             name,
             role,
+            emailVerified,
+            emailVerificationToken,
+            emailVerificationExpiresAt,
+            emailVerifiedAt,
           },
         });
 

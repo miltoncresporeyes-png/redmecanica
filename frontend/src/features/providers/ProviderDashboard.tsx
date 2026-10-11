@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../lib/http';
 import SubscriptionPaymentModal from './SubscriptionPaymentModal';
+import CoverageDashboard from './CoverageDashboard';
 
 interface ProviderDashboardProps {
   onClose: () => void;
@@ -16,7 +17,7 @@ interface Notification {
 }
 
 const ProviderDashboard: React.FC<ProviderDashboardProps> = ({ onClose }) => {
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'jobs' | 'quotes' | 'earnings' | 'profile'>('dashboard');
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'coverage' | 'quotes' | 'jobs' | 'earnings' | 'profile'>('dashboard');
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState<any>(null);
   const [jobs, setJobs] = useState<any[]>([]);
@@ -224,6 +225,7 @@ const ProviderDashboard: React.FC<ProviderDashboardProps> = ({ onClose }) => {
       <div className="bg-white rounded-2xl shadow-sm border border-slate-100 mb-6 p-2 flex gap-2 overflow-x-auto">
         {[
           { id: 'dashboard', label: 'Panel', icon: '📊' },
+          { id: 'coverage', label: 'Mi Cobertura / Comunas', icon: '📍' },
           { id: 'quotes', label: 'Cotizaciones', icon: '📝', badge: pendingQuotes.length },
           { id: 'jobs', label: 'Trabajos', icon: '🔧', badge: pendingJobs.length },
           { id: 'earnings', label: 'Finanzas', icon: '💵' },
@@ -358,6 +360,10 @@ const ProviderDashboard: React.FC<ProviderDashboardProps> = ({ onClose }) => {
             </div>
           </div>
         </div>
+      )}
+
+      {activeTab === 'coverage' && (
+        <CoverageDashboard onUpgradePlan={() => setShowPaymentModal(true)} />
       )}
 
       {activeTab === 'quotes' && (

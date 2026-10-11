@@ -7,6 +7,7 @@ import {
   verifyEmailSchema,
   resendVerificationSchema,
   refreshTokenSchema,
+  forgotPasswordSchema,
 } from "./auth.schemas.js";
 import * as authController from "./auth.controller.js";
 
@@ -32,6 +33,12 @@ router.post(
   authLimiter,
   validate(resendVerificationSchema),
   authController.resendVerification,
+);
+router.post(
+  "/forgot-password",
+  authLimiter,
+  validate(forgotPasswordSchema),
+  authController.forgotPassword,
 );
 router.post(
   "/refresh",

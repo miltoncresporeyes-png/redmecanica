@@ -424,3 +424,63 @@ export const getSubscriptionStatus = async (id: string): Promise<any> => {
   const response = await api.get(`/subscriptions/${id}/status`);
   return response.data;
 };
+
+// ============================================================
+// COBERTURA Y MONETIZACIÓN TERRITORIAL
+// ============================================================
+
+export interface ProviderCoverageItem {
+  id: string;
+  providerId: string;
+  commune: string;
+  region?: string;
+  isPrimary: boolean;
+  source: 'BASE_COMMUNE' | 'PLAN_INCLUDED' | 'EXPANSION_PAID' | 'PROMOTIONAL';
+  active: boolean;
+  createdAt: string;
+}
+
+export interface ExpansionProduct {
+  id: string;
+  name: string;
+  description: string;
+  blockSize: number;
+  price: number;
+  currency: string;
+  billingPeriod: string;
+  popular?: boolean;
+}
+
+export interface MyCoverageResponse {
+  providerId: string;
+  plan: string;
+  baseCommune?: string;
+  planMaxCommunes: number;
+  expansionSlots: number;
+  totalAllowedCommunes: number;
+  totalUsedCommunes: number;
+  isAtLimit: boolean;
+  coverages: ProviderCoverageItem[];
+  activeExpansions: any[];
+  expansionProducts: ExpansionProduct[];
+}
+
+export const getMyCoverage = async (): Promise<MyCoverageResponse> => {
+  const response = await api.get('/coverage/my-coverage');
+  return response.data;
+};
+
+export const addCoverageCommune = async (data: { commune: string; region?: string }): Promise<any> => {
+  const response = await api.post('/coverage/add-commune', data);
+  return response.data;
+};
+
+export const removeCoverageCommune = async (coverageId: string): Promise<any> => {
+  const response = await api.delete(`/coverage/remove-commune/${coverageId}`);
+  return response.data;
+};
+
+export const getExpansionProducts = async (): Promise<ExpansionProduct[]> => {
+  const response = await api.get('/coverage/expansion-products');
+  return response.data;
+};

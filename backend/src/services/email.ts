@@ -153,6 +153,12 @@ export const sendEmail = async (options: {
     options.from ||
     `"RedMecánica" <${process.env.SMTP_USER || "no-reply@redmecanica.cl"}>`;
 
+  // In development/test environments or for RFC 2606 test domains (.test, .example), log and bypass real delivery
+  if (options.to.endsWith('.test') || options.to.endsWith('.example') || process.env.NODE_ENV === 'test') {
+    logger.info(`[Email Service] Simulación de envío exitoso a dominio de prueba: ${options.to} (${options.subject})`);
+    return { messageId: `mock-${Date.now()}` };
+  }
+
   // Use Resend HTTP API if configured (avoids SMTP port blockages in production)
   if (process.env.RESEND_API_KEY) {
     try {

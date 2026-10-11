@@ -1,5 +1,5 @@
 import React, { Suspense } from 'react';
-import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router';
+import { BrowserRouter, Routes, Route, Navigate, useNavigate, useLocation } from 'react-router';
 import { AuthProvider, useAuth } from './providers';
 import { RequireAuth, RequireRole } from '../lib/guards';
 import { AnalyticsProvider } from '../components/AnalyticsProvider';
@@ -81,13 +81,28 @@ const LazyRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => (
 const MainLayout: React.FC = () => {
     const { user } = useAuth();
     const navigate = useNavigate();
+    const location = useLocation();
     const [showNewsletter, setShowNewsletter] = React.useState(false);
 
     React.useEffect(() => {
-      // Mostrar el modal después de 5 segundos
-      const timer = setTimeout(() => setShowNewsletter(true), 5000);
-      return () => clearTimeout(timer);
-    }, []);
+      // Rutas excluidas (flujos de suscripción, registro, onboarding o pago)
+      const isSubscriptionOrOnboarding = 
+        location.pathname.startsWith('/onboarding') ||
+        location.pathname.startsWith('/pricing') ||
+        location.pathname.startsWith('/unete') ||
+        location.pathname.startsWith('/payment');
+
+      // Solo activar cuando se ingresa a la portada inicial y no se ha mostrado previamente
+      const hasSeenModal = sessionStorage.getItem('hasSeenWelcomeModal');
+
+      if (location.pathname === '/' && !hasSeenModal && !isSubscriptionOrOnboarding) {
+        const timer = setTimeout(() => {
+          setShowNewsletter(true);
+          sessionStorage.setItem('hasSeenWelcomeModal', 'true');
+        }, 5000);
+        return () => clearTimeout(timer);
+      }
+    }, [location.pathname]);
 
   return (
     <div className="min-h-dvh bg-gray-50 font-sans text-gray-800 flex flex-col">

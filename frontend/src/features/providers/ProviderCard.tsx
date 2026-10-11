@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router';
 import Card from '../../components/common/Card';
+import LeadQualificationModal from '../../components/common/LeadQualificationModal';
 
 interface Provider {
   id: string;
@@ -32,6 +33,7 @@ interface ProviderCardProps {
 
 const ProviderCard: React.FC<ProviderCardProps> = ({ provider, onSelect }) => {
   const navigate = useNavigate();
+  const [isLeadModalOpen, setIsLeadModalOpen] = useState(false);
   const verified = Boolean(provider.isVerified || provider.emailVerified);
 
   const getTypeIcon = (type: string) => {
@@ -138,16 +140,17 @@ const ProviderCard: React.FC<ProviderCardProps> = ({ provider, onSelect }) => {
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 pt-3 border-t border-gray-50">
             <p className="text-[11px] text-gray-400 font-medium flex-1">✅ Contacto directo y gratuito · sin cuenta</p>
             <div className="flex flex-col xs:flex-row sm:flex-row gap-2">
-              {whatsAppLink ? (
-                <a
-                  href={whatsAppLink}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={(e) => e.stopPropagation()}
-                  className="btn-whatsapp !min-h-[40px] !py-2"
+              {sanitizedPhone ? (
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setIsLeadModalOpen(true);
+                  }}
+                  className="btn-whatsapp !min-h-[40px] !py-2 cursor-pointer"
                 >
                   💬 WhatsApp
-                </a>
+                </button>
               ) : provider.phone ? (
                 <a
                   href={`tel:${provider.phone}`}
@@ -167,6 +170,16 @@ const ProviderCard: React.FC<ProviderCardProps> = ({ provider, onSelect }) => {
           </div>
         </div>
       </div>
+
+      {sanitizedPhone && (
+        <LeadQualificationModal
+          isOpen={isLeadModalOpen}
+          onClose={() => setIsLeadModalOpen(false)}
+          phonePrestador={sanitizedPhone}
+          nombrePrestador={provider.businessName || provider.user?.name || 'Prestador automotriz'}
+          comunaSugerida={provider.commune}
+        />
+      )}
     </Card>
   );
 };

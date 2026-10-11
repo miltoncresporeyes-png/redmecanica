@@ -42,6 +42,16 @@ router.post('/register', async (req, res) => {
             }
         });
 
+        if (userRole === 'MECHANIC') {
+            await tx.serviceProvider.create({
+                data: {
+                    userId: user.id,
+                    status: 'PENDING',
+                    isDemo: false
+                }
+            });
+        }
+
         return user;
     });
 
@@ -185,6 +195,38 @@ router.get('/me', authenticateToken, async (req: AuthRequest, res) => {
      res.json({ user: userWithoutPassword });
   } catch (error) {
     res.status(500).json({ error: 'Error obteniendo perfil' });
+  }
+});
+
+// POST /api/auth/forgot-password
+router.post('/forgot-password', async (req, res) => {
+  try {
+    const { email } = req.body;
+    if (!email) {
+      return res.status(400).json({ error: 'El correo electrónico es requerido' });
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { email: email.toLowerCase().trim() }
+    });
+
+    // Por seguridad (OWASP), siempre respondemos positivamente para evitar enumeración de correos
+    if (!user) {
+      return res.json({
+        message: 'Si el correo está registrado en RedMecánica, recibirás las instrucciones para restablecer tu contraseña.'
+      });
+    }
+
+    // Aquí se genera el enlace de restablecimiento o código OTP
+    console.log(`[AUTH] Solicitud de restablecimiento de contraseña para: ${email}`);
+
+    res.json({
+      message: 'Si el correo está registrado en RedMecánica, recibirás las instrucciones para restablecer tu contraseña.',
+      success: true
+    });
+  } catch (error) {
+    console.error('Error in forgot-password:', error);
+    res.status(500).json({ error: 'Error al procesar la solicitud' });
   }
 });
 

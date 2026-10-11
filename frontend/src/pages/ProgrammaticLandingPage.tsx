@@ -141,7 +141,7 @@ const ProgrammaticLandingPage: React.FC = () => {
     "name": `RedMecánica - ${serviceInfo.pluralName} en ${communeInfo.name}`,
     "description": pageDesc,
     "url": currentUrl,
-    "telephone": "+56912345678",
+    "telephone": "+56983414730",
     "address": {
       "@type": "PostalAddress",
       "addressLocality": communeInfo.name,

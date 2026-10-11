@@ -24,6 +24,10 @@ export const resendVerificationSchema = z.object({
   email: z.string().email(),
 });
 
+export const forgotPasswordSchema = z.object({
+  email: z.string().email("Email inválido"),
+});
+
 export const refreshTokenSchema = z.object({
   refreshToken: z.string().optional(),
 });

@@ -4,4 +4,5 @@ export {
   verifyEmailSchema,
   resendVerificationSchema,
   refreshTokenSchema,
+  forgotPasswordSchema,
 } from "../../schemas/shared.schemas.js";

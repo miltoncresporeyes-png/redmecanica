@@ -4,7 +4,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
 
-import authRoutes from './modules/auth/auth.routes.js';
+import authRoutes from './routes/auth.js';
 import { globalLimiter, authLimiter } from './middlewares/rateLimiter.js';
 import monitoringRoutes from './routes/monitoring.js';
 
@@ -25,6 +25,7 @@ import geolocationRoutes from './routes/geolocation.js';
 import mapsRoutes from './routes/maps.js';
 import subscriptionsRoutes from './routes/subscriptions.js';
 import contactRoutes from './routes/contact.js';
+import coverageRoutes from './routes/coverage.js';
 
 import { requestIdMiddleware, securityHeadersMiddleware } from './middlewares/securityHeaders.js';
 import { errorHandler } from './middlewares/errorHandler.js';
@@ -198,6 +199,7 @@ app.use('/api/conversations', conversationsRoutes);
 app.use('/api/geo', geolocationRoutes);
 app.use('/api/maps', mapsRoutes);
 app.use('/api/subscriptions', subscriptionsRoutes);
+app.use('/api/coverage', coverageRoutes);
 app.use('/api/contact', contactRoutes);
 
 // Protected endpoint to view launch leads

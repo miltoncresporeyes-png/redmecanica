@@ -5,6 +5,8 @@ import { getProviderById, getProviderAvailability, searchNearbyProviders } from 
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import Card from '../components/common/Card';
 import ProviderCard from '../features/providers/ProviderCard';
+import StickyWhatsAppButton from '../components/common/StickyWhatsAppButton';
+import LeadQualificationModal from '../components/common/LeadQualificationModal';
 
 const DAYS = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
 
@@ -17,6 +19,7 @@ const ProviderProfilePage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+  const [isLeadModalOpen, setIsLeadModalOpen] = useState(false);
 
   useEffect(() => {
     if (!id) return;
@@ -149,7 +152,7 @@ const ProviderProfilePage: React.FC = () => {
   };
 
   return (
-    <div className="max-w-5xl mx-auto px-4 py-6 sm:py-8">
+    <div className="max-w-5xl mx-auto px-4 py-6 sm:py-8 pb-24 md:pb-8">
       <Helmet>
         <title>{pageTitle}</title>
         <meta name="description" content={pageDesc} />
@@ -246,16 +249,25 @@ const ProviderProfilePage: React.FC = () => {
           </div>
         </div>
 
-        {/* CTA contacto directo */}
+        {/* CTA contacto directo con pre-calificación */}
         <div className="mt-6 grid sm:grid-cols-2 gap-2">
-          <a
-            href={whatsAppLink}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold py-3 px-4 rounded-xl transition-all shadow-md active:scale-95 text-sm"
-          >
-            <span className="text-lg">💬</span> WhatsApp directo · gratis
-          </a>
+          {provider.phone ? (
+            <button
+              type="button"
+              onClick={() => setIsLeadModalOpen(true)}
+              className="flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold py-3 px-4 rounded-xl transition-all shadow-md active:scale-95 text-sm cursor-pointer"
+            >
+              <span className="text-lg">💬</span> Contactar por WhatsApp
+            </button>
+          ) : (
+            <button
+              type="button"
+              disabled
+              className="flex items-center justify-center gap-2 bg-slate-300 text-slate-500 font-extrabold py-3 px-4 rounded-xl text-sm cursor-not-allowed"
+            >
+              Sin WhatsApp disponible
+            </button>
+          )}
           {provider.phone ? (
             <a
               href={`tel:${provider.phone}`}
@@ -411,6 +423,24 @@ const ProviderProfilePage: React.FC = () => {
             ))}
           </div>
         </div>
+      )}
+
+      {/* Botón flotante móvil para contacto de urgencia */}
+      <StickyWhatsAppButton
+        phone={provider.phone}
+        providerName={name}
+        commune={provider.commune}
+      />
+
+      {/* Modal Wizard de Pre-calificación de Leads */}
+      {provider.phone && (
+        <LeadQualificationModal
+          isOpen={isLeadModalOpen}
+          onClose={() => setIsLeadModalOpen(false)}
+          phonePrestador={provider.phone}
+          nombrePrestador={name}
+          comunaSugerida={provider.commune}
+        />
       )}
     </div>
   );

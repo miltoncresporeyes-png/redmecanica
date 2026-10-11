@@ -79,6 +79,8 @@ model ServiceProvider {
   isDemo   Boolean  @default(false)
   
   subscription  Subscription?
+  coverages     ProviderCoverage[]
+  expansions    CoverageExpansion[]
   jobs         Job[]
   quotes       Quote[]
   history      ProviderHistory[]
@@ -95,8 +97,9 @@ model Subscription {
   id              String   @id @default(uuid())
   providerId      String   @unique
   provider        ServiceProvider @relation(fields: [providerId], references: [id])
-  plan            String   // MONTHLY, YEARLY
+  plan            String   // FREE, MONTHLY, YEARLY, PROFESSIONAL
   status          String   @default("ACTIVE") // ACTIVE, EXPIRED, CANCELLED, PENDING
+  maxCommunes     Int      @default(1) // Cupo base de comunas incluidas (Gratis=1, Destacado=3, Pro=10)
   startDate       DateTime @default(now())
   endDate         DateTime
   amount          Float
@@ -467,4 +470,55 @@ model Job {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   events      JobEvent[]
+}
+
+// ============================================================
+// MODELO DE COBERTURA Y MONETIZACIÓN TERRITORIAL (v1)
+// ============================================================
+
+enum CoverageSource {
+  BASE_COMMUNE      // Comuna principal registrada en su perfil
+  PLAN_INCLUDED     // Comuna dentro del cupo contratado en su suscripción
+  EXPANSION_PAID    // Comuna adquirida mediante pack de expansión territorial
+  PROMOTIONAL       // Asignada por promoción o administrador
+}
+
+model ProviderCoverage {
+  id                  String         @id @default(uuid())
+  providerId          String
+  provider            ServiceProvider @relation(fields: [providerId], references: [id], onDelete: Cascade)
+  commune             String         // Nombre de la comuna (ej: "Maipú", "Las Condes")
+  region              String?        // Región (ej: "Metropolitana de Santiago")
+  isPrimary           Boolean        @default(false)
+  source              CoverageSource @default(PLAN_INCLUDED)
+  active              Boolean        @default(true)
+  coverageExpansionId String?
+  expansion           CoverageExpansion? @relation(fields: [coverageExpansionId], references: [id], onDelete: SetNull)
+  createdAt           DateTime       @default(now())
+  updatedAt           DateTime       @updatedAt
+
+  @@unique([providerId, commune])
+  @@index([providerId])
+  @@index([commune])
+  @@index([active])
+}
+
+model CoverageExpansion {
+  id             String             @id @default(uuid())
+  providerId     String
+  provider       ServiceProvider    @relation(fields: [providerId], references: [id], onDelete: Cascade)
+  name           String             // ej: "Pack Territorial +3 Comunas"
+  blockSize      Int                @default(3) // Cantidad de cupos extras otorgados
+  price          Float              // Precio en CLP (ej: 7990)
+  currency       String             @default("CLP")
+  billingPeriod  String             @default("MONTHLY") // MONTHLY | YEARLY | ONE_TIME
+  status         String             @default("ACTIVE")  // ACTIVE | CANCELLED | EXPIRED
+  startsAt       DateTime           @default(now())
+  endsAt         DateTime?
+  coverages      ProviderCoverage[]
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+
+  @@index([providerId])
+  @@index([status])
 }
