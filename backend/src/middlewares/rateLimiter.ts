@@ -20,3 +20,26 @@ export const authLimiter = rateLimit({
     message: 'Demasiados intentos de acceso, por favor intente de nuevo en una hora.'
   }
 });
+
+// Límite estricto para registro de preventa / launch leads (máximo 5 por IP cada 15 minutos)
+export const launchLeadLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 5,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    error: 'Has alcanzado el límite de intentos para registrarte. Por favor espera unos minutos antes de volver a intentar.'
+  }
+});
+
+// Límite para envío de mensajes de contacto general (máximo 5 por IP cada 15 minutos)
+export const contactLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 5,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    error: 'Has enviado demasiados mensajes recientemente. Por favor espera unos minutos.'
+  }
+});
+

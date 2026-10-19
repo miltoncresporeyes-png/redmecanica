@@ -5,6 +5,8 @@ import { dirname, join } from 'path';
 import { sendContactNotification, sendLaunchLeadNotification, sendLaunchLeadConfirmation } from '../services/email.js';
 import { logger } from '../lib/logger.js';
 import { prisma } from '../db.js';
+import { contactLimiter, launchLeadLimiter } from '../middlewares/rateLimiter.js';
+import { validateEmailDeliverability } from '../utils/emailValidator.js';
 
 const router = Router();
 
@@ -31,16 +33,29 @@ const buildLeadTicket = (lead: { id: string; createdAt: Date }) => {
 
 const buildTemporaryTicket = () => `RM-LEAD-TMP-${Date.now().toString(36).toUpperCase()}`;
 
-router.post('/message', async (req, res) => {
+// POST /api/contact/message con rate limiting y protección contra spam
+router.post('/message', contactLimiter, async (req, res) => {
   try {
-    const { name, email, phone, subject, message } = req.body;
+    const { name, email, phone, subject, message, honeypot } = req.body;
+
+    // Trampa anti-bot (honeypot): si viene lleno, es un bot automatizado
+    if (honeypot) {
+      logger.warn({ ip: req.ip, honeypot }, 'Intento de spam bloqueado por honeypot en formulario de contacto');
+      // Respondemos con éxito simulado para neutralizar el bot sin gastar recursos ni cuota de email
+      return res.status(200).json({ success: true, message: 'Mensaje recibido.' });
+    }
 
     if (!name || !email || !message) {
       return res.status(400).json({ error: 'Nombre, email y mensaje son obligatorios.' });
     }
 
+    const emailCheck = await validateEmailDeliverability(email);
+    if (!emailCheck.isValid) {
+      return res.status(400).json({ error: emailCheck.reason || 'Por favor ingresa un correo electrónico corporativo o personal válido.' });
+    }
+
     try {
-      await sendContactNotification({ name, email, phone, subject, message });
+      await sendContactNotification({ name, email: email.trim().toLowerCase(), phone, subject, message });
     } catch (emailErr: any) {
       logger.warn({ emailErr }, 'Advertencia: No se pudo despachar correo de contacto');
     }
@@ -52,19 +67,34 @@ router.post('/message', async (req, res) => {
   }
 });
 
-router.post('/launch-lead', async (req, res) => {
+// POST /api/contact/launch-lead con rate limiting estricto y verificación de lead real
+router.post('/launch-lead', launchLeadLimiter, async (req, res) => {
   try {
     const rawEmail = req.body?.email as string | undefined;
+    const honeypot = req.body?.honeypot as string | undefined;
+
+    // Trampa anti-bot (honeypot)
+    if (honeypot) {
+      logger.warn({ ip: req.ip, honeypot }, 'Intento de bot bloqueado en registro de leads');
+      return res.status(200).json({
+        success: true,
+        ticket: buildTemporaryTicket(),
+        message: 'Registro completado.'
+      });
+    }
+
     const email = rawEmail?.trim().toLowerCase();
 
     if (!email) {
       return res.status(400).json({ error: 'El email es obligatorio.' });
     }
 
-    // simple email format validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      return res.status(400).json({ error: 'El email no tiene un formato válido.' });
+    // Validación profunda: formato, descarte de desechables y verificación DNS de servidores MX
+    const emailCheck = await validateEmailDeliverability(email);
+    if (!emailCheck.isValid) {
+      return res.status(400).json({ 
+        error: emailCheck.reason || 'Por favor ingresa un correo electrónico válido capaz de recibir notificaciones.' 
+      });
     }
 
     let existingLead = await prisma.launchLead.findUnique({ where: { email } });
@@ -79,6 +109,7 @@ router.post('/launch-lead', async (req, res) => {
         });
       }
 
+      // No enviamos nuevos correos a Resend si ya existe; solo devolvemos su ticket existente
       return res.status(200).json({
         success: true,
         duplicate: true,
@@ -91,7 +122,7 @@ router.post('/launch-lead', async (req, res) => {
     let createdLead: { id: string; email: string; createdAt: Date; discountCode: string | null } | null = null;
     const discountCode = `RM-${crypto.randomBytes(3).toString('hex').toUpperCase()}`;
 
-    // store lead in database
+    // Almacenar lead en base de datos
     try {
       createdLead = await prisma.launchLead.create({ data: { email, discountCode } });
     } catch (prismaError: any) {
@@ -109,6 +140,7 @@ router.post('/launch-lead', async (req, res) => {
 
     const ticket = createdLead ? buildLeadTicket(createdLead) : buildTemporaryTicket();
 
+    // Solo despachamos el correo si el lead es legítimo, verificado y nuevo
     void (async () => {
       try {
         await sendLaunchLeadNotification(email, ticket);

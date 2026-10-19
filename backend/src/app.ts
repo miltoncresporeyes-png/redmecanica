@@ -3,6 +3,7 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
+import { config } from './config/index.js';
 
 import authRoutes from './routes/auth.js';
 import { globalLimiter, authLimiter } from './middlewares/rateLimiter.js';
@@ -42,6 +43,30 @@ app.set('trust proxy', process.env.NODE_ENV === 'production' ? 1 : false);
 app.get(['/', '/health', '/api/health'], (_req, res) => {
   res.status(200).json({ status: 'ok', service: 'redmecanica-backend', timestamp: new Date().toISOString() });
 });
+
+// Middleware para descartar de inmediato escáneres de WordPress / exploits comunes
+// Previene ejecución innecesaria de middlewares, parsing o procesamiento en la API / aplicación
+app.use((req, res, next) => {
+  const url = req.originalUrl || req.url;
+  if (/(?:wp-admin|wp-login|wp-content|wp-includes|xmlrpc\.php|install\.php|\.env|\.git|phpmyadmin)/i.test(url)) {
+    return res.status(404).end();
+  }
+  next();
+});
+
+// STARTUP VALIDATION of critical env vars
+if (config.env === 'production' && process.env.SMTP_DEBUG === 'true') {
+  throw new Error('SMTP_DEBUG must not be true in production; set it to false or remove it.');
+}
+if (config.env === 'test') {
+  throw new Error('NODE_ENV must not be "test" in this configuration; use "development" or "production".');
+}
+if (config.jwt.accessSecret.length < 32) {
+  throw new Error('ACCESS_TOKEN_SECRET must be at least 32 characters long for adequate security.');
+}
+if (config.jwt.refreshSecret.length < 32) {
+  throw new Error('REFRESH_TOKEN_SECRET must be at least 32 characters long for adequate security.');
+}
 
 app.get('/api', (_req, res) => {
   res.status(200).json({ status: 'ok', service: 'api', timestamp: new Date().toISOString() });

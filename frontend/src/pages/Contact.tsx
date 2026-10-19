@@ -13,7 +13,8 @@ const Contact: React.FC<ContactProps> = ({ onClose }) => {
     email: '',
     phone: '+56 ',
     subject: 'general',
-    message: ''
+    message: '',
+    honeypot: ''
   });
 
   const [submitted, setSubmitted] = useState(false);
@@ -37,10 +38,11 @@ const Contact: React.FC<ContactProps> = ({ onClose }) => {
     try {
       await sendContactMessage(formData);
       setSubmitted(true);
-      setFormData({ name: '', email: '', phone: '+56 ', subject: 'general', message: '' });
+      setFormData({ name: '', email: '', phone: '+56 ', subject: 'general', message: '', honeypot: '' });
     } catch (err: any) {
       console.error('Error al enviar mensaje:', err);
-      setError('Hubo un error al enviar el mensaje. Por favor, intenta de nuevo o contáctanos por WhatsApp.');
+      const serverMsg = err?.response?.data?.error;
+      setError(serverMsg || 'Hubo un error al enviar el mensaje. Por favor, intenta de nuevo o contáctanos por WhatsApp.');
     } finally {
       setLoading(false);
     }
@@ -105,6 +107,20 @@ const Contact: React.FC<ContactProps> = ({ onClose }) => {
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-4">
+                {/* Campo trampa Honeypot (invisible para humanos, rellenado por bots de spam) */}
+                <div style={{ display: 'none' }} aria-hidden="true">
+                  <label htmlFor="contact-honeypot">No llenar este campo</label>
+                  <input
+                    type="text"
+                    id="contact-honeypot"
+                    name="honeypot"
+                    value={formData.honeypot}
+                    onChange={handleChange}
+                    tabIndex={-1}
+                    autoComplete="off"
+                  />
+                </div>
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Nombre completo *

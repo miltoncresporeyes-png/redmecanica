@@ -353,13 +353,14 @@ export const sendContactMessage = async (data: {
     phone?: string;
     subject: string;
     message: string;
+    honeypot?: string;
 }): Promise<{ success: boolean; message: string }> => {
     const response = await api.post('/contact/message', data);
     return response.data;
 };
 
-export const registerLaunchLead = async (email: string): Promise<{ success: boolean; message: string }> => {
-    const response = await api.post('/contact/launch-lead', { email });
+export const registerLaunchLead = async (email: string, honeypot?: string): Promise<{ success: boolean; message: string; ticket?: string }> => {
+    const response = await api.post('/contact/launch-lead', { email, honeypot });
     return response.data;
 };
 

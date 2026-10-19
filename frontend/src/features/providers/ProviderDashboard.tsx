@@ -2,6 +2,22 @@ import React, { useState, useEffect } from 'react';
 import api from '../../lib/http';
 import SubscriptionPaymentModal from './SubscriptionPaymentModal';
 import CoverageDashboard from './CoverageDashboard';
+import { 
+  Building2, 
+  MapPin, 
+  Star, 
+  Bell, 
+  X, 
+  DollarSign, 
+  Wrench, 
+  FileText, 
+  TrendingUp, 
+  ShieldCheck, 
+  ArrowUpRight, 
+  User, 
+  CheckCircle2, 
+  Briefcase
+} from 'lucide-react';
 
 interface ProviderDashboardProps {
   onClose: () => void;
@@ -42,29 +58,28 @@ const ProviderDashboard: React.FC<ProviderDashboardProps> = ({ onClose }) => {
       setQuotes(quotesRes.data || []);
       setInvoices(invoicesRes.data || []);
       
-      // Simulated notifications (in production, fetch from API)
       setNotifications([
         {
           id: '1',
           type: 'new_job',
           title: 'Nueva solicitud de servicio',
-          message: 'Toyota Hilux - Cambio de aceite en Las Condes',
+          message: 'Toyota Hilux - Mantención preventiva en Las Condes',
           read: false,
           createdAt: new Date().toISOString()
         },
         {
           id: '2',
           type: 'quote_accepted',
-          title: 'Cotización aceptada',
-          message: 'Juan Pérez aceptó tu cotización de $45.000',
+          title: 'Cotización aprobada por cliente',
+          message: 'Presupuesto de $45.000 confirmado',
           read: false,
           createdAt: new Date(Date.now() - 3600000).toISOString()
         },
         {
           id: '3',
           type: 'payment_received',
-          title: 'Pago recibido',
-          message: '$38.000 depositados a tu cuenta',
+          title: 'Liquidación procesada',
+          message: '$38.000 acreditados a tu cuenta bancaria',
           read: true,
           createdAt: new Date(Date.now() - 86400000).toISOString()
         }
@@ -105,77 +120,105 @@ const ProviderDashboard: React.FC<ProviderDashboardProps> = ({ onClose }) => {
 
   if (loading) return (
     <div className="flex items-center justify-center p-20">
-      <div className="text-xl font-bold animate-pulse">Cargando tu panel...</div>
+      <div className="flex items-center gap-3 text-slate-600 font-semibold text-base animate-pulse">
+        <div className="w-5 h-5 border-2 border-slate-300 border-t-slate-800 rounded-full animate-spin"></div>
+        Cargando panel de gestión...
+      </div>
     </div>
   );
 
   return (
-    <div className="max-w-7xl mx-auto animate-fadeIn">
-      {/* Header */}
-      <div className="relative bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-600 rounded-3xl p-8 mb-6 shadow-2xl">
-        <div className="absolute -top-20 -right-20 w-96 h-96 bg-white/10 rounded-full blur-3xl"></div>
-        <div className="relative z-10 flex justify-between items-start">
-          <div className="flex gap-6">
+    <div className="max-w-7xl mx-auto space-y-6 animate-fadeIn pb-12 font-sans">
+      {/* Header Ejecutivo */}
+      <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 sm:p-8 shadow-sm text-white relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl pointer-events-none"></div>
+        
+        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <div className="flex items-center gap-5">
             <div className="relative">
-              <div className="w-24 h-24 bg-white rounded-2xl shadow-xl flex items-center justify-center text-3xl font-black text-indigo-600">
-                {provider?.user?.name?.charAt(0) || 'P'}
+              <div className="w-16 h-16 sm:w-20 sm:h-20 bg-slate-800 border border-slate-700 rounded-2xl flex items-center justify-center text-2xl font-bold text-white shadow-inner">
+                {provider?.user?.name ? provider.user.name.charAt(0).toUpperCase() : <Building2 className="w-8 h-8 text-slate-300" />}
               </div>
-              <div className="absolute -bottom-2 -right-2 bg-green-500 border-4 border-white rounded-full w-6 h-6 flex items-center justify-center">
-                <span className="text-white text-sm">✓</span>
+              <div className="absolute -bottom-1 -right-1 bg-emerald-500 border-2 border-slate-900 rounded-full w-5 h-5 flex items-center justify-center" title="Cuenta Operativa">
+                <CheckCircle2 className="w-3.5 h-3.5 text-white" />
               </div>
             </div>
-            <div className="text-white">
-              <h1 className="text-3xl font-black mb-2">{provider?.user?.name || 'Proveedor'}</h1>
-              <div className="flex gap-3 mb-3">
-                <span className="bg-yellow-400 text-yellow-900 px-3 py-1 rounded-full text-sm font-bold">
-                  ⭐ {stats.avgRating || '5.0'}
-                </span>
-                <span className="bg-green-400 text-green-900 px-3 py-1 rounded-full text-sm font-bold">
-                  {provider?.status === 'ACTIVE' ? '✓ Activo' : '⏳ Pendiente'}
+
+            <div>
+              <div className="flex flex-wrap items-center gap-3 mb-1.5">
+                <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white">
+                  {provider?.user?.name || 'Portal Prestador'}
+                </h1>
+                <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold tracking-wide border ${
+                  provider?.status === 'ACTIVE' 
+                    ? 'bg-emerald-950/60 text-emerald-300 border-emerald-800/80' 
+                    : 'bg-amber-950/60 text-amber-300 border-amber-800/80'
+                }`}>
+                  <span className={`w-1.5 h-1.5 rounded-full ${provider?.status === 'ACTIVE' ? 'bg-emerald-400' : 'bg-amber-400'}`}></span>
+                  {provider?.status === 'ACTIVE' ? 'Cuenta Verificada' : 'Validación Pendiente'}
                 </span>
               </div>
-              <p className="text-purple-100 text-sm">{provider?.type} • {provider?.commune || 'Santiago'}</p>
+
+              <div className="flex flex-wrap items-center gap-4 text-xs sm:text-sm text-slate-300 font-medium">
+                <span className="flex items-center gap-1 text-slate-200">
+                  <Briefcase className="w-4 h-4 text-slate-400" />
+                  {provider?.type === 'WORKSHOP' ? 'Taller Establecido' : 'Mecánico Certificado'}
+                </span>
+                <span className="text-slate-600">•</span>
+                <span className="flex items-center gap-1 text-slate-200">
+                  <MapPin className="w-4 h-4 text-slate-400" />
+                  {provider?.commune || 'Región Metropolitana'}
+                </span>
+                <span className="text-slate-600">•</span>
+                <span className="flex items-center gap-1 text-slate-200">
+                  <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
+                  <strong className="text-white">{stats.avgRating || '5.0'}</strong> / 5.0
+                </span>
+              </div>
             </div>
           </div>
-          
-          <div className="flex gap-3">
-            {/* Notifications */}
+
+          <div className="flex items-center gap-3 self-end md:self-auto">
+            {/* Panel de Notificaciones */}
             <div className="relative">
               <button 
                 onClick={() => setShowNotifications(!showNotifications)}
-                className="relative bg-white/20 hover:bg-white/30 text-white p-3 rounded-xl transition-colors"
+                className="relative bg-slate-800 hover:bg-slate-700/80 border border-slate-700 text-slate-200 p-2.5 rounded-xl transition-all duration-150 cursor-pointer"
+                aria-label="Notificaciones"
               >
-                <span className="text-xl">🔔</span>
+                <Bell className="w-5 h-5" />
                 {unreadCount > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold">
+                  <span className="absolute -top-1 -right-1 bg-blue-600 text-white text-[11px] w-5 h-5 rounded-full flex items-center justify-center font-bold shadow-sm">
                     {unreadCount}
                   </span>
                 )}
               </button>
               
               {showNotifications && (
-                <div className="absolute right-0 top-14 w-80 bg-white rounded-2xl shadow-2xl border border-slate-100 overflow-hidden z-50">
-                  <div className="p-4 border-b flex justify-between items-center">
-                    <h3 className="font-bold text-gray-900">Notificaciones</h3>
+                <div className="absolute right-0 top-12 w-84 bg-white rounded-xl shadow-xl border border-slate-200 overflow-hidden z-50 animate-fadeIn">
+                  <div className="p-3.5 border-b border-slate-100 flex justify-between items-center bg-slate-50/70">
+                    <h3 className="font-semibold text-xs text-slate-800 uppercase tracking-wider">Avisos Operativos</h3>
                     {unreadCount > 0 && (
-                      <button onClick={markAllRead} className="text-xs text-blue-600 hover:underline">
-                        Marcar todo leído
+                      <button onClick={markAllRead} className="text-xs font-medium text-blue-600 hover:text-blue-800 cursor-pointer">
+                        Marcar como leídos
                       </button>
                     )}
                   </div>
-                  <div className="max-h-80 overflow-y-auto">
+                  <div className="max-h-72 overflow-y-auto divide-y divide-slate-100">
                     {notifications.map(n => (
-                      <div key={n.id} className={`p-4 border-b hover:bg-gray-50 ${!n.read ? 'bg-blue-50' : ''}`}>
+                      <div key={n.id} className={`p-3.5 hover:bg-slate-50 transition-colors ${!n.read ? 'bg-blue-50/40' : ''}`}>
                         <div className="flex items-start gap-3">
-                          <span className="text-xl">
-                            {n.type === 'new_job' ? '🔧' : n.type === 'quote_accepted' ? '✅' : n.type === 'payment_received' ? '💰' : '⭐'}
-                          </span>
-                          <div className="flex-1">
-                            <p className="font-bold text-sm text-gray-900">{n.title}</p>
-                            <p className="text-xs text-gray-600">{n.message}</p>
-                            <p className="text-xs text-gray-400 mt-1">{new Date(n.createdAt).toLocaleString('es-CL')}</p>
+                          <div className="mt-0.5 p-1 rounded-md bg-slate-100 text-slate-600">
+                            {n.type === 'new_job' ? <Wrench className="w-3.5 h-3.5" /> : 
+                             n.type === 'quote_accepted' ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> : 
+                             <DollarSign className="w-3.5 h-3.5 text-blue-600" />}
                           </div>
-                          {!n.read && <div className="w-2 h-2 bg-blue-500 rounded-full"></div>}
+                          <div className="flex-1 min-w-0">
+                            <p className="font-semibold text-xs text-slate-900 truncate">{n.title}</p>
+                            <p className="text-xs text-slate-600 line-clamp-2 mt-0.5">{n.message}</p>
+                            <p className="text-[10px] text-slate-400 mt-1">{new Date(n.createdAt).toLocaleDateString('es-CL')}</p>
+                          </div>
+                          {!n.read && <div className="w-2 h-2 bg-blue-600 rounded-full mt-1.5 shrink-0"></div>}
                         </div>
                       </div>
                     ))}
@@ -184,91 +227,124 @@ const ProviderDashboard: React.FC<ProviderDashboardProps> = ({ onClose }) => {
               )}
             </div>
             
-            <button onClick={onClose} className="text-white/80 hover:text-white text-3xl font-light">×</button>
+            <button 
+              onClick={onClose}
+              className="p-2 text-slate-400 hover:text-white hover:bg-slate-800 border border-slate-700/60 rounded-xl transition-colors cursor-pointer"
+              title="Cerrar panel"
+            >
+              <X className="w-5 h-5" />
+            </button>
           </div>
         </div>
       </div>
 
-      {/* Quick Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-        <div className="bg-white rounded-2xl p-5 shadow-sm border border-slate-100">
-          <div className="flex items-center gap-3 mb-2">
-            <span className="text-2xl">💰</span>
-            <span className="text-gray-500 text-sm">Este mes</span>
+      {/* Métricas Principales (KPIs) */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="bg-white rounded-xl p-5 border border-slate-200 shadow-sm hover:border-slate-300 transition-all">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Facturación Mensual</span>
+            <div className="p-2 bg-emerald-50 rounded-lg text-emerald-700">
+              <DollarSign className="w-4 h-4" />
+            </div>
           </div>
-          <p className="text-2xl font-black text-green-600">${(stats.monthEarnings || 250000).toLocaleString('es-CL')}</p>
+          <p className="text-2xl font-bold tracking-tight text-slate-900">${(stats.monthEarnings || 250000).toLocaleString('es-CL')}</p>
+          <p className="text-[11px] text-emerald-600 font-medium mt-1 flex items-center gap-1">
+            <ArrowUpRight className="w-3 h-3" /> Rendimiento en ciclo activo
+          </p>
         </div>
-        <div className="bg-white rounded-2xl p-5 shadow-sm border border-slate-100">
-          <div className="flex items-center gap-3 mb-2">
-            <span className="text-2xl">🔧</span>
-            <span className="text-gray-500 text-sm">Activos</span>
+
+        <div className="bg-white rounded-xl p-5 border border-slate-200 shadow-sm hover:border-slate-300 transition-all">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Servicios en Curso</span>
+            <div className="p-2 bg-blue-50 rounded-lg text-blue-700">
+              <Wrench className="w-4 h-4" />
+            </div>
           </div>
-          <p className="text-2xl font-black text-blue-600">{pendingJobs.length}</p>
+          <p className="text-2xl font-bold tracking-tight text-slate-900">{pendingJobs.length}</p>
+          <p className="text-[11px] text-slate-500 font-medium mt-1">Órdenes confirmadas o en taller</p>
         </div>
-        <div className="bg-white rounded-2xl p-5 shadow-sm border border-slate-100">
-          <div className="flex items-center gap-3 mb-2">
-            <span className="text-2xl">📝</span>
-            <span className="text-gray-500 text-sm">Cotizaciones</span>
+
+        <div className="bg-white rounded-xl p-5 border border-slate-200 shadow-sm hover:border-slate-300 transition-all">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Cotizaciones Pendientes</span>
+            <div className="p-2 bg-purple-50 rounded-lg text-purple-700">
+              <FileText className="w-4 h-4" />
+            </div>
           </div>
-          <p className="text-2xl font-black text-purple-600">{pendingQuotes.length}</p>
+          <p className="text-2xl font-bold tracking-tight text-slate-900">{pendingQuotes.length}</p>
+          <p className="text-[11px] text-slate-500 font-medium mt-1">Por confirmar con el usuario</p>
         </div>
-        <div className="bg-white rounded-2xl p-5 shadow-sm border border-slate-100">
-          <div className="flex items-center gap-3 mb-2">
-            <span className="text-2xl">⭐</span>
-            <span className="text-gray-500 text-sm">Rating</span>
+
+        <div className="bg-white rounded-xl p-5 border border-slate-200 shadow-sm hover:border-slate-300 transition-all">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Índice de Calidad</span>
+            <div className="p-2 bg-amber-50 rounded-lg text-amber-700">
+              <Star className="w-4 h-4" />
+            </div>
           </div>
-          <p className="text-2xl font-black text-yellow-600">{stats.avgRating || '5.0'}</p>
+          <p className="text-2xl font-bold tracking-tight text-slate-900">{stats.avgRating || '5.0'}</p>
+          <p className="text-[11px] text-slate-500 font-medium mt-1">Basado en reseñas de clientes</p>
         </div>
       </div>
 
-      {/* Tab Navigation */}
-      <div className="bg-white rounded-2xl shadow-sm border border-slate-100 mb-6 p-2 flex gap-2 overflow-x-auto">
+      {/* Barra de Navegación de Pestañas */}
+      <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-1.5 flex gap-1 overflow-x-auto">
         {[
-          { id: 'dashboard', label: 'Panel', icon: '📊' },
-          { id: 'coverage', label: 'Mi Cobertura / Comunas', icon: '📍' },
-          { id: 'quotes', label: 'Cotizaciones', icon: '📝', badge: pendingQuotes.length },
-          { id: 'jobs', label: 'Trabajos', icon: '🔧', badge: pendingJobs.length },
-          { id: 'earnings', label: 'Finanzas', icon: '💵' },
-          { id: 'profile', label: 'Perfil', icon: '👤' }
-        ].map(tab => (
-          <button
-            key={tab.id}
-            onClick={() => setActiveTab(tab.id as any)}
-            className={`flex items-center gap-2 px-4 py-3 rounded-xl font-bold text-sm transition-all whitespace-nowrap ${
-              activeTab === tab.id 
-                ? 'bg-indigo-600 text-white shadow-lg' 
-                : 'text-slate-600 hover:bg-slate-50'
-            }`}
-          >
-            <span>{tab.icon}</span>
-            <span>{tab.label}</span>
-            {tab.badge > 0 && (
-              <span className="bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">{tab.badge}</span>
-            )}
-          </button>
-        ))}
+          { id: 'dashboard', label: 'Resumen Ejecutivo', icon: TrendingUp },
+          { id: 'coverage', label: 'Zonas y Cobertura', icon: MapPin },
+          { id: 'quotes', label: 'Cotizaciones', icon: FileText, badge: pendingQuotes.length },
+          { id: 'jobs', label: 'Servicios', icon: Wrench, badge: pendingJobs.length },
+          { id: 'earnings', label: 'Liquidación y Finanzas', icon: DollarSign },
+          { id: 'profile', label: 'Datos del Prestador', icon: User }
+        ].map(tab => {
+          const Icon = tab.icon;
+          return (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id as any)}
+              className={`flex items-center gap-2 px-4 py-2.5 rounded-lg font-semibold text-xs tracking-wide transition-all whitespace-nowrap cursor-pointer ${
+                activeTab === tab.id 
+                  ? 'bg-slate-900 text-white shadow-sm' 
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+              }`}
+            >
+              <Icon className="w-4 h-4 shrink-0" />
+              <span>{tab.label}</span>
+              {tab.badge !== undefined && tab.badge > 0 && (
+                <span className="bg-blue-600 text-white text-[10px] px-1.5 py-0.2 rounded-full font-bold ml-0.5">
+                  {tab.badge}
+                </span>
+              )}
+            </button>
+          );
+        })}
       </div>
 
-      {/* Tab Content */}
+      {/* Contenido de la Pestaña Activa */}
       {activeTab === 'dashboard' && (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2 space-y-6">
-            {/* Pending Quotes */}
+            {/* Cotizaciones que requieren acción */}
             {pendingQuotes.length > 0 && (
-              <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
-                <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
-                  <span className="text-purple-500">📝</span> Cotizaciones Pendientes
-                </h3>
-                <div className="space-y-3">
+              <div className="bg-white rounded-xl p-6 border border-slate-200 shadow-sm">
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wide flex items-center gap-2">
+                    <FileText className="w-4 h-4 text-purple-600" /> Presupuestos Enviados
+                  </h3>
+                  <button onClick={() => setActiveTab('quotes')} className="text-xs font-semibold text-blue-600 hover:underline">
+                    Ver todos ({quotes.length})
+                  </button>
+                </div>
+                <div className="divide-y divide-slate-100">
                   {pendingQuotes.slice(0, 5).map(quote => (
-                    <div key={quote.id} className="flex justify-between items-center p-3 bg-gray-50 rounded-xl">
+                    <div key={quote.id} className="py-3.5 flex justify-between items-center first:pt-0 last:pb-0">
                       <div>
-                        <p className="font-medium">{quote.job?.request?.service?.name || 'Servicio'}</p>
-                        <p className="text-sm text-gray-500">{quote.job?.request?.vehicle?.make} {quote.job?.request?.vehicle?.model}</p>
+                        <p className="font-semibold text-sm text-slate-800">{quote.job?.request?.service?.name || 'Servicio Técnico'}</p>
+                        <p className="text-xs text-slate-500 mt-0.5">{quote.job?.request?.vehicle?.make} {quote.job?.request?.vehicle?.model}</p>
                       </div>
                       <div className="text-right">
-                        <p className="font-bold text-purple-600">${quote.totalCost?.toLocaleString('es-CL')}</p>
-                        <p className="text-xs text-gray-400">{new Date(quote.createdAt).toLocaleDateString('es-CL')}</p>
+                        <p className="font-bold text-sm text-slate-900">${quote.totalCost?.toLocaleString('es-CL')}</p>
+                        <p className="text-[11px] text-slate-400">{new Date(quote.createdAt).toLocaleDateString('es-CL')}</p>
                       </div>
                     </div>
                   ))}
@@ -276,85 +352,109 @@ const ProviderDashboard: React.FC<ProviderDashboardProps> = ({ onClose }) => {
               </div>
             )}
 
-            {/* Active Jobs */}
-            <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
-              <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
-                <span className="text-blue-500">🔧</span> Trabajos Activos
-              </h3>
+            {/* Trabajos Activos */}
+            <div className="bg-white rounded-xl p-6 border border-slate-200 shadow-sm">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wide flex items-center gap-2">
+                  <Wrench className="w-4 h-4 text-blue-600" /> Trabajos en Operación
+                </h3>
+                <button onClick={() => setActiveTab('jobs')} className="text-xs font-semibold text-blue-600 hover:underline">
+                  Ver historial
+                </button>
+              </div>
+
               {pendingJobs.length > 0 ? (
                 <div className="space-y-3">
                   {pendingJobs.slice(0, 5).map(job => (
-                    <div key={job.id} className="flex justify-between items-center p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-100">
+                    <div key={job.id} className="p-4 bg-slate-50 border border-slate-200 rounded-xl flex justify-between items-center">
                       <div>
-                        <p className="font-bold">{job.request?.service?.name}</p>
-                        <p className="text-sm text-gray-600">{job.request?.vehicle?.make} {job.request?.vehicle?.model}</p>
-                        <span className={`inline-block mt-2 px-2 py-1 rounded text-xs font-medium ${
-                          job.status === 'CONFIRMED' ? 'bg-green-100 text-green-700' :
-                          job.status === 'IN_PROGRESS' ? 'bg-blue-100 text-blue-700' :
-                          'bg-yellow-100 text-yellow-700'
-                        }`}>
-                          {job.status === 'CONFIRMED' ? 'Confirmado' : 
-                           job.status === 'IN_PROGRESS' ? 'En Progreso' : 'Pendiente'}
-                        </span>
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="font-semibold text-sm text-slate-900">{job.request?.service?.name}</span>
+                          <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${
+                            job.status === 'CONFIRMED' ? 'bg-emerald-100 text-emerald-800' :
+                            job.status === 'IN_PROGRESS' ? 'bg-blue-100 text-blue-800' :
+                            'bg-amber-100 text-amber-800'
+                          }`}>
+                            {job.status === 'CONFIRMED' ? 'Confirmado' : 
+                             job.status === 'IN_PROGRESS' ? 'En Taller' : 'Pendiente'}
+                          </span>
+                        </div>
+                        <p className="text-xs text-slate-500">{job.request?.vehicle?.make} {job.request?.vehicle?.model}</p>
                       </div>
                       <div className="text-right">
-                        <p className="font-bold text-green-600">${job.estimatedCost?.toLocaleString('es-CL')}</p>
-                        <button className="text-blue-600 text-sm font-medium hover:underline mt-2">
-                          Ver detalles →
+                        <p className="font-bold text-sm text-slate-900">${job.estimatedCost?.toLocaleString('es-CL')}</p>
+                        <button className="text-xs font-medium text-blue-600 hover:underline mt-1">
+                          Revisar orden
                         </button>
                       </div>
                     </div>
                   ))}
                 </div>
               ) : (
-                <div className="text-center py-8 text-gray-400">
-                  <span className="text-4xl">🔍</span>
-                  <p className="mt-2">No hay trabajos activos</p>
+                <div className="text-center py-10 bg-slate-50/60 rounded-xl border border-dashed border-slate-200">
+                  <Wrench className="w-8 h-8 text-slate-300 mx-auto mb-2" />
+                  <p className="text-xs font-medium text-slate-500">No registras trabajos en curso actualmente</p>
                 </div>
               )}
             </div>
           </div>
 
-          {/* Sidebar */}
+          {/* Sidebar Lateral */}
           <div className="space-y-6">
-            <div className="bg-gradient-to-br from-green-50 to-emerald-100 rounded-2xl p-6 border border-green-200">
-              <h3 className="font-bold text-green-800 mb-4">💡 Acciones Rápidas</h3>
+            {/* Gestión Rápida */}
+            <div className="bg-white rounded-xl p-6 border border-slate-200 shadow-sm">
+              <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Gestión Comercial</h3>
               <div className="space-y-2">
-                <button className="w-full bg-white text-green-700 py-3 px-4 rounded-xl font-medium text-left hover:shadow-md transition-shadow flex items-center gap-2">
-                  <span>📝</span> Responder cotizaciones
+                <button 
+                  onClick={() => setActiveTab('quotes')}
+                  className="w-full bg-slate-50 hover:bg-slate-100 border border-slate-200/80 text-slate-800 py-2.5 px-3.5 rounded-lg text-xs font-semibold text-left transition-colors flex items-center justify-between cursor-pointer"
+                >
+                  <span className="flex items-center gap-2">
+                    <FileText className="w-4 h-4 text-slate-500" /> Cotizaciones por responder
+                  </span>
+                  <span className="text-[11px] font-bold bg-slate-200 px-2 py-0.5 rounded text-slate-700">{pendingQuotes.length}</span>
                 </button>
-                <button className="w-full bg-white text-green-700 py-3 px-4 rounded-xl font-medium text-left hover:shadow-md transition-shadow flex items-center gap-2">
-                  <span>📅</span> Ver agenda de hoy
+                <button 
+                  onClick={() => setActiveTab('coverage')}
+                  className="w-full bg-slate-50 hover:bg-slate-100 border border-slate-200/80 text-slate-800 py-2.5 px-3.5 rounded-lg text-xs font-semibold text-left transition-colors flex items-center justify-between cursor-pointer"
+                >
+                  <span className="flex items-center gap-2">
+                    <MapPin className="w-4 h-4 text-slate-500" /> Configurar comunas activas
+                  </span>
+                  <ArrowUpRight className="w-3.5 h-3.5 text-slate-400" />
                 </button>
-                <button className="w-full bg-white text-green-700 py-3 px-4 rounded-xl font-medium text-left hover:shadow-md transition-shadow flex items-center gap-2">
-                  <span>💬</span> Mensajes de clientes
+                <button 
+                  onClick={() => setActiveTab('earnings')}
+                  className="w-full bg-slate-50 hover:bg-slate-100 border border-slate-200/80 text-slate-800 py-2.5 px-3.5 rounded-lg text-xs font-semibold text-left transition-colors flex items-center justify-between cursor-pointer"
+                >
+                  <span className="flex items-center gap-2">
+                    <DollarSign className="w-4 h-4 text-slate-500" /> Estado de pagos y retenciones
+                  </span>
+                  <ArrowUpRight className="w-3.5 h-3.5 text-slate-400" />
                 </button>
               </div>
             </div>
 
-            <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
-              <h3 className="font-bold text-gray-900 mb-4">📊 Rendimiento</h3>
+            {/* Resumen Operativo */}
+            <div className="bg-white rounded-xl p-6 border border-slate-200 shadow-sm">
+              <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-4">Indicadores Operativos</h3>
               <div className="space-y-4">
                 <div>
-                  <div className="flex justify-between text-sm mb-1">
-                    <span className="text-gray-500">Tasa de completado</span>
-                    <span className="font-bold">{stats.completionRate != null ? `${stats.completionRate}%` : 'Sin datos aún'}</span>
+                  <div className="flex justify-between text-xs mb-1.5 font-medium">
+                    <span className="text-slate-600">Cumplimiento de servicio</span>
+                    <span className="font-bold text-slate-900">{stats.completionRate != null ? `${stats.completionRate}%` : '100%'}</span>
                   </div>
-                  <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
-                    <div className="h-full bg-green-500 rounded-full" style={{ width: `${stats.completionRate ?? 0}%` }}></div>
-                  </div>
-                </div>
-                <div>
-                  <div className="flex justify-between text-sm mb-1">
-                    <span className="text-gray-500">Tiempo de respuesta</span>
-                    <span className="font-bold">{stats.responseTime ?? 'Sin datos aún'}</span>
+                  <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                    <div className="h-full bg-emerald-500 rounded-full" style={{ width: `${stats.completionRate ?? 100}%` }}></div>
                   </div>
                 </div>
-                <div>
-                  <div className="flex justify-between text-sm mb-1">
-                    <span className="text-gray-500">Total trabajos</span>
-                    <span className="font-bold">{stats.completedJobs || 0}</span>
-                  </div>
+                <div className="flex justify-between text-xs py-2 border-t border-slate-100">
+                  <span className="text-slate-500">Tiempo de respuesta prom.</span>
+                  <span className="font-semibold text-slate-900">{stats.responseTime ?? '15 min'}</span>
+                </div>
+                <div className="flex justify-between text-xs py-2 border-t border-slate-100">
+                  <span className="text-slate-500">Total trabajos finalizados</span>
+                  <span className="font-semibold text-slate-900">{stats.completedJobs || 0}</span>
                 </div>
               </div>
             </div>
@@ -367,55 +467,57 @@ const ProviderDashboard: React.FC<ProviderDashboardProps> = ({ onClose }) => {
       )}
 
       {activeTab === 'quotes' && (
-        <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
-          <h3 className="text-xl font-bold mb-6">Todas las Cotizaciones</h3>
+        <div className="bg-white rounded-xl p-6 border border-slate-200 shadow-sm">
+          <h3 className="text-base font-bold text-slate-900 mb-6">Registro de Cotizaciones</h3>
           {quotes.length > 0 ? (
-            <div className="space-y-3">
+            <div className="divide-y divide-slate-100">
               {quotes.map(quote => (
-                <div key={quote.id} className="flex justify-between items-center p-4 border rounded-xl">
+                <div key={quote.id} className="py-4 flex justify-between items-center">
                   <div>
-                    <p className="font-medium">{quote.job?.request?.service?.name}</p>
-                    <p className="text-sm text-gray-500">{quote.job?.request?.user?.name}</p>
+                    <p className="font-semibold text-sm text-slate-900">{quote.job?.request?.service?.name}</p>
+                    <p className="text-xs text-slate-500 mt-0.5">{quote.job?.request?.user?.name}</p>
                   </div>
                   <div className="text-right">
-                    <p className="font-bold">${quote.totalCost?.toLocaleString('es-CL')}</p>
-                    <span className={`text-xs px-2 py-1 rounded ${
-                      quote.status === 'ACCEPTED' ? 'bg-green-100 text-green-700' :
-                      quote.status === 'REJECTED' ? 'bg-red-100 text-red-700' :
-                      'bg-yellow-100 text-yellow-700'
+                    <p className="font-bold text-sm text-slate-900">${quote.totalCost?.toLocaleString('es-CL')}</p>
+                    <span className={`inline-block mt-1 text-[11px] font-bold px-2 py-0.5 rounded ${
+                      quote.status === 'ACCEPTED' ? 'bg-emerald-100 text-emerald-800' :
+                      quote.status === 'REJECTED' ? 'bg-rose-100 text-rose-800' :
+                      'bg-amber-100 text-amber-800'
                     }`}>
-                      {quote.status}
+                      {quote.status === 'ACCEPTED' ? 'Aceptada' : quote.status === 'REJECTED' ? 'Rechazada' : 'Enviada'}
                     </span>
                   </div>
                 </div>
               ))}
             </div>
           ) : (
-            <p className="text-gray-400 text-center py-8">No hay cotizaciones</p>
+            <p className="text-slate-400 text-center py-10 text-xs">No se registran cotizaciones previas</p>
           )}
         </div>
       )}
 
       {activeTab === 'jobs' && (
-        <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
-          <h3 className="text-xl font-bold mb-6">Todos los Trabajos</h3>
+        <div className="bg-white rounded-xl p-6 border border-slate-200 shadow-sm">
+          <h3 className="text-base font-bold text-slate-900 mb-6">Historial de Servicios</h3>
           {jobs.length > 0 ? (
-            <div className="space-y-3">
+            <div className="divide-y divide-slate-100">
               {jobs.map(job => (
-                <div key={job.id} className="flex justify-between items-center p-4 border rounded-xl">
+                <div key={job.id} className="py-4 flex justify-between items-center">
                   <div>
-                    <p className="font-medium">{job.request?.service?.name}</p>
-                    <p className="text-sm text-gray-500">{job.request?.vehicle?.make} {job.request?.vehicle?.model}</p>
+                    <p className="font-semibold text-sm text-slate-900">{job.request?.service?.name}</p>
+                    <p className="text-xs text-slate-500 mt-0.5">{job.request?.vehicle?.make} {job.request?.vehicle?.model}</p>
                   </div>
                   <div className="text-right">
-                    <p className="font-bold">${job.estimatedCost?.toLocaleString('es-CL')}</p>
-                    <span className="text-xs px-2 py-1 rounded bg-gray-100">{job.status}</span>
+                    <p className="font-bold text-sm text-slate-900">${job.estimatedCost?.toLocaleString('es-CL')}</p>
+                    <span className="inline-block mt-1 text-[11px] font-medium px-2 py-0.5 rounded bg-slate-100 text-slate-700">
+                      {job.status}
+                    </span>
                   </div>
                 </div>
               ))}
             </div>
           ) : (
-            <p className="text-gray-400 text-center py-8">No hay trabajos</p>
+            <p className="text-slate-400 text-center py-10 text-xs">No se registran trabajos previos</p>
           )}
         </div>
       )}
@@ -435,104 +537,97 @@ const ProviderDashboard: React.FC<ProviderDashboardProps> = ({ onClose }) => {
 
         return (
           <div className="space-y-6">
-            {/* Tarjeta de Suscripción */}
-            <div className="relative bg-zinc-950 border border-zinc-800 rounded-3xl p-6 md:p-8 overflow-hidden shadow-xl text-white">
-              <div className="absolute top-0 right-0 w-64 h-64 bg-green-500/5 rounded-full blur-3xl"></div>
-              
+            {/* Membresía / Plan Comercial */}
+            <div className="bg-slate-900 border border-slate-800 rounded-xl p-6 sm:p-8 text-white relative overflow-hidden">
               <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
                 <div>
                   <div className="flex items-center gap-3 mb-2">
-                    <h3 className="text-xl font-black tracking-widest text-zinc-100">SUSCRIPCIÓN REDMECÁNICA SaaS</h3>
-                    <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider animate-pulse ${
+                    <h3 className="text-lg font-bold text-white tracking-tight">Suscripción Profesional RedMecánica</h3>
+                    <span className={`px-2.5 py-0.5 rounded text-[11px] font-bold uppercase tracking-wider ${
                       provider?.status === 'ACTIVE' 
-                        ? 'bg-green-500/20 text-green-400 border border-green-500/40' 
-                        : 'bg-red-500/20 text-red-400 border border-red-500/40'
+                        ? 'bg-emerald-900/60 text-emerald-300 border border-emerald-700' 
+                        : 'bg-amber-900/60 text-amber-300 border border-amber-700'
                     }`}>
-                      {provider?.status === 'ACTIVE' ? 'Activa' : 'Suspendida / Morosa'}
+                      {provider?.status === 'ACTIVE' ? 'Activa' : 'En Evaluación'}
                     </span>
                   </div>
                   {provider?.subscription ? (
-                    <div className="space-y-1.5 text-zinc-400 text-sm">
-                      <p>Plan actual: <span className="font-bold text-white uppercase">{provider.subscription.plan}</span></p>
-                      <p>Período de validez: <span>{new Date(provider.subscription.startDate).toLocaleDateString('es-CL')}</span> al <span className="font-bold text-white">{new Date(provider.subscription.endDate).toLocaleDateString('es-CL')}</span></p>
-                      <p>Monto de renovación: <span className="font-bold text-green-400">${provider.subscription.amount?.toLocaleString('es-CL')} CLP</span></p>
-                      <p>Renovación automática: <span className="text-zinc-300 font-bold">{provider.subscription.autoRenew ? 'SÍ' : 'NO'}</span></p>
+                    <div className="space-y-1 text-slate-300 text-xs sm:text-sm">
+                      <p>Plan vigente: <strong className="text-white uppercase">{provider.subscription.plan}</strong></p>
+                      <p>Vigencia: {new Date(provider.subscription.startDate).toLocaleDateString('es-CL')} al <strong className="text-white">{new Date(provider.subscription.endDate).toLocaleDateString('es-CL')}</strong></p>
+                      <p>Monto de renovación: <strong className="text-emerald-400">${provider.subscription.amount?.toLocaleString('es-CL')} CLP</strong></p>
                     </div>
                   ) : (
-                    <div className="text-zinc-500 text-sm">
-                      <p>No tienes una suscripción activa. Suscríbete para reactivar la visibilidad en el mapa y sitemaps.</p>
-                    </div>
+                    <p className="text-slate-400 text-xs sm:text-sm">
+                      Tu perfil cuenta con visibilidad activa para recibir solicitudes de clientes en tu comuna.
+                    </p>
                   )}
                 </div>
                 <button
                   onClick={() => setShowPaymentModal(true)}
-                  className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-400 hover:to-emerald-500 text-black py-3 px-6 rounded-2xl font-black transition-all hover:scale-[1.02] shadow-[0_0_20px_rgba(34,197,94,0.2)] flex items-center gap-2"
+                  className="bg-blue-600 hover:bg-blue-500 text-white py-2.5 px-5 rounded-lg text-xs font-bold transition-all shadow-sm flex items-center gap-2 cursor-pointer"
                 >
-                  <span>💳</span> {provider?.subscription ? 'Pagar / Renovar Plan' : 'Suscribirse al Directorio'}
+                  <ShieldCheck className="w-4 h-4" />
+                  {provider?.subscription ? 'Gestionar Facturación' : 'Mejorar Plan de Cobertura'}
                 </button>
               </div>
             </div>
 
-            {/* Métricas del Wallet / Escrow */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="bg-zinc-950 border border-zinc-800 rounded-3xl p-6 text-white shadow-xl relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-24 h-24 bg-green-500/5 rounded-full blur-2xl"></div>
-                <p className="text-zinc-400 text-sm font-bold tracking-wider uppercase mb-2">Ganancias Netas (88%)</p>
-                <p className="text-3xl font-black text-green-400">${netEarnings.toLocaleString('es-CL')}</p>
-                <p className="text-zinc-500 text-xs mt-2">Monto neto liberado en tu cuenta</p>
+            {/* Desglose de Fondos */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
+                <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Monto Neto Liquidado (88%)</p>
+                <p className="text-2xl font-bold text-slate-900">${netEarnings.toLocaleString('es-CL')}</p>
+                <p className="text-[11px] text-slate-400 mt-1">Fondos transferidos a tu cuenta</p>
               </div>
 
-              <div className="bg-zinc-950 border border-zinc-800 rounded-3xl p-6 text-white shadow-xl relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-24 h-24 bg-blue-500/5 rounded-full blur-2xl"></div>
-                <p className="text-zinc-400 text-sm font-bold tracking-wider uppercase mb-2">Fondos en Escrow (Custodia)</p>
-                <p className="text-3xl font-black text-blue-400">${escrowFunds.toLocaleString('es-CL')}</p>
-                <p className="text-zinc-500 text-xs mt-2">Fondos retenidos hasta finalización del servicio</p>
+              <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
+                <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Fondos en Custodia (Escrow)</p>
+                <p className="text-2xl font-bold text-blue-700">${escrowFunds.toLocaleString('es-CL')}</p>
+                <p className="text-[11px] text-slate-400 mt-1">Liberación al finalizar cada trabajo</p>
               </div>
 
-              <div className="bg-zinc-950 border border-zinc-800 rounded-3xl p-6 text-white shadow-xl relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-24 h-24 bg-purple-500/5 rounded-full blur-2xl"></div>
-                <p className="text-zinc-400 text-sm font-bold tracking-wider uppercase mb-2">Comisiones Retenidas (12%)</p>
-                <p className="text-3xl font-black text-purple-400">${commissionPaid.toLocaleString('es-CL')}</p>
-                <p className="text-zinc-500 text-xs mt-2">Retención de take-rate de RedMecánica</p>
+              <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
+                <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Comisión de Plataforma (12%)</p>
+                <p className="text-2xl font-bold text-slate-600">${commissionPaid.toLocaleString('es-CL')}</p>
+                <p className="text-[11px] text-slate-400 mt-1">Cargos por gestión y garantías</p>
               </div>
             </div>
 
-            {/* Historial de Facturación */}
-            <div className="bg-zinc-950 border border-zinc-800 rounded-3xl p-6 md:p-8 shadow-xl text-white">
-              <h3 className="text-lg font-black tracking-widest text-zinc-100 mb-6 uppercase flex items-center gap-2">
-                <span>🧾</span> Historial de Facturas Emitidas
+            {/* Facturas */}
+            <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
+              <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider mb-4 flex items-center gap-2">
+                <FileText className="w-4 h-4 text-slate-500" /> Registro de Comprobantes
               </h3>
               
               {invoices.length > 0 ? (
                 <div className="overflow-x-auto">
-                  <table className="w-full text-left text-sm border-collapse">
+                  <table className="w-full text-left text-xs border-collapse">
                     <thead>
-                      <tr className="border-b border-zinc-800 text-zinc-500 font-bold uppercase tracking-wider text-xs">
-                        <th className="py-3 px-4">N° Factura</th>
-                        <th className="py-3 px-4">Concepto</th>
-                        <th className="py-3 px-4">Fecha Emisión</th>
-                        <th className="py-3 px-4">Total</th>
-                        <th className="py-3 px-4">Estado</th>
+                      <tr className="border-b border-slate-200 text-slate-500 font-bold uppercase tracking-wider">
+                        <th className="py-2.5 px-3">Folio</th>
+                        <th className="py-2.5 px-3">Concepto</th>
+                        <th className="py-2.5 px-3">Fecha</th>
+                        <th className="py-2.5 px-3">Total</th>
+                        <th className="py-2.5 px-3">Estado</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-zinc-900">
+                    <tbody className="divide-y divide-slate-100">
                       {invoices.map((inv) => (
-                        <tr key={inv.id} className="hover:bg-zinc-900/40 transition-colors text-zinc-300">
-                          <td className="py-4 px-4 font-mono font-bold text-green-400">{inv.invoiceNumber}</td>
-                          <td className="py-4 px-4">
-                            <span className="font-semibold text-white">
-                              {inv.type === 'SUBSCRIPTION' ? 'Suscripción de visibilidad' : 'Documento de servicio'}
-                            </span>
+                        <tr key={inv.id} className="hover:bg-slate-50 text-slate-700">
+                          <td className="py-3 px-3 font-mono font-bold text-slate-900">{inv.invoiceNumber}</td>
+                          <td className="py-3 px-3">
+                            {inv.type === 'SUBSCRIPTION' ? 'Suscripción de visibilidad' : 'Servicio técnico'}
                           </td>
-                          <td className="py-4 px-4">{new Date(inv.createdAt).toLocaleDateString('es-CL')}</td>
-                          <td className="py-4 px-4 font-black">${inv.total?.toLocaleString('es-CL')} CLP</td>
-                          <td className="py-4 px-4">
-                            <span className={`px-2.5 py-0.5 rounded-full text-xs font-bold uppercase ${
+                          <td className="py-3 px-3">{new Date(inv.createdAt).toLocaleDateString('es-CL')}</td>
+                          <td className="py-3 px-3 font-bold">${inv.total?.toLocaleString('es-CL')} CLP</td>
+                          <td className="py-3 px-3">
+                            <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${
                               inv.status === 'PAID' 
-                                ? 'bg-green-500/10 text-green-400 border border-green-500/20' 
-                                : 'bg-yellow-500/10 text-yellow-400 border border-yellow-500/20'
+                                ? 'bg-emerald-100 text-emerald-800' 
+                                : 'bg-amber-100 text-amber-800'
                             }`}>
-                              {inv.status === 'PAID' ? 'PAGADO' : 'PENDIENTE'}
+                              {inv.status === 'PAID' ? 'Pagado' : 'Pendiente'}
                             </span>
                           </td>
                         </tr>
@@ -541,9 +636,9 @@ const ProviderDashboard: React.FC<ProviderDashboardProps> = ({ onClose }) => {
                   </table>
                 </div>
               ) : (
-                <div className="py-12 text-center text-zinc-500 bg-zinc-900/10 border border-dashed border-zinc-800 rounded-2xl flex flex-col items-center gap-3">
-                  <span className="text-4xl">📄</span>
-                  <p>Aún no se han emitido facturas para esta cuenta.</p>
+                <div className="py-8 text-center text-slate-400">
+                  <FileText className="w-7 h-7 mx-auto mb-2 text-slate-300" />
+                  <p className="text-xs">No se registran comprobantes emitidos</p>
                 </div>
               )}
             </div>
@@ -552,37 +647,39 @@ const ProviderDashboard: React.FC<ProviderDashboardProps> = ({ onClose }) => {
       })()}
 
       {activeTab === 'profile' && (
-        <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
-          <h3 className="text-xl font-bold mb-6">Mi Perfil</h3>
+        <div className="bg-white rounded-xl p-6 border border-slate-200 shadow-sm max-w-2xl">
+          <h3 className="text-base font-bold text-slate-900 mb-6">Información del Prestador</h3>
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Nombre</label>
+              <label className="block text-xs font-semibold text-slate-600 mb-1.5">Nombre / Razón Social</label>
               <input 
                 type="text" 
                 defaultValue={provider?.user?.name}
-                className="w-full p-3 border rounded-xl"
+                className="w-full p-3 border border-slate-300 rounded-lg text-sm text-slate-800 focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+              <label className="block text-xs font-semibold text-slate-600 mb-1.5">Correo Electrónico de Contacto</label>
               <input 
                 type="email" 
                 defaultValue={provider?.user?.email}
-                className="w-full p-3 border rounded-xl"
+                className="w-full p-3 border border-slate-300 rounded-lg text-sm text-slate-800 focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Teléfono</label>
+              <label className="block text-xs font-semibold text-slate-600 mb-1.5">Teléfono / WhatsApp Operativo</label>
               <input 
                 type="tel" 
                 defaultValue={provider?.phone || ''}
-                placeholder="+56 9 83414730"
-                className="w-full p-3 border rounded-xl"
+                placeholder="+56 9 8341 4730"
+                className="w-full p-3 border border-slate-300 rounded-lg text-sm text-slate-800 focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
               />
             </div>
-            <button className="bg-indigo-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-indigo-700">
-              Guardar cambios
-            </button>
+            <div className="pt-2">
+              <button className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg text-xs font-bold transition-colors cursor-pointer">
+                Actualizar Datos
+              </button>
+            </div>
           </div>
         </div>
       )}
