@@ -5,7 +5,7 @@ export const notificationSchema = z.object({
   type: z.enum(['JOB_UPDATE', 'NEW_QUOTE', 'MESSAGE', 'PAYMENT', 'SYSTEM']),
   title: z.string().min(1, 'El título es requerido'),
   body: z.string().min(1, 'El cuerpo es requerido'),
-  data: z.record(z.unknown()).optional(),
+  data: z.record(z.string(), z.unknown()).optional(),
 });
 
 export type NotificationDTO = z.infer<typeof notificationSchema>;

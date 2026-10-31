@@ -18,19 +18,25 @@
   "overrides": {
     "react": "19.2.8",
     "react-dom": "19.2.8",
-    "fast-uri": "^3.1.6",
+    "body-parser": "^2.4.0",
+    "fast-uri": "^3.1.9",
     "browserslist": "^4.28.7",
     "mysql2": "^3.24.4",
-    "ip-address": "^10.7.3",
+    "ip-address": "^10.7.5",
     "socket.io-parser": "^4.2.7",
     "brace-expansion": "^5.0.12",
     "proxy-addr": "^2.0.8",
     "axios": "^1.20.0",
+    "follow-redirects": "^1.16.2",
     "engine.io": "^6.6.11",
     "source-map-js": "^1.2.2",
     "deepmerge-ts": "^8.0.2",
     "esbuild": "^0.28.2",
-    "postcss-selector-parser": "^7.1.6"
+    "postcss-selector-parser": "^7.1.6",
+    "qs": "^6.17.1",
+    "vite": "^6.4.4",
+    "zod": "^4.6.7",
+    "nodemailer": "^10.3.1"
   },
   "optionalDependencies": {
     "@rollup/rollup-darwin-arm64": "4.59.0",
@@ -46,6 +52,6 @@
     "@rollup/rollup-win32-x64-msvc": "4.59.0"
   },
   "dependencies": {
-    "resend": "^6.20.0"
+    "resend": "^6.37.0"
   }
 }

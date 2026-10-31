@@ -61,7 +61,7 @@ export const notificationSchema = z.object({
   type: z.enum(["JOB_UPDATE", "NEW_QUOTE", "MESSAGE", "PAYMENT", "SYSTEM"]),
   title: z.string().min(1, "El titulo es requerido"),
   body: z.string().min(1, "El cuerpo es requerido"),
-  data: z.record(z.unknown()).optional(),
+  data: z.record(z.string(), z.unknown()).optional(),
 });
 
 export const markNotificationReadSchema = z.object({
@@ -89,7 +89,7 @@ export const messageSchema = z.object({
     .string()
     .min(1, "El mensaje no puede estar vacio")
     .max(2000, "Mensaje demasiado largo"),
-  metadata: z.record(z.unknown()).optional(),
+  metadata: z.record(z.string(), z.unknown()).optional(),
 });
 
 export const serviceCategorySchema = z.object({

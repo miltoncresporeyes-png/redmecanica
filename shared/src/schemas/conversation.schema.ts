@@ -13,7 +13,7 @@ export const messageSchema = z.object({
   senderId: z.string().uuid('ID de remitente inválido'),
   senderType: z.enum(['CUSTOMER', 'PROVIDER']),
   content: z.string().min(1, 'El mensaje no puede estar vacío').max(2000, 'Mensaje demasiado largo'),
-  metadata: z.record(z.unknown()).optional(),
+  metadata: z.record(z.string(), z.unknown()).optional(),
 });
 
 export type MessageDTO = z.infer<typeof messageSchema>;
