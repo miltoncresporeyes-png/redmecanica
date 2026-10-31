@@ -109,6 +109,14 @@ router.post('/login', async (req, res) => {
       return res.status(401).json({ error: 'Credenciales inválidas' });
     }
 
+    if ((user as any).status === 'SUSPENDED') {
+      return res.status(403).json({ error: 'Tu cuenta ha sido suspendida. Contacta a soporte para más detalles.' });
+    }
+
+    if ((user as any).status === 'DELETED') {
+      return res.status(401).json({ error: 'Esta cuenta ha sido dada de baja.' });
+    }
+
     // Verificar password
     // Nota: El seed original usa passwords planos o hashes simples. 
     // Para compatibilidad con desarrollo, permitimos 'admin123' como backdoor o verificamos hash real.

@@ -4,9 +4,9 @@ import Card from '../../components/common/Card';
 import ProviderCard from './ProviderCard';
 import AdBanner from '../../components/common/AdBanner';
 import AutocompleteInput from '../../components/common/AutocompleteInput';
-import { REGIONES, COMUNAS_POR_REGION } from '../../data/autocompleteData';
+import { REGIONES, COMUNAS_POR_REGION, TIPOS_PROBLEMA } from '../../data/autocompleteData';
 import { MARKETPLACE_CATEGORIES, getCategoryBySlug, normalizeText } from '../../data/marketplace';
-import { searchNearbyProviders, geocodeAddress } from '../../services/api';
+import { searchNearbyProviders, geocodeAddress, registerLaunchLead } from '../../services/api';
 
 const ALL_COMUNAS: string[] = Array.from(
   new Set(Object.values(COMUNAS_POR_REGION).flat())
@@ -26,6 +26,7 @@ const ProviderSearch: React.FC = () => {
     category: categorySlug,
     type: searchParams.get('type') || '',
     certified: searchParams.get('certified') === 'true',
+    featured: searchParams.get('featured') === 'true',
     radius: searchParams.get('radius') || '15',
     query: searchParams.get('query') || ''
   });
@@ -34,6 +35,9 @@ const ProviderSearch: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [searched, setSearched] = useState(false);
   const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null);
+  const [leadEmail, setLeadEmail] = useState('');
+  const [leadStatus, setLeadStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [leadHoneypot, setLeadHoneypot] = useState('');
 
   const comunasSugeridas = useMemo(() => {
     if (filters.region && COMUNAS_POR_REGION[filters.region]) {
@@ -41,6 +45,24 @@ const ProviderSearch: React.FC = () => {
     }
     return ALL_COMUNAS;
   }, [filters.region]);
+
+  const serviciosSugeridos = useMemo(() => {
+    const categoryKeywords = MARKETPLACE_CATEGORIES.flatMap((c) => [c.label, ...(c.keywords || [])]);
+    return Array.from(new Set([
+      'Cambio de aceite',
+      'Pinchazo / Vulcanización',
+      'Frenos y pastillas',
+      'Grúa y auxilio',
+      'Batería descargada',
+      'Alineación y balanceo',
+      'Aire acondicionado',
+      'Diagnóstico / Scanner',
+      'Hojalatería y pintura',
+      'Embrague',
+      ...TIPOS_PROBLEMA,
+      ...categoryKeywords
+    ]));
+  }, []);
 
   const resolveServiceType = useCallback((catSlug: string, legacyType: string) => {
     const cat = getCategoryBySlug(catSlug);
@@ -128,6 +150,9 @@ const ProviderSearch: React.FC = () => {
       if (currentFilters.certified) {
         filtered = filtered.filter((p: any) => p.isVerified || p.emailVerified || (p.trustScore || 0) > 70);
       }
+      if (currentFilters.featured) {
+        filtered = filtered.filter((p: any) => p.plan && p.plan !== 'FREE');
+      }
 
       setTotalFound(providers.length);
       setResults(filtered);
@@ -147,8 +172,9 @@ const ProviderSearch: React.FC = () => {
       commune: searchParams.get('commune') || '',
       category: searchParams.get('category') || '',
       type: searchParams.get('type') || '',
-      certified: searchParams.get('certified') === 'true',
-      radius: searchParams.get('radius') || '15',
+       certified: searchParams.get('certified') === 'true',
+       featured: searchParams.get('featured') === 'true',
+       radius: searchParams.get('radius') || '15',
       query: searchParams.get('query') || ''
     };
     setFilters(next);
@@ -172,6 +198,7 @@ const ProviderSearch: React.FC = () => {
     if (next.category) params.set('category', next.category);
     if (next.type) params.set('type', next.type);
     if (next.certified) params.set('certified', 'true');
+    if (next.featured) params.set('featured', 'true');
     if (next.radius && next.radius !== '15') params.set('radius', next.radius);
     setSearchParams(params, { replace: true });
   };
@@ -182,8 +209,21 @@ const ProviderSearch: React.FC = () => {
     handleSearch();
   };
 
+  const handleLeadSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!leadEmail.trim()) return;
+    setLeadStatus('loading');
+    try {
+      await registerLaunchLead(leadEmail.trim(), leadHoneypot);
+      setLeadStatus('success');
+      setLeadEmail('');
+    } catch {
+      setLeadStatus('error');
+    }
+  };
+
   const clearFilters = () => {
-    const cleared = { region: '', commune: '', category: '', type: '', certified: false, radius: '15', query: '' };
+    const cleared = { region: '', commune: '', category: '', type: '', certified: false, featured: false, radius: '15', query: '' };
     setFilters(cleared);
     setSearchParams({}, { replace: true });
     setResults([]);
@@ -213,11 +253,12 @@ const ProviderSearch: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-[1.2fr_1fr_auto] gap-2 sm:gap-3 mb-4">
             <div>
               <label htmlFor="search-query" className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">¿Qué necesitas?</label>
-              <input
-                id="search-query"
+              <AutocompleteInput
                 value={filters.query}
-                onChange={(e) => setFilters({ ...filters, query: e.target.value })}
+                onChange={(value) => setFilters({ ...filters, query: value })}
+                suggestions={serviciosSugeridos}
                 placeholder="Ej: cambio de aceite, pinchazo, grúa, frenos…"
+                suggestionsLabel="Servicios y fallas comunes (o escribe libremente):"
                 className="input-market"
               />
             </div>
@@ -320,6 +361,15 @@ const ProviderSearch: React.FC = () => {
               />
               <span><span className="badge-verified mr-1 !px-1.5">✓</span>Solo verificados</span>
             </label>
+            <label className="flex items-center gap-2 text-xs font-bold text-gray-700 cursor-pointer bg-amber-50 border border-amber-200 rounded-xl px-3 min-h-[44px]">
+              <input
+                type="checkbox"
+                checked={filters.featured}
+                onChange={(e) => setFilters({ ...filters, featured: e.target.checked })}
+                className="w-4 h-4 text-amber-600 rounded"
+              />
+              <span>⭐ Solo destacados</span>
+            </label>
           </div>
 
           <div className="flex flex-wrap items-center justify-between gap-2">
@@ -379,6 +429,34 @@ const ProviderSearch: React.FC = () => {
             <button onClick={clearFilters} className="btn-primary">
               Ver todos los prestadores
             </button>
+            <a
+              href="https://wa.me/56983414730?text=Hola%2C%20no%20encontr%C3%A9%20prestador%20en%20mi%20comuna%20y%20necesito%20ayuda%20con%20mi%20auto."
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center gap-2 px-4 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl transition-all"
+            >
+              💬 Escríbenos por WhatsApp
+            </a>
+
+            <form onSubmit={handleLeadSubmit} className="w-full max-w-md mx-auto mt-4 space-y-2">
+              <p className="text-xs font-bold text-gray-600">¿Quieres que te avisemos cuando haya prestadores en tu comuna?</p>
+              <div className="flex gap-2">
+                <input
+                  type="email"
+                  value={leadEmail}
+                  onChange={(e) => setLeadEmail(e.target.value)}
+                  placeholder="tu@email.cl"
+                  className="flex-1 input-market"
+                  required
+                />
+                <input type="text" value={leadHoneypot} onChange={(e) => setLeadHoneypot(e.target.value)} className="hidden" tabIndex={-1} autoComplete="off" />
+                <button type="submit" disabled={leadStatus === 'loading'} className="btn-primary whitespace-nowrap">
+                  {leadStatus === 'loading' ? 'Enviando…' : 'Avisarme'}
+                </button>
+              </div>
+              {leadStatus === 'success' && <p className="text-xs text-emerald-600 font-bold">✓ Te avisaremos cuando haya prestadores.</p>}
+              {leadStatus === 'error' && <p className="text-xs text-red-600 font-bold">No se pudo registrar. Intenta de nuevo.</p>}
+            </form>
           </div>
         )}
         {results.map((provider, index) => (

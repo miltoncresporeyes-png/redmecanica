@@ -515,4 +515,53 @@ router.get('/launch-leads/stats', async (req: AuthRequest, res, next) => {
   }
 });
 
+
+// POST /api/admin/users/:id/suspend - Suspender usuario por administrador
+router.post('/users/:id/suspend', async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const user = await prisma.user.update({
+      where: { id: String(id) },
+      data: { status: 'SUSPENDED' }
+    });
+    await prisma.serviceProvider.updateMany({
+      where: { userId: String(id) },
+      data: { status: 'SUSPENDED' }
+    });
+    await auditLog({
+      userId: req.user?.id,
+      action: 'SUSPEND_USER',
+      resource: 'User',
+      resourceId: String(id),
+      ipAddress: req.ip,
+      userAgent: String(req.headers['user-agent'] || 'unknown')
+    });
+    res.json({ message: 'Usuario suspendido exitosamente', user });
+  } catch (error) {
+    next(error);
+  }
+});
+
+// POST /api/admin/users/:id/reactivate - Reactivar usuario
+router.post('/users/:id/reactivate', async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const user = await prisma.user.update({
+      where: { id: String(id) },
+      data: { status: 'ACTIVE' }
+    });
+    await auditLog({
+      userId: req.user?.id,
+      action: 'REACTIVATE_USER',
+      resource: 'User',
+      resourceId: String(id),
+      ipAddress: req.ip,
+      userAgent: String(req.headers['user-agent'] || 'unknown')
+    });
+    res.json({ message: 'Usuario reactivado exitosamente', user });
+  } catch (error) {
+    next(error);
+  }
+});
+
 export default router;

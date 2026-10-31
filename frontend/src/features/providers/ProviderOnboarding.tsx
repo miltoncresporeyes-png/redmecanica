@@ -9,6 +9,7 @@ import { validarRUT, formatearRUT, validarRUTDetalle } from '../../utils/rutVali
 import { formatearWhatsAppChile, validarWhatsAppChile } from '../../utils/phoneValidator';
 import { useAuth } from '../../app/providers';
 import LoginModal from '../auth/LoginModal';
+import { trackEvent } from '../../lib/analytics';
 
 interface ProviderOnboardingProps {
   onComplete: () => void;
@@ -76,6 +77,11 @@ const ProviderOnboarding: React.FC<ProviderOnboardingProps> = ({ onComplete, onC
   const [error, setError] = useState<string | null>(null);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [pendingSubmit, setPendingSubmit] = useState(false);
+
+  // Embudo de registro: inicio
+  useEffect(() => {
+    trackEvent('provider_registration_started');
+  }, []);
 
   // Precarga desde /unete (borrador de vitrina en 2 minutos)
   useEffect(() => {
@@ -147,40 +153,20 @@ const ProviderOnboarding: React.FC<ProviderOnboardingProps> = ({ onComplete, onC
         setError('El nombre de fantasía es obligatorio.');
         return false;
       }
-      if (!formData.rut.trim()) {
-        setError('El RUT es obligatorio.');
-        return false;
+      if (formData.rut.trim()) {
+        const rutCheck = validarRUTDetalle(formData.rut);
+        if (!rutCheck.isValid) {
+          setError(rutCheck.error || 'El RUT ingresado no es válido según Módulo 11.');
+          return false;
+        }
       }
-      const rutCheck = validarRUTDetalle(formData.rut);
-      if (!rutCheck.isValid) {
-        setError(rutCheck.error || 'El RUT ingresado no es válido según Módulo 11.');
-        return false;
-      }
-      if (!formData.experience || parseInt(formData.experience) < 0) {
+      if (formData.experience && parseInt(formData.experience) < 0) {
         setError('Debes ingresar años de experiencia válidos.');
         return false;
       }
-      if ((formData.type === 'MECHANIC' || formData.type === 'WORKSHOP') && formData.specialties.length === 0) {
-        setError('Debes seleccionar al menos una especialidad.');
+      if (formData.bio.trim() && formData.bio.length < 10) {
+        setError('La presentación debe tener al menos 10 caracteres.');
         return false;
-      }
-      if (!formData.bio.trim() || formData.bio.length < 20) {
-        setError('La presentación debe tener al menos 20 caracteres.');
-        return false;
-      }
-      if ((formData.type === 'MECHANIC' || formData.type === 'TOWING')) {
-        if (!formData.vehicleBrand) {
-          setError('Debes seleccionar la marca del vehículo.');
-          return false;
-        }
-        if (formData.vehicleBrand === 'Otro' && !formData.customVehicleBrand.trim()) {
-          setError('Debes ingresar la marca y modelo del vehículo.');
-          return false;
-        }
-        if (!formData.licensePlate.trim()) {
-          setError('La patente del vehículo es obligatoria.');
-          return false;
-        }
       }
     } else if (step === 3) {
       if (!formData.commune.trim()) {
@@ -192,25 +178,15 @@ const ProviderOnboarding: React.FC<ProviderOnboardingProps> = ({ onComplete, onC
         setError(phoneCheck.error || 'Debes ingresar un número de WhatsApp válido.');
         return false;
       }
-      if (!formData.address.trim()) {
-        setError('La dirección es obligatoria.');
-        return false;
-      }
     } else if (step === 4) {
-      if (!formData.backgroundCheckUrl) {
-        setError('El Certificado de Antecedentes es obligatorio.');
-        return false;
-      }
-      if (!formData.idDocumentUrl) {
-        setError('La Cédula de Identidad es obligatoria.');
-        return false;
-      }
+      // Documentos opcionales para publicar; se pueden subir después para obtener "Verificado"
     }
     return true;
   };
 
   const handleNext = () => {
     if (validateStep()) {
+      trackEvent('provider_registration_step_completed', { step });
       setStep(step + 1);
     }
   };
@@ -258,14 +234,19 @@ const ProviderOnboarding: React.FC<ProviderOnboardingProps> = ({ onComplete, onC
         ? formData.customVehicleBrand 
         : formData.vehicleBrand;
 
+      // Valores por defecto para no dejar perfiles vacíos
+      const bioValue = formData.bio?.trim() ? formData.bio : 'Servicios automotrices en tu comuna. Contacto directo por WhatsApp.';
+
       // Convertir specialties array a string separado por comas para el API si es necesario
       const payload = {
         ...formData,
         userId: userId,
-        specialties: formData.specialties.join(','),
+        bio: bioValue,
+        specialties: (formData.specialties || []).join(','),
         vehicle: vehicleValue
       };
       await registerProvider(payload);
+      trackEvent('provider_registration_completed', { hasDocs: Boolean(formData.backgroundCheckUrl || formData.idDocumentUrl) });
       localStorage.removeItem('provider_draft');
       
       const savedPlan = localStorage.getItem('selectedPlan');
@@ -347,7 +328,7 @@ const ProviderOnboarding: React.FC<ProviderOnboardingProps> = ({ onComplete, onC
           </div>
           <div>
             <div className="flex justify-between items-center mb-1">
-              <label className="block text-sm font-bold text-slate-600">RUT (Personal o Empresa)</label>
+              <label className="block text-sm font-bold text-slate-600">RUT (opcional)</label>
               {formData.rut && (
                 <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-full ${
                   validarRUT(formData.rut) 
@@ -379,7 +360,7 @@ const ProviderOnboarding: React.FC<ProviderOnboardingProps> = ({ onComplete, onC
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-bold text-slate-600 mb-1">Años de Experiencia</label>
+            <label className="block text-sm font-bold text-slate-600 mb-1">Años de Experiencia (opcional)</label>
             <input
               type="number"
               value={formData.experience}
@@ -432,7 +413,7 @@ const ProviderOnboarding: React.FC<ProviderOnboardingProps> = ({ onComplete, onC
         )}
 
         <div>
-          <label className="block text-sm font-bold text-slate-600 mb-1">Presentación / Propuesta de Valor</label>
+          <label className="block text-sm font-bold text-slate-600 mb-1">Presentación / Propuesta de Valor (opcional)</label>
           <textarea
             value={formData.bio}
             onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
@@ -561,7 +542,7 @@ const ProviderOnboarding: React.FC<ProviderOnboardingProps> = ({ onComplete, onC
         </div>
         <div className="col-span-2">
           <div className="flex justify-between items-center mb-1">
-            <label className="block text-sm font-bold text-slate-600">Dirección</label>
+            <label className="block text-sm font-bold text-slate-600">Dirección (opcional)</label>
             <span className="text-[11px] text-slate-400 font-medium">Escribe tu calle y número libremente</span>
           </div>
           <AutocompleteInput
@@ -582,8 +563,8 @@ const ProviderOnboarding: React.FC<ProviderOnboardingProps> = ({ onComplete, onC
   
   const renderStep4_Docs = () => (
     <div className="space-y-4">
-      <h3 className="text-xl font-black">Documentación Obligatoria</h3>
-      <p className="text-sm text-slate-500 mb-4">Sube fotos o PDFs claros de tus documentos para validar tu cuenta.</p>
+       <h3 className="text-xl font-black">Documentación (opcional)</h3>
+       <p className="text-sm text-slate-500 mb-4">Puedes publicar ahora y subir tus documentos después para obtener la insignia "Verificado".</p>
       
       <div className="grid grid-cols-1 gap-4">
         {/* Certificado de Antecedentes */}

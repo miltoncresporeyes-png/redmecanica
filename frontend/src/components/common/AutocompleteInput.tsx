@@ -8,6 +8,8 @@ interface AutocompleteInputProps {
   className?: string;
   type?: string;
   suggestionsLabel?: string;
+  noMatchLabel?: string;
+  footerNote?: string;
 }
 
 const AutocompleteInput: React.FC<AutocompleteInputProps> = ({
@@ -17,7 +19,9 @@ const AutocompleteInput: React.FC<AutocompleteInputProps> = ({
   placeholder = '',
   className = '',
   type = 'text',
-  suggestionsLabel = 'Sugerencias rápidas (puedes escribir tu propia dirección):'
+  suggestionsLabel = 'Sugerencias rápidas:',
+  noMatchLabel = 'No hay coincidencias exactas. Puedes continuar escribiendo libremente.',
+  footerNote
 }) => {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [filteredSuggestions, setFilteredSuggestions] = useState<string[]>([]);
@@ -30,8 +34,8 @@ const AutocompleteInput: React.FC<AutocompleteInputProps> = ({
       );
       setFilteredSuggestions(filtered);
     } else {
-      // Si el input está vacío, mostrar solo las primeras sugerencias de ejemplo
-      setFilteredSuggestions(suggestions.slice(0, 6));
+      // Si el input está vacío, mostrar las primeras sugerencias
+      setFilteredSuggestions(suggestions.slice(0, 8));
     }
   }, [value, suggestions]);
 
@@ -51,7 +55,7 @@ const AutocompleteInput: React.FC<AutocompleteInputProps> = ({
   };
 
   return (
-    <div ref={wrapperRef} className="relative">
+    <div ref={wrapperRef} className="relative w-full">
       <input
         type={type}
         value={value}
@@ -65,7 +69,7 @@ const AutocompleteInput: React.FC<AutocompleteInputProps> = ({
       />
       {showSuggestions && (
         <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-slate-200 rounded-xl shadow-xl max-h-64 overflow-y-auto z-50 divide-y divide-slate-100 animate-fadeIn">
-          {/* Header explicativo para que el usuario sepa que es solo sugerencia */}
+          {/* Header explicativo */}
           <div className="px-3.5 py-2 bg-slate-50 flex items-center justify-between text-[11px] font-semibold text-slate-500">
             <span>💡 {suggestionsLabel}</span>
             <span className="text-[10px] text-slate-400 font-normal">Escritura libre</span>
@@ -80,19 +84,21 @@ const AutocompleteInput: React.FC<AutocompleteInputProps> = ({
                 className="w-full text-left px-4 py-2.5 text-xs sm:text-sm text-slate-700 hover:bg-blue-50 hover:text-blue-700 transition-colors flex items-center justify-between group"
               >
                 <span>{suggestion}</span>
-                <span className="text-[11px] text-slate-400 group-hover:text-blue-600 opacity-0 group-hover:opacity-100 transition-opacity">Usar sugerencia ↵</span>
+                <span className="text-[11px] text-slate-400 group-hover:text-blue-600 opacity-0 group-hover:opacity-100 transition-opacity">Usar ↵</span>
               </button>
             ))
           ) : (
             <div className="px-4 py-3 text-xs text-slate-500 italic bg-white">
-              No coincide con las avenidas sugeridas. <strong className="text-slate-700 not-italic">Puedes continuar escribiendo tu dirección completa normalmente.</strong>
+              {noMatchLabel}
             </div>
           )}
 
-          {/* Footer aclaratorio */}
-          <div className="px-3 py-1.5 bg-slate-50 text-[10px] text-slate-400 text-center">
-            Ingresa tu calle y número exacto. No estás limitado a la lista.
-          </div>
+          {/* Footer aclaratorio opcional */}
+          {footerNote && (
+            <div className="px-3 py-1.5 bg-slate-50 text-[10px] text-slate-400 text-center">
+              {footerNote}
+            </div>
+          )}
         </div>
       )}
     </div>

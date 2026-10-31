@@ -10,6 +10,7 @@ export interface AuthRequest extends Request {
     id: string;
     email: string;
     role: string;
+    status?: string;
   };
 }
 
@@ -25,11 +26,19 @@ export const requireAuth = async (req: AuthRequest, _res: Response, next: NextFu
     // We fetch user just to be sure, maybe cache this later
     const user = await prisma.user.findUnique({
       where: { id: decoded.userId },
-      select: { id: true, email: true, role: true }
+      select: { id: true, email: true, role: true, status: true }
     });
 
     if (!user) {
         return next(new UnauthorizedError('Usuario no encontrado'));
+    }
+
+    if ((user as any).status === 'SUSPENDED') {
+        return next(new ForbiddenError('Tu cuenta ha sido suspendida por la administración.'));
+    }
+
+    if ((user as any).status === 'DELETED') {
+        return next(new UnauthorizedError('Esta cuenta ha sido dada de baja.'));
     }
 
     req.user = user;

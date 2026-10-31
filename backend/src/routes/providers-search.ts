@@ -62,6 +62,7 @@ router.get('/search', async (req, res) => {
       emailVerified: p.emailVerified,
       phoneVerified: p.phoneVerified,
       trustScore: p.trustScore,
+      plan: p.subscription?.plan || 'FREE',
       distance: Math.round(p.distance * 10) / 10,
       etaMinutes: estimateArrivalTime(p.distance, p.type),
     }));

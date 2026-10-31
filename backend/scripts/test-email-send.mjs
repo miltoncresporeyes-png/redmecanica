@@ -15,7 +15,7 @@ import {
   sendContactNotification, 
   NOTIFICATIONS_EMAIL, 
   CONTACT_EMAIL 
-} from '../src/services/email.js';
+} from '../src/services/email.ts';
 
 async function runEmailTests() {
   console.log('====================================================');

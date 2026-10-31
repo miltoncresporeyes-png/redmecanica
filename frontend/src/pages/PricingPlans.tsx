@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router';
 import { Check, X, Wrench, Star, Rocket, Warehouse, HelpCircle, CreditCard, Loader2, Shield } from 'lucide-react';
 import SEO from '../components/SEO';
 import { useAuth } from '../app/providers';
+import { trackEvent } from '../lib/analytics';
 import { createSubscription } from '../services/api';
 import LoginModal from '../features/auth/LoginModal';
 import { POPULAR_COMUNAS } from '../data/marketplace';
@@ -127,6 +128,7 @@ const PricingPlans: React.FC<PricingPlansProps> = ({ onSelectPlan, onNavigateToO
   const handleSelectPlan = (planId: string) => {
     const plan = plans.find((p) => p.id === planId);
     if (!plan) return;
+    trackEvent('plan_selected', { planId, billingCycle, role });
 
     if (planId === 'enterprise') {
       window.open('mailto:ventas@redmecanica.cl?subject=Consulta Plan Empresarial RedMecánica', '_blank');

@@ -20,6 +20,7 @@ interface Provider {
   distance?: number;
   isVerified?: boolean;
   emailVerified?: boolean;
+  plan?: string;
   completedJobs?: number;
   user?: {
     name: string;
@@ -104,6 +105,11 @@ const ProviderCard: React.FC<ProviderCardProps> = ({ provider, onSelect }) => {
                 {verified && (
                   <span className="badge-verified">
                     ✓ Verificado
+                  </span>
+                )}
+                {provider.plan && provider.plan !== 'FREE' && (
+                  <span className="bg-amber-100 text-amber-800 text-[10px] font-bold uppercase px-2 py-0.5 rounded border border-amber-200">
+                    ⭐ Destacado
                   </span>
                 )}
                 {specs.map((spec) => (

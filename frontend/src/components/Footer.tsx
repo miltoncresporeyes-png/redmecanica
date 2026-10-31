@@ -131,7 +131,7 @@ const Footer: React.FC = () => {
         {/* Línea divisoria */}
         <div className="border-t border-slate-800 mt-10 pt-6 flex flex-col sm:flex-row justify-between items-center gap-4">
           <p className="text-xs text-slate-500 text-center sm:text-left">
-            © {new Date().getFullYear()} RedMecánica. Todos los derechos reservados.
+            © {new Date().getFullYear()} RedMecánica. Todos los derechos reservados. Diseñado por <a href='https://automatiza360.cl' target='_blank' rel='noopener noreferrer' className='text-amber-400 hover:text-amber-300 font-bold transition-colors underline decoration-amber-400/50 hover:decoration-amber-300 inline-flex items-center gap-0.5 ml-1' title='Visitar Automatiza360.cl'>Automatiza360.cl <span className='text-[10px]'>↗</span></a>
           </p>
 
           {/* Badge de confianza */}

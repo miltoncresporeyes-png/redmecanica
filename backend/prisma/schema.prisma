@@ -12,7 +12,8 @@ model User {
   email     String   @unique
   password  String   @default("$2b$10$YourDefaultHashedPasswordHere") // En producción usar bcrypt
   name      String?
-  role      String   @default("USER") // USER, MECHANIC, ADMIN
+  role      String   @default("USER") // USER, MECHANIC, ADMIN, SUSPENDED
+  status    String   @default("ACTIVE") // ACTIVE, SUSPENDED, DELETED
   phone     String?
   emailVerified Boolean  @default(false)
   emailVerificationToken String?

@@ -79,4 +79,38 @@ router.put('/:id', authenticateToken, async (req: AuthRequest, res) => {
   }
 });
 
+
+
+// DELETE /api/users/me/deactivate - Dar de baja mi propia cuenta
+router.delete('/me/deactivate', authenticateToken, async (req: AuthRequest, res) => {
+  try {
+    const userId = req.user?.id;
+    if (!userId) return res.status(401).json({ error: 'No autenticado' });
+
+    const timestamp = Date.now();
+    await prisma.$transaction(async (tx) => {
+      await tx.user.update({
+        where: { id: userId },
+        data: {
+          status: 'DELETED',
+          email: 'deleted_' + timestamp + '_' + req.user!.email,
+          name: 'Usuario dado de baja',
+          phone: null
+        }
+      });
+
+      await tx.serviceProvider.updateMany({
+        where: { userId },
+        data: { status: 'SUSPENDED' }
+      });
+    });
+
+    res.clearCookie('refresh_token');
+    res.json({ message: 'Tu cuenta ha sido dada de baja exitosamente.' });
+  } catch (error: any) {
+    console.error('Error al dar de baja cuenta:', error);
+    res.status(500).json({ error: 'Error al procesar la baja de la cuenta' });
+  }
+});
+
 export default router;

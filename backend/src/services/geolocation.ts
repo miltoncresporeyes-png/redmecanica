@@ -45,9 +45,6 @@ export async function findNearbyProviders(params: ProviderSearchParams) {
   const providers = await prisma.serviceProvider.findMany({
     where: {
       status: 'ACTIVE',
-      subscription: {
-        status: 'ACTIVE'
-      },
       latitude: { not: null },
       longitude: { not: null },
       ...(categoryId && {
@@ -75,6 +72,12 @@ export async function findNearbyProviders(params: ProviderSearchParams) {
 
   const userLocation: GeoPoint = { lat, lng };
   
+  const planPriority = (p: any) => {
+    const plan = p.subscription?.plan;
+    if (plan === 'PROFESSIONAL') return 0;
+    if (plan === 'MONTHLY' || plan === 'YEARLY') return 1;
+    return 2;
+  };
   const nearbyProviders = providers
     .map(provider => {
       const providerLocation: GeoPoint = {
@@ -85,7 +88,7 @@ export async function findNearbyProviders(params: ProviderSearchParams) {
       return { ...provider, distance };
     })
     .filter(provider => provider.distance <= radiusKm)
-    .sort((a, b) => a.distance - b.distance);
+    .sort((a, b) => planPriority(a) - planPriority(b) || a.distance - b.distance);
 
   return nearbyProviders;
 }

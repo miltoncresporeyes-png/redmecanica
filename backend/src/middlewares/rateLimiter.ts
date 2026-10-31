@@ -1,21 +1,30 @@
 import rateLimit from 'express-rate-limit';
 
+// Permitir tráfico local en desarrollo sin bloquearse por reloads y hot-reload
+const isDev = process.env.NODE_ENV !== 'production';
+
 export const globalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // limit each IP to 100 requests per windowMs
+  max: isDev ? 5000 : 300, // En desarrollo prácticamente ilimitado para recargas / HMR
   standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
   legacyHeaders: false, // Disable the `X-RateLimit-*` headers
-  skip: (req) => req.method === 'OPTIONS',
+  skip: (req) => req.method === 'OPTIONS' || (isDev && (req.ip === '127.0.0.1' || req.ip === '::1' || req.ip === '::ffff:127.0.0.1')),
   message: {
     message: 'Demasiadas solicitudes desde esta IP, por favor intente de nuevo más tarde.'
   }
 });
 
 export const authLimiter = rateLimit({
-  windowMs: 60 * 60 * 1000, // 1 hour
-  max: 10, // limit each IP to 10 login/register attempts per hour
+  windowMs: isDev ? 60 * 1000 : 60 * 60 * 1000,
+  max: isDev ? 100 : 20, // En dev permite pruebas fluidas sin bloquear la IP local
   standardHeaders: true,
   legacyHeaders: false,
+  skip: (req) => {
+    // No limitar la verificación de sesión en cada reload (/auth/me o OPTIONS)
+    if (req.method === 'OPTIONS' || req.path === '/me') return true;
+    if (isDev && (req.ip === '127.0.0.1' || req.ip === '::1' || req.ip === '::ffff:127.0.0.1')) return true;
+    return false;
+  },
   message: {
     message: 'Demasiados intentos de acceso, por favor intente de nuevo en una hora.'
   }

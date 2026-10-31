@@ -4,6 +4,7 @@ import SEO from '../components/SEO';
 import { MARKETPLACE_CATEGORIES } from '../data/marketplace';
 import { COMUNAS_POR_REGION } from '../data/autocompleteData';
 import { formatearWhatsAppChile, validarWhatsAppChile } from '../utils/phoneValidator';
+import { trackEvent } from '../lib/analytics';
 
 const ALL_COMUNAS: string[] = Array.from(new Set(Object.values(COMUNAS_POR_REGION).flat())).sort((a, b) =>
   a.localeCompare(b, 'es')
@@ -41,6 +42,7 @@ const ProviderLanding: React.FC = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    trackEvent('provider_registration_started', { source: 'provider_landing' });
     setError(null);
     if (!formData.businessName.trim()) return setError('Ponle nombre a tu vitrina (tu taller, vulca, grúa…).');
     if (!formData.categorySlug) return setError('Elige tu categoría principal.');
@@ -190,7 +192,7 @@ const ProviderLanding: React.FC = () => {
                     autoComplete="off"
                   />
                   {communeFocus && (
-                    <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-100 rounded-xl shadow-xl z-10 overflow-hidden">
+                    <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-100 rounded-xl shadow-xl z-50 max-h-60 overflow-y-auto overscroll-contain">
                       {filteredComunas.map((c) => (
                         <button
                           key={c}
