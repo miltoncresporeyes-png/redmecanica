@@ -241,7 +241,7 @@ router.put('/:id', authenticateToken, async (req: AuthRequest, res) => {
       return res.status(403).json({ error: 'Acceso denegado: No tienes permiso para modificar este perfil' });
     }
 
-    const { bio, vehicle, licensePlate, status, latitude, longitude } = req.body;
+    const { bio, vehicle, licensePlate, status, latitude, longitude, address, commune, region, phone, website, specialties, paymentMethods } = req.body;
 
     if (status !== undefined && status !== provider.status && !isAdmin) {
       return res.status(403).json({ error: 'Acceso denegado: Solo administradores pueden cambiar el estado del proveedor' });
@@ -255,6 +255,13 @@ router.put('/:id', authenticateToken, async (req: AuthRequest, res) => {
         licensePlate,
         latitude,
         longitude,
+        ...(address !== undefined && { address }),
+        ...(commune !== undefined && { commune }),
+        ...(region !== undefined && { region }),
+        ...(phone !== undefined && { phone }),
+        ...(website !== undefined && { website }),
+        ...(specialties !== undefined && { specialties }),
+        ...(paymentMethods !== undefined && { paymentMethods }),
         ...(isAdmin && status && { status })
       }
     });
