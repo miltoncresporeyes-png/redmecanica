@@ -260,6 +260,13 @@ const Header: React.FC = () => {
             updateUser(u);
             setIsLoginModalOpen(false);
             closeMobileMenu();
+            if (u.role === 'MECHANIC' || u.role === 'WORKSHOP' || u.role === 'TOWING') {
+              navigate('/provider-dashboard');
+            } else if (u.role === 'ADMIN') {
+              navigate('/admin');
+            } else {
+              navigate('/profile');
+            }
         }}
       />
     </>
