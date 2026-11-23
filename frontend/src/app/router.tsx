@@ -144,12 +144,6 @@ const MainLayout: React.FC = () => {
             <Route path="/climatizacion/:citySlug" element={<LazyRoute><ServiceCityPage /></LazyRoute>} />
             <Route path="/detailing/:citySlug" element={<LazyRoute><ServiceCityPage /></LazyRoute>} />
            
-           {/* Programmatic SEO dynamic URL landing page */}
-           <Route path="/:seoSlug" element={<LazyRoute><ProgrammaticLandingPage /></LazyRoute>} />
-           
-           {/* 404 - Not Found */}
-           <Route path="*" element={<LazyRoute><NotFoundPage /></LazyRoute>} />
-           
            <Route element={<RequireAuth />}>
                <Route path="/profile" element={<LazyRoute><AccountHub currentUser={user} onClose={() => navigate('/')} /></LazyRoute>} />
            </Route>
@@ -157,6 +151,12 @@ const MainLayout: React.FC = () => {
            <Route element={<RequireRole roles={['MECHANIC', 'WORKSHOP', 'TOWING']} />}>
                <Route path="/provider-dashboard" element={<LazyRoute><ProviderDashboard onClose={() => navigate('/')} /></LazyRoute>} />
            </Route>
+
+           {/* Programmatic SEO dynamic URL landing page */}
+           <Route path="/:seoSlug" element={<LazyRoute><ProgrammaticLandingPage /></LazyRoute>} />
+           
+           {/* 404 - Not Found */}
+           <Route path="*" element={<LazyRoute><NotFoundPage /></LazyRoute>} />
         </Routes>
       </main>
       <Suspense fallback={null}>
