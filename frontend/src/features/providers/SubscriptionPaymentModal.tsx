@@ -71,10 +71,10 @@ const SubscriptionPaymentModal: React.FC<SubscriptionPaymentModalProps> = ({ pro
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-3 sm:p-4 overflow-y-auto">
-      <div className="relative w-full max-w-lg bg-zinc-950 border border-zinc-800 rounded-3xl overflow-hidden shadow-[0_0_50px_rgba(34,197,94,0.15)] max-h-[92dvh] sm:max-h-[88dvh] flex flex-col my-auto text-white animate-scaleUp">
+      <div className="relative w-full max-w-lg bg-zinc-950 border border-zinc-800 rounded-card overflow-hidden shadow-[0_0_50px_rgba(34,197,94,0.15)] max-h-[92dvh] sm:max-h-[88dvh] flex flex-col my-auto text-white animate-scaleUp">
         
         {/* Neon Underglow and Corner Accents */}
-        <div className="absolute top-0 left-1/4 right-1/4 h-[2px] bg-gradient-to-r from-transparent via-green-500 to-transparent pointer-events-none"></div>
+        <div className="absolute top-0 left-1/4 right-1/4 h-[2px] bg-gradient-to-r from-transparent via-emerald-500 to-transparent pointer-events-none"></div>
         
         <div className="p-4 sm:p-7 overflow-y-auto flex-1 min-h-0">
         
@@ -82,7 +82,7 @@ const SubscriptionPaymentModal: React.FC<SubscriptionPaymentModalProps> = ({ pro
         <div className="flex justify-between items-center mb-6">
           <div className="flex items-center gap-2">
             <span className="text-2xl animate-spin-slow">⚙️</span>
-            <span className="text-lg font-black tracking-widest text-green-400">REDMECÁNICA FACTURACIÓN</span>
+            <span className="text-lg font-black tracking-widest text-emerald-400">REDMECÁNICA FACTURACIÓN</span>
           </div>
           <button 
             onClick={onClose} 
@@ -93,7 +93,7 @@ const SubscriptionPaymentModal: React.FC<SubscriptionPaymentModalProps> = ({ pro
         </div>
 
         {error && (
-          <div className="mb-6 p-4 bg-red-950/60 border border-red-800/80 rounded-2xl text-red-300 text-sm text-center">
+          <div className="mb-6 p-4 bg-red-950/60 border border-red-800/80 rounded-card text-red-300 text-sm text-center">
             ⚠️ {error}
           </div>
         )}
@@ -114,9 +114,9 @@ const SubscriptionPaymentModal: React.FC<SubscriptionPaymentModalProps> = ({ pro
                   <label 
                     key={key}
                     onClick={() => setSelectedPlan(key)}
-                    className={`block relative p-5 rounded-2xl border cursor-pointer transition-all ${
+                    className={`block relative p-5 rounded-card border cursor-pointer transition-all ${
                       active 
-                        ? 'bg-zinc-900 border-green-500 shadow-[0_0_20px_rgba(34,197,94,0.1)]' 
+                        ? 'bg-zinc-900 border-emerald-500 shadow-[0_0_20px_rgba(34,197,94,0.1)]' 
                         : 'bg-zinc-900/30 border-zinc-800 hover:border-zinc-700'
                     }`}
                   >
@@ -126,7 +126,7 @@ const SubscriptionPaymentModal: React.FC<SubscriptionPaymentModalProps> = ({ pro
                         <span className="block text-zinc-400 text-xs mt-1">{plan.description}</span>
                       </div>
                       <div className="text-right">
-                        <span className="block text-xl font-black text-green-400">{formatPrice(plan.price)}</span>
+                        <span className="block text-xl font-black text-emerald-400">{formatPrice(plan.price)}</span>
                         <span className="text-zinc-500 text-xs">/período</span>
                       </div>
                     </div>
@@ -138,7 +138,7 @@ const SubscriptionPaymentModal: React.FC<SubscriptionPaymentModalProps> = ({ pro
             <button
               onClick={handleSelectPlan}
               disabled={submitting}
-              className="w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-400 hover:to-emerald-500 text-black py-4 px-6 rounded-2xl font-black transition-all hover:scale-[1.02] flex items-center justify-center gap-2"
+              className="w-full bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-black py-4 px-6 rounded-card font-black transition-all hover:scale-[1.02] flex items-center justify-center gap-2"
             >
               {submitting ? (
                 <>
@@ -173,11 +173,11 @@ const SubscriptionPaymentModal: React.FC<SubscriptionPaymentModalProps> = ({ pro
         {/* STEP 3: PAYMENT SUCCESS (confirmado por retorno de Webpay) */}
         {step === 'success' && (
           <div className="py-8 flex flex-col items-center justify-center space-y-6 text-center animate-scaleUp">
-            <div className="w-20 h-20 bg-green-500/20 border border-green-500 rounded-full flex items-center justify-center text-green-400 text-4xl shadow-[0_0_30px_rgba(34,197,94,0.3)]">
+            <div className="w-20 h-20 bg-emerald-500/20 border border-emerald-500 rounded-full flex items-center justify-center text-emerald-400 text-4xl shadow-[0_0_30px_rgba(34,197,94,0.3)]">
               ✓
             </div>
             <div className="space-y-2">
-              <h3 className="text-2xl font-black text-green-400">Pago recibido</h3>
+              <h3 className="text-2xl font-black text-emerald-400">Pago recibido</h3>
               <p className="text-zinc-300 text-sm">
                 Tu suscripción al {plans[selectedPlan].name} ({formatPrice(plans[selectedPlan].price)} CLP) quedó registrada.
                 Revisa el estado en tu panel una vez que Webpay confirme la transacción.
@@ -189,7 +189,7 @@ const SubscriptionPaymentModal: React.FC<SubscriptionPaymentModalProps> = ({ pro
                 onSuccess();
                 onClose();
               }}
-              className="w-full bg-green-500 hover:bg-green-400 text-black py-4 px-6 rounded-2xl font-black transition-colors"
+              className="w-full bg-emerald-500 hover:bg-emerald-400 text-black py-4 px-6 rounded-card font-black transition-colors"
             >
               Regresar al Panel
             </button>

@@ -87,7 +87,7 @@ const BlogPost: React.FC = () => {
       </div>
 
       {/* Large Featured Image */}
-      <div className="rounded-3xl overflow-hidden h-[300px] md:h-[450px] w-full shadow-lg mb-10">
+      <div className="rounded-card overflow-hidden h-[300px] md:h-[450px] w-full shadow-lg mb-10">
         <img
           src={post.image}
           alt={post.title}
@@ -118,7 +118,7 @@ const BlogPost: React.FC = () => {
               <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">Compartir:</span>
               <button className="w-8 h-8 rounded-full bg-slate-100 hover:bg-blue-50 text-slate-500 hover:text-blue-600 flex items-center justify-center text-xs transition-colors">f</button>
               <button className="w-8 h-8 rounded-full bg-slate-100 hover:bg-sky-50 text-slate-500 hover:text-sky-600 flex items-center justify-center text-xs transition-colors">in</button>
-              <button className="w-8 h-8 rounded-full bg-slate-100 hover:bg-green-50 text-slate-500 hover:text-green-600 flex items-center justify-center text-xs transition-colors">wa</button>
+              <button className="w-8 h-8 rounded-full bg-slate-100 hover:bg-emerald-50 text-slate-500 hover:text-emerald-600 flex items-center justify-center text-xs transition-colors">wa</button>
             </div>
           </div>
         </div>
@@ -126,7 +126,7 @@ const BlogPost: React.FC = () => {
         {/* Right Side: Floating Sidebar CTA */}
         <div className="lg:col-span-1">
           <div className="sticky top-6 space-y-6">
-            <Card className="p-5 bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100 shadow-sm rounded-2xl text-center">
+            <Card className="p-5 bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100 shadow-sm rounded-card text-center">
               <span className="text-[28px] block mb-2">🚗</span>
               <h4 className="font-extrabold text-blue-950 text-sm mb-2">¿Necesitas un servicio hoy?</h4>
               <p className="text-[11px] text-blue-800/80 mb-6 leading-relaxed">
@@ -134,7 +134,7 @@ const BlogPost: React.FC = () => {
               </p>
               <Link
                 to="/solicitar"
-                className="w-full text-center block bg-blue-600 hover:bg-blue-700 text-white font-extrabold py-2.5 rounded-xl transition-all shadow-md text-xs uppercase tracking-wider"
+                className="w-full text-center block bg-blue-600 hover:bg-blue-700 text-white font-extrabold py-2.5 rounded-control transition-all shadow-md text-xs uppercase tracking-wider"
               >
                 🛠️ Cotizar Gratis
               </Link>
@@ -161,10 +161,10 @@ const BlogPost: React.FC = () => {
           {relatedArticles.map(article => (
             <Card 
               key={article.slug}
-              className="p-4 border border-gray-100 hover:border-blue-200 transition-all rounded-xl"
+              className="p-4 border border-gray-100 hover:border-blue-200 transition-all rounded-control"
             >
               <Link to={`/blog/${article.slug}`} className="flex gap-4">
-                <div className="w-24 h-24 rounded-lg overflow-hidden bg-slate-100 flex-shrink-0">
+                <div className="w-24 h-24 rounded-control overflow-hidden bg-slate-100 flex-shrink-0">
                   <img
                     src={article.image}
                     alt={article.title}

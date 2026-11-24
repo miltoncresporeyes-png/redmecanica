@@ -50,7 +50,7 @@ const JobTracking: React.FC<JobTrackingProps> = ({ job: initialJob, onComplete }
         <h2 className="text-2xl font-bold mb-4 text-center">Seguimiento de tu Servicio</h2>
         
         {/* Placeholder for Map */}
-        <div className="w-full h-64 bg-gray-200 rounded-lg flex items-center justify-center mb-4 relative overflow-hidden">
+        <div className="w-full h-64 bg-gray-200 rounded-control flex items-center justify-center mb-4 relative overflow-hidden">
            <div className="absolute inset-0 bg-gray-300 opacity-50"></div>
            <div className="text-center z-10">
             <svg className="w-16 h-16 text-gray-500 mx-auto animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l5.447 2.724A1 1 0 0021 16.382V5.618a1 1 0 00-1.447-.894L15 7m-6 10v-5m6 5v-5m0 0l-6-3m6 3l6-3"></path></svg>
@@ -68,7 +68,7 @@ const JobTracking: React.FC<JobTrackingProps> = ({ job: initialJob, onComplete }
                 <span className={`px-3 py-1 rounded-full text-sm font-bold ${
                     job.status === 'En Route' ? 'bg-yellow-100 text-yellow-800' :
                     job.status === 'In Progress' ? 'bg-blue-100 text-blue-800' :
-                    'bg-green-100 text-green-800'
+                    'bg-emerald-100 text-emerald-800'
                 }`}>
                     {job.status === 'En Route' ? 'En Camino' : 
                      job.status === 'In Progress' ? 'En Progreso' : 'Finalizado'}
@@ -76,7 +76,7 @@ const JobTracking: React.FC<JobTrackingProps> = ({ job: initialJob, onComplete }
             </div>
         </div>
 
-        <div className="p-4 border rounded-lg bg-white shadow-sm flex items-center space-x-4 mb-6">
+        <div className="p-4 border rounded-control bg-white shadow-sm flex items-center space-x-4 mb-6">
           <div
             className="w-16 h-16 rounded-full flex items-center justify-center text-white font-extrabold text-xl bg-gradient-to-br from-blue-500 to-blue-700 shrink-0"
             aria-hidden="true"
@@ -87,7 +87,7 @@ const JobTracking: React.FC<JobTrackingProps> = ({ job: initialJob, onComplete }
             <p className="font-bold text-lg truncate">{job.mechanic?.name || 'Mecánico Asignado'}</p>
             <p className="text-sm text-gray-600 truncate">{job.mechanic?.vehicle} • {job.mechanic?.licensePlate}</p>
           </div>
-          <div className="flex flex-col items-center bg-yellow-50 px-3 py-2 rounded-lg">
+          <div className="flex flex-col items-center bg-yellow-50 px-3 py-2 rounded-control">
             <span className="text-yellow-500 text-xl">★</span>
             <span className="font-bold text-gray-800">{job.mechanic?.rating || '5.0'}</span>
           </div>

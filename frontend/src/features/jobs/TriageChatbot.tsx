@@ -80,7 +80,7 @@ const TriageChatbot: React.FC<TriageChatbotProps> = ({ onServiceSelect, availabl
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-inner border border-blue-100 overflow-hidden min-h-[400px] flex flex-col">
+    <div className="bg-white rounded-control shadow-inner border border-blue-100 overflow-hidden min-h-[400px] flex flex-col">
       {/* Header */}
       <div className="bg-gradient-to-r from-blue-600 to-blue-800 p-4 text-white flex justify-between items-center">
         <div>
@@ -106,7 +106,7 @@ const TriageChatbot: React.FC<TriageChatbotProps> = ({ onServiceSelect, availabl
               <div className="bg-blue-100 rounded-full h-8 w-8 flex items-center justify-center text-blue-600 mr-3 flex-shrink-0">
                 🤖
               </div>
-              <div className="bg-blue-50 border border-blue-100 rounded-2xl rounded-tl-none p-4 text-gray-800 shadow-sm max-w-[90%]">
+              <div className="bg-blue-50 border border-blue-100 rounded-card rounded-tl-none p-4 text-gray-800 shadow-sm max-w-[90%]">
                 <p className="font-medium">{currentQuestion.text}</p>
               </div>
             </div>
@@ -116,7 +116,7 @@ const TriageChatbot: React.FC<TriageChatbotProps> = ({ onServiceSelect, availabl
                 <button
                   key={index}
                   onClick={() => handleOptionClick(option)}
-                  className="w-full text-left p-4 bg-white border border-gray-200 rounded-xl hover:border-blue-400 hover:bg-blue-50 transition-all duration-200 group flex justify-between items-center shadow-sm hover:shadow-md"
+                  className="w-full text-left p-4 bg-white border border-gray-200 rounded-control hover:border-blue-400 hover:bg-blue-50 transition-all duration-200 group flex justify-between items-center shadow-sm hover:shadow-md"
                 >
                   <span className="text-gray-700 group-hover:text-blue-900 font-medium">{option.text}</span>
                   <span className="text-blue-200 group-hover:text-blue-500 transition-transform group-hover:translate-x-1">→</span>
@@ -135,20 +135,20 @@ const TriageChatbot: React.FC<TriageChatbotProps> = ({ onServiceSelect, availabl
           </div>
         ) : (
           <div className="space-y-6 animate-fadeIn text-center py-4">
-            <div className="bg-green-100 rounded-full h-16 w-16 flex items-center justify-center text-green-600 mx-auto mb-4 border-4 border-green-50 shadow-lg">
+            <div className="bg-emerald-100 rounded-full h-16 w-16 flex items-center justify-center text-emerald-600 mx-auto mb-4 border-4 border-emerald-50 shadow-lg">
               <span className="text-2xl">✅</span>
             </div>
             
             <div className="space-y-2">
               <h4 className="text-xl font-bold text-gray-900">Diagnóstico Preliminar</h4>
-              <div className="bg-gray-50 border border-gray-100 rounded-2xl p-6 text-gray-700 shadow-inner italic">
+              <div className="bg-gray-50 border border-gray-100 rounded-card p-6 text-gray-700 shadow-inner italic">
                 "{result?.analysis}"
               </div>
             </div>
 
-            <div className="p-4 bg-blue-50 rounded-xl border border-blue-100">
+            <div className="p-4 bg-blue-50 rounded-control border border-blue-100">
               <p className="text-sm text-blue-800 font-semibold mb-3">Recomendamos el siguiente servicio:</p>
-              <div className="bg-white p-4 rounded-lg shadow-sm font-bold text-blue-600 text-lg border border-blue-200">
+              <div className="bg-white p-4 rounded-control shadow-sm font-bold text-blue-600 text-lg border border-blue-200">
                 {availableServices.find(s => s.id === result?.serviceId)?.name || 'Revisión General'}
               </div>
             </div>
@@ -156,13 +156,13 @@ const TriageChatbot: React.FC<TriageChatbotProps> = ({ onServiceSelect, availabl
             <div className="flex flex-col sm:flex-row gap-3">
               <button
                 onClick={handleBack}
-                className="flex-1 px-4 py-3 border border-gray-300 rounded-xl text-gray-700 hover:bg-gray-50 font-medium transition-colors"
+                className="flex-1 px-4 py-3 border border-gray-300 rounded-control text-gray-700 hover:bg-gray-50 font-medium transition-colors"
               >
                 Cambiar Respuesta
               </button>
               <button
                 onClick={handleSelectService}
-                className="flex-1 px-4 py-3 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5"
+                className="flex-1 px-4 py-3 bg-blue-600 text-white rounded-control font-bold hover:bg-blue-700 shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5"
               >
                 Seleccionar y Continuar
               </button>

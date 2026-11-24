@@ -20,20 +20,20 @@ const PrivacyPolicy: React.FC<PrivacyPolicyProps> = ({ onClose }) => {
       </div>
 
       {/* Last Update */}
-      <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
+      <div className="bg-emerald-50 border border-emerald-200 rounded-control p-4 mb-6">
         <p className="text-sm text-gray-600">
           <strong>Última actualización:</strong> 09 de Febrero de 2026
         </p>
         <p className="text-sm text-gray-600 mt-1">
           <strong>Versión:</strong> 2.0
         </p>
-        <p className="text-sm text-green-700 mt-2">
+        <p className="text-sm text-emerald-700 mt-2">
           <strong>✓</strong> Cumplimos con la Ley 19.628 de Protección de Datos Personales de Chile
         </p>
       </div>
 
       {/* Content */}
-      <div className="bg-white border border-gray-200 rounded-lg p-8 space-y-6 text-gray-700">
+      <div className="bg-white border border-gray-200 rounded-control p-8 space-y-6 text-gray-700">
 
         <section>
           <h2 className="text-2xl font-bold text-gray-900 mb-3">1. Introducción</h2>
@@ -339,9 +339,9 @@ const PrivacyPolicy: React.FC<PrivacyPolicyProps> = ({ onClose }) => {
           </ul>
         </section>
 
-        <div className="bg-green-50 border-l-4 border-green-600 p-4 mt-8">
+        <div className="bg-emerald-50 border-l-4 border-emerald-600 p-4 mt-8">
           <p className="text-sm text-gray-700 flex items-start">
-            <span className="text-green-600 text-xl mr-2">✓</span>
+            <span className="text-emerald-600 text-xl mr-2">✓</span>
             <span>
               <strong>Su privacidad es nuestra prioridad.</strong> En RedMecánica implementamos
               las mejores prácticas de la industria y cumplimos estrictamente con toda la
@@ -355,7 +355,7 @@ const PrivacyPolicy: React.FC<PrivacyPolicyProps> = ({ onClose }) => {
       <div className="text-center mt-6">
         <button
           onClick={onClose}
-          className="bg-gradient-to-r from-green-600 to-blue-600 text-white px-8 py-3 rounded-lg font-bold hover:shadow-lg transition-shadow"
+          className="bg-gradient-to-r from-emerald-600 to-blue-600 text-white px-8 py-3 rounded-control font-bold hover:shadow-lg transition-shadow"
         >
           He Leído la Política de Privacidad
         </button>

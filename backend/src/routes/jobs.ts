@@ -10,6 +10,21 @@ import { ForbiddenError, NotFoundError, BadRequestError } from '../lib/httpError
 
 const router = Router();
 
+// Pasos que un PRESTADOR puede avanzar por su cuenta. Confirmar (aceptar cotizacion), calificar y
+// cerrar corresponden al cliente o al sistema; un prestador no puede saltarse esos pasos.
+const PROVIDER_TRANSITIONS: Record<string, string> = {
+  CONFIRMED: 'PROVIDER_EN_ROUTE',
+  PROVIDER_EN_ROUTE: 'PROVIDER_ARRIVED',
+  PROVIDER_ARRIVED: 'DIAGNOSING',
+  DIAGNOSING: 'IN_PROGRESS',
+  IN_PROGRESS: 'WORK_COMPLETED',
+  WORK_COMPLETED: 'DELIVERED',
+};
+
+const isAdminRole = (role: string) => role === 'ADMIN' || role === 'SUPER_ADMIN';
+
+const CANCELLABLE_STATUSES = ['PENDING', 'SEARCHING', 'QUOTING', 'COMPARING_QUOTES', 'CONFIRMED', 'PROVIDER_EN_ROUTE'];
+
 // Helper to check job access
 async function checkJobAccess(jobId: string, userId: string, role: string) {
   const job = await prisma.job.findUnique({
@@ -71,10 +86,20 @@ router.post('/', requireAuth, validate(createJobSchema), async (req: AuthRequest
     let finalProviderId = providerId;
     if (!finalProviderId) {
       const provider = await prisma.serviceProvider.findFirst({
-        where: { status: { in: ['APPROVED', 'ACTIVE'] } },
+        where: { status: { in: ['APPROVED', 'ACTIVE'] }, userId: { not: userId } },
         orderBy: { createdAt: 'asc' }
       });
       finalProviderId = provider?.id;
+    }
+
+    // Un prestador elegido a mano debe existir, estar publicado y no ser el propio solicitante.
+    if (finalProviderId) {
+      const target = await prisma.serviceProvider.findUnique({ where: { id: String(finalProviderId) }, select: { userId: true, status: true } });
+      if (!target) throw new BadRequestError('El prestador seleccionado no existe');
+      if (target.userId === userId) throw new BadRequestError('No puedes pedirte un servicio a ti mismo');
+      if (target.status !== 'ACTIVE' && target.status !== 'APPROVED') {
+        throw new BadRequestError('El prestador seleccionado no está disponible');
+      }
     }
 
     if (!finalProviderId) {
@@ -190,10 +215,17 @@ router.patch('/:id/status', requireAuth, validate(updateJobStatusSchema), async 
     const { id } = req.params;
     const { status, metadata } = req.body;
 
-    await checkJobAccess(String(id), req.user!.id, req.user!.role);
+    const accessJob = await checkJobAccess(String(id), req.user!.id, req.user!.role);
 
     if (req.user!.role === 'USER' && status !== 'CANCELLED') {
       throw new ForbiddenError('Los clientes solo pueden cancelar solicitudes.');
+    }
+
+    // Un prestador solo puede avanzar al siguiente paso de su flujo (no puede calificarse ni cerrar).
+    if (!isAdminRole(req.user!.role) && req.user!.role !== 'USER' && status !== 'CANCELLED') {
+      if (accessJob.provider.userId !== req.user!.id || PROVIDER_TRANSITIONS[accessJob.status] !== status) {
+        throw new ForbiddenError('Ese cambio de estado no está permitido para tu rol.');
+      }
     }
 
     const updateData: any = { status };
@@ -266,10 +298,20 @@ router.patch('/:id/advance', requireAuth, async (req: AuthRequest, res, next) =>
   try {
     const { id } = req.params;
 
-    await checkJobAccess(String(id), req.user!.id, req.user!.role);
+    const accessJob = await checkJobAccess(String(id), req.user!.id, req.user!.role);
 
     const current = await prisma.job.findUnique({ where: { id: String(id) } });
     if (!current) throw new NotFoundError('Job no encontrado');
+
+    // Los clientes no avanzan estados: aceptan cotizaciones, califican y cancelan por sus propias rutas.
+    if (!isAdminRole(req.user!.role)) {
+      if (req.user!.role === 'USER' || accessJob.provider.userId !== req.user!.id) {
+        throw new ForbiddenError('Solo el prestador asignado puede avanzar este servicio.');
+      }
+      if (!PROVIDER_TRANSITIONS[current.status]) {
+        throw new ForbiddenError('Este paso no lo puede avanzar el prestador.');
+      }
+    }
 
     const nextByStatus: Record<string, string> = {
       SEARCHING: 'QUOTING',
@@ -318,7 +360,20 @@ router.patch('/:id/advance', requireAuth, async (req: AuthRequest, res, next) =>
 router.post('/:id/cancel', requireAuth, async (req: AuthRequest, res, next) => {
   try {
     const { id } = req.params;
-    await checkJobAccess(String(id), req.user!.id, req.user!.role);
+    const accessJob = await checkJobAccess(String(id), req.user!.id, req.user!.role);
+
+    const current = await prisma.job.findUnique({ where: { id: String(id) } });
+    if (!current) throw new NotFoundError('Job no encontrado');
+
+    // Solo se cancela antes de que el prestador llegue; despues requiere a un administrador.
+    if (!CANCELLABLE_STATUSES.includes(current.status) && !isAdminRole(req.user!.role)) {
+      throw new BadRequestError('Este servicio ya no se puede cancelar desde aqui. Contacta a soporte.');
+    }
+    // Con un pago retenido, el reembolso lo gestiona el equipo (no se cancela a ciegas).
+    if (current.paymentStatus === 'HELD' && !isAdminRole(req.user!.role)) {
+      throw new BadRequestError('Este servicio tiene un pago en custodia. Escribe a contacto@redmecanica.cl para gestionar la cancelación.');
+    }
+    void accessJob;
 
     const job = await prisma.job.update({
       where: { id: String(id) },
@@ -328,6 +383,9 @@ router.post('/:id/cancel', requireAuth, async (req: AuthRequest, res, next) => {
         provider: { include: { user: true } }
       }
     });
+
+    // El historial del cliente lee el estado de la solicitud: mantenerlos coherentes.
+    await prisma.serviceRequest.update({ where: { id: job.requestId }, data: { status: 'CANCELLED' } });
 
     // @ts-ignore
     await prisma.jobEvent.create({
@@ -352,7 +410,18 @@ router.post('/:id/rate', requireAuth, validate(rateJobSchema), async (req: AuthR
     const { rating, review } = req.body;
 
     const job = await checkJobAccess(String(id), req.user!.id, req.user!.role);
-    
+
+    // Solo el cliente que pidio el servicio califica: ni el prestador ni terceros.
+    if (job.request.userId !== req.user!.id) {
+      throw new ForbiddenError('Solo el cliente de este servicio puede calificarlo.');
+    }
+    if (job.provider.userId === req.user!.id) {
+      throw new ForbiddenError('No puedes calificar un servicio de tu propia vitrina.');
+    }
+    if (!Number.isInteger(rating)) {
+      throw new BadRequestError('La calificación debe ser un número entero de 1 a 5');
+    }
+
     if (job.status !== 'WORK_COMPLETED' && job.status !== 'DELIVERED') {
       throw new BadRequestError('Solo se pueden calificar trabajos finalizados');
     }
@@ -362,7 +431,7 @@ router.post('/:id/rate', requireAuth, validate(rateJobSchema), async (req: AuthR
       data: {
         status: 'REVIEWED',
         rating,
-        review: review || null,
+        review: review ? String(review).trim().slice(0, 1000) : null,
         reviewedAt: new Date()
       },
       include: {

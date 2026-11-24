@@ -50,7 +50,7 @@ const NotFoundPage: React.FC = () => {
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
             <Link
               to="/"
-              className="inline-flex items-center justify-center gap-2 bg-blue-600 text-white px-8 py-3 rounded-xl font-bold hover:bg-blue-700 transition-all hover:-translate-y-0.5 shadow-lg hover:shadow-xl"
+              className="inline-flex items-center justify-center gap-2 bg-blue-600 text-white px-8 py-3 rounded-control font-bold hover:bg-blue-700 transition-all hover:-translate-y-0.5 shadow-lg hover:shadow-xl"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
@@ -60,7 +60,7 @@ const NotFoundPage: React.FC = () => {
             
             <button
               onClick={handleGoBack}
-              className="inline-flex items-center justify-center gap-2 bg-white text-gray-700 border-2 border-gray-200 px-8 py-3 rounded-xl font-bold hover:bg-gray-50 transition-all"
+              className="inline-flex items-center justify-center gap-2 bg-white text-gray-700 border-2 border-gray-200 px-8 py-3 rounded-control font-bold hover:bg-gray-50 transition-all"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
@@ -70,7 +70,7 @@ const NotFoundPage: React.FC = () => {
           </div>
 
           {/* Popular Links */}
-          <div className="bg-gray-50 rounded-2xl p-8">
+          <div className="bg-gray-50 rounded-card p-8">
             <h2 className="text-lg font-semibold text-gray-900 mb-4">
               ¿Qué estabas buscando?
             </h2>
@@ -80,7 +80,7 @@ const NotFoundPage: React.FC = () => {
                 <Link
                   key={link.path}
                   to={link.path}
-                  className="flex items-center gap-3 p-4 bg-white rounded-xl border border-gray-200 hover:border-blue-400 hover:shadow-md transition-all group"
+                  className="flex items-center gap-3 p-4 bg-white rounded-control border border-gray-200 hover:border-blue-400 hover:shadow-md transition-all group"
                 >
                   <span className="text-2xl group-hover:scale-110 transition-transform">
                     {link.icon}

@@ -26,6 +26,13 @@ interface Provider {
   id: string;
   type: string;
   status: string;
+  reviewedAt?: string | null;
+  rejectionReason?: string | null;
+  idDocumentUrl?: string | null;
+  backgroundCheckUrl?: string | null;
+  businessName?: string | null;
+  bio?: string | null;
+  specialties?: string | null;
   rut: string;
   commune?: string;
   region?: string;
@@ -49,6 +56,20 @@ interface Provider {
   createdAt: string;
   submittedAt?: string;
 }
+
+// Los documentos se guardan como data URL; los navegadores bloquean abrirlas directo, se convierten a blob.
+const openDocument = async (url: string) => {
+  try {
+    if (url.startsWith('data:')) {
+      const blob = await (await fetch(url)).blob();
+      window.open(URL.createObjectURL(blob), '_blank', 'noopener');
+    } else {
+      window.open(url, '_blank', 'noopener,noreferrer');
+    }
+  } catch {
+    alert('No se pudo abrir el documento');
+  }
+};
 
 const ProviderReview: React.FC = () => {
   const [providers, setProviders] = useState<Provider[]>([]);
@@ -98,15 +119,13 @@ const ProviderReview: React.FC = () => {
   const handleAction = async (id: string, action: 'approve' | 'reject' | 'suspend' | 'reactivate', reason?: string) => {
     setIsProcessing(true);
     try {
-      const endpoint = action === 'reactivate' 
-        ? `/admin/providers/${id}/reactivate`
-        : `/admin/providers/${id}/${action === 'approve' ? 'approve' : 'suspend'}`;
-      
+      const endpoint = `/admin/providers/${id}/${action}`;
+
       await api.post(endpoint, { reason });
       setSelectedProvider(null);
       fetchProviders();
     } catch (error) {
-      alert("Error al procesar la solicitud");
+      alert((error as any)?.response?.data?.error || "Error al procesar la solicitud");
     } finally {
       setIsProcessing(false);
     }
@@ -114,20 +133,22 @@ const ProviderReview: React.FC = () => {
 
   const getStatusBadge = (status: string) => {
     const styles: Record<string, string> = {
-      ACTIVE: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+      ACTIVE: 'bg-sky-50 text-sky-700 border-sky-200',
       PENDING: 'bg-amber-50 text-amber-700 border-amber-200',
       UNDER_REVIEW: 'bg-blue-50 text-blue-700 border-blue-200',
       SUSPENDED: 'bg-red-50 text-red-700 border-red-200',
+      PAUSED: 'bg-slate-100 text-slate-700 border-slate-200',
       APPROVED: 'bg-emerald-50 text-emerald-700 border-emerald-200',
       REJECTED: 'bg-gray-50 text-gray-700 border-gray-200',
     };
     
     const labels: Record<string, string> = {
-      ACTIVE: 'Activo',
+      ACTIVE: 'Publicado',
       PENDING: 'Pendiente',
       UNDER_REVIEW: 'En Revisión',
       SUSPENDED: 'Suspendido',
-      APPROVED: 'Aprobado',
+      PAUSED: 'Pausado por el prestador',
+      APPROVED: 'Verificado',
       REJECTED: 'Rechazado',
     };
 
@@ -158,18 +179,18 @@ const ProviderReview: React.FC = () => {
         <div className="flex items-center gap-3">
           <button 
             onClick={fetchProviders}
-            className="p-3 bg-white border border-gray-200 rounded-xl text-gray-600 hover:bg-gray-50 transition-all shadow-sm"
+            className="p-3 bg-white border border-gray-200 rounded-control text-gray-600 hover:bg-gray-50 transition-all shadow-sm"
           >
             <RefreshCw size={20} className={loading ? "animate-spin" : ""} />
           </button>
-          <div className="px-4 py-2 bg-blue-50 text-blue-700 rounded-xl text-xs font-black uppercase tracking-widest border border-blue-100">
+          <div className="px-4 py-2 bg-blue-50 text-blue-700 rounded-control text-xs font-black uppercase tracking-widest border border-blue-100">
              {pagination.total} Prestadores
           </div>
         </div>
       </div>
 
       {/* Filtros */}
-      <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm">
+      <div className="bg-white p-4 rounded-card border border-gray-100 shadow-sm">
         <div className="flex flex-wrap gap-4 items-center">
           <div className="flex items-center gap-2">
             <Filter size={16} className="text-gray-400" />
@@ -179,19 +200,21 @@ const ProviderReview: React.FC = () => {
           <select
             value={filters.status}
             onChange={(e) => setFilters({ ...filters, status: e.target.value })}
-            className="px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500"
+            className="px-3 py-2 border border-gray-200 rounded-control text-sm focus:ring-2 focus:ring-blue-500"
           >
             <option value="ALL">Todos los estados</option>
-            <option value="ACTIVE">Activos</option>
+            <option value="ACTIVE">Publicados (sin verificar)</option>
+            <option value="APPROVED">Verificados</option>
             <option value="PENDING">Pendientes</option>
             <option value="UNDER_REVIEW">En Revisión</option>
             <option value="SUSPENDED">Suspendidos</option>
+            <option value="PAUSED">Pausados</option>
           </select>
 
           <select
             value={filters.type}
             onChange={(e) => setFilters({ ...filters, type: e.target.value })}
-            className="px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500"
+            className="px-3 py-2 border border-gray-200 rounded-control text-sm focus:ring-2 focus:ring-blue-500"
           >
             <option value="">Todos los tipos</option>
             <option value="MECHANIC">Mecánico</option>
@@ -208,7 +231,7 @@ const ProviderReview: React.FC = () => {
                 placeholder="Buscar por nombre, email, RUT o comuna..."
                 value={filters.search}
                 onChange={(e) => setFilters({ ...filters, search: e.target.value })}
-                className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500"
+                className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-control text-sm focus:ring-2 focus:ring-blue-500"
               />
             </div>
           </div>
@@ -249,7 +272,7 @@ const ProviderReview: React.FC = () => {
                   >
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 text-white flex items-center justify-center font-bold text-sm shadow-lg">
+                        <div className="w-10 h-10 rounded-control bg-gradient-to-br from-blue-500 to-indigo-600 text-white flex items-center justify-center font-bold text-sm shadow-lg">
                           {p.user.name?.charAt(0) || '?'}
                         </div>
                         <div className="space-y-0.5">
@@ -299,15 +322,15 @@ const ProviderReview: React.FC = () => {
                       <div className="flex items-center justify-end gap-2">
                         <button 
                           onClick={() => setSelectedProvider(p)}
-                          className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-all"
+                          className="p-2 text-blue-600 hover:bg-blue-50 rounded-control transition-all"
                           title="Ver detalles"
                         >
                           <Eye size={16} />
                         </button>
-                        {p.status === 'ACTIVE' && (
+                        {(p.status === 'ACTIVE' || p.status === 'APPROVED') && (
                           <button 
                             onClick={() => handleAction(p.id, 'suspend')}
-                            className="p-2 text-amber-600 hover:bg-amber-50 rounded-lg transition-all"
+                            className="p-2 text-amber-600 hover:bg-amber-50 rounded-control transition-all"
                             title="Suspender"
                           >
                             <PauseCircle size={16} />
@@ -316,7 +339,7 @@ const ProviderReview: React.FC = () => {
                         {p.status === 'SUSPENDED' && (
                           <button 
                             onClick={() => handleAction(p.id, 'reactivate')}
-                            className="p-2 text-emerald-600 hover:bg-emerald-50 rounded-lg transition-all"
+                            className="p-2 text-emerald-600 hover:bg-emerald-50 rounded-control transition-all"
                             title="Reactivar"
                           >
                             <PlayCircle size={16} />
@@ -341,14 +364,14 @@ const ProviderReview: React.FC = () => {
               <button
                 onClick={() => setPagination(p => ({ ...p, page: p.page - 1 }))}
                 disabled={pagination.page === 1}
-                className="px-3 py-1 border border-gray-200 rounded-lg text-sm disabled:opacity-50"
+                className="px-3 py-1 border border-gray-200 rounded-control text-sm disabled:opacity-50"
               >
                 Anterior
               </button>
               <button
                 onClick={() => setPagination(p => ({ ...p, page: p.page + 1 }))}
                 disabled={pagination.page === pagination.totalPages}
-                className="px-3 py-1 border border-gray-200 rounded-lg text-sm disabled:opacity-50"
+                className="px-3 py-1 border border-gray-200 rounded-control text-sm disabled:opacity-50"
               >
                 Siguiente
               </button>
@@ -370,7 +393,7 @@ const ProviderReview: React.FC = () => {
               <div className="p-8">
                 <div className="flex justify-between items-start mb-6">
                   <div className="flex items-center gap-4">
-                    <div className="w-14 h-14 bg-gradient-to-tr from-blue-600 to-indigo-600 rounded-2xl flex items-center justify-center text-white text-xl font-black shadow-lg">
+                    <div className="w-14 h-14 bg-gradient-to-tr from-blue-600 to-indigo-600 rounded-card flex items-center justify-center text-white text-xl font-black shadow-lg">
                       {selectedProvider.user.name?.charAt(0)}
                     </div>
                     <div>
@@ -378,37 +401,65 @@ const ProviderReview: React.FC = () => {
                       <p className="text-gray-500 text-sm">{selectedProvider.user.email}</p>
                     </div>
                   </div>
-                  <button onClick={() => setSelectedProvider(null)} className="p-2 hover:bg-gray-100 rounded-xl">
+                  <button onClick={() => setSelectedProvider(null)} className="p-2 hover:bg-gray-100 rounded-control">
                     <X size={20} className="text-gray-400" />
                   </button>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4 mb-6">
-                  <div className="bg-gray-50 p-4 rounded-2xl">
+                  <div className="bg-gray-50 p-4 rounded-card">
                     <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">RUT</p>
                     <p className="text-lg font-bold text-gray-900 mt-1">{selectedProvider.rut || 'N/A'}</p>
                   </div>
-                  <div className="bg-gray-50 p-4 rounded-2xl">
+                  <div className="bg-gray-50 p-4 rounded-card">
                     <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Teléfono</p>
                     <p className="text-lg font-bold text-gray-900 mt-1">{selectedProvider.user.phone || 'N/A'}</p>
                   </div>
-                  <div className="bg-gray-50 p-4 rounded-2xl">
+                  <div className="bg-gray-50 p-4 rounded-card">
                     <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Ubicación</p>
                     <p className="text-lg font-bold text-gray-900 mt-1">{selectedProvider.commune || 'N/A'}</p>
                   </div>
-                  <div className="bg-gray-50 p-4 rounded-2xl">
+                  <div className="bg-gray-50 p-4 rounded-card">
                     <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Jobs Completados</p>
                     <p className="text-lg font-bold text-gray-900 mt-1">{selectedProvider.completedJobs || 0}</p>
                   </div>
                 </div>
 
+                {/* Documentos para verificar: de esto depende la insignia "Verificado" */}
+                <div className="mb-6">
+                  <p className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Documentos de verificación</p>
+                  <div className="grid grid-cols-2 gap-3">
+                    {[
+                      { label: 'Cédula de identidad', url: selectedProvider.idDocumentUrl },
+                      { label: 'Certificado de antecedentes', url: selectedProvider.backgroundCheckUrl },
+                    ].map((d) => (
+                      <div key={d.label} className="border border-gray-200 rounded-control p-3 flex items-center justify-between gap-2">
+                        <span className="text-sm font-semibold text-gray-700">{d.label}</span>
+                        {d.url ? (
+                          <button type="button" onClick={() => openDocument(d.url!)} className="text-sm font-bold text-blue-600 hover:underline">Ver</button>
+                        ) : (
+                          <span className="text-xs text-gray-400">No subido</span>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                  {selectedProvider.rejectionReason && (
+                    <p className="mt-3 text-sm text-red-700 bg-red-50 border border-red-100 rounded-control p-3">
+                      <strong>Motivo del rechazo:</strong> {selectedProvider.rejectionReason}
+                    </p>
+                  )}
+                </div>
+
                 <div className="flex gap-3 pt-4 border-t border-gray-100">
-                  {selectedProvider.status === 'PENDING' && (
+                  {(selectedProvider.status === 'PENDING' || selectedProvider.status === 'UNDER_REVIEW' || (selectedProvider.status === 'ACTIVE' && !selectedProvider.reviewedAt)) && (
                     <>
                       <button 
                         disabled={isProcessing}
-                        onClick={() => handleAction(selectedProvider.id, 'reject', 'No cumple requisitos')}
-                        className="flex-1 py-3 bg-red-50 text-red-600 rounded-xl font-bold text-sm hover:bg-red-100 transition-all flex items-center justify-center gap-2"
+                        onClick={() => {
+                          const reason = window.prompt('Motivo del rechazo (el prestador podrá verlo):');
+                          if (reason && reason.trim()) handleAction(selectedProvider.id, 'reject', reason.trim());
+                        }}
+                        className="flex-1 py-3 bg-red-50 text-red-600 rounded-control font-bold text-sm hover:bg-red-100 transition-all flex items-center justify-center gap-2"
                       >
                         <XCircle size={16} />
                         Rechazar
@@ -416,18 +467,18 @@ const ProviderReview: React.FC = () => {
                       <button 
                         disabled={isProcessing}
                         onClick={() => handleAction(selectedProvider.id, 'approve')}
-                        className="flex-[2] py-3 bg-blue-600 text-white rounded-xl font-bold text-sm hover:bg-blue-700 transition-all flex items-center justify-center gap-2 shadow-lg shadow-blue-200"
+                        className="flex-[2] py-3 bg-blue-600 text-white rounded-control font-bold text-sm hover:bg-blue-700 transition-all flex items-center justify-center gap-2 shadow-lg shadow-blue-200"
                       >
                         <CheckCircle2 size={16} />
-                        {isProcessing ? 'Procesando...' : 'Aprobar'}
+                        {isProcessing ? 'Procesando...' : 'Aprobar y verificar'}
                       </button>
                     </>
                   )}
-                  {selectedProvider.status === 'ACTIVE' && (
+                  {(selectedProvider.status === 'ACTIVE' || selectedProvider.status === 'APPROVED') && (
                     <button 
                       disabled={isProcessing}
                       onClick={() => handleAction(selectedProvider.id, 'suspend', 'Suspendido por administrador')}
-                      className="flex-1 py-3 bg-amber-50 text-amber-600 rounded-xl font-bold text-sm hover:bg-amber-100 transition-all flex items-center justify-center gap-2"
+                      className="flex-1 py-3 bg-amber-50 text-amber-600 rounded-control font-bold text-sm hover:bg-amber-100 transition-all flex items-center justify-center gap-2"
                     >
                       <PauseCircle size={16} />
                       Suspender Proveedor
@@ -437,7 +488,7 @@ const ProviderReview: React.FC = () => {
                     <button 
                       disabled={isProcessing}
                       onClick={() => handleAction(selectedProvider.id, 'reactivate')}
-                      className="flex-1 py-3 bg-emerald-50 text-emerald-600 rounded-xl font-bold text-sm hover:bg-emerald-100 transition-all flex items-center justify-center gap-2"
+                      className="flex-1 py-3 bg-emerald-50 text-emerald-600 rounded-control font-bold text-sm hover:bg-emerald-100 transition-all flex items-center justify-center gap-2"
                     >
                       <PlayCircle size={16} />
                       Reactivar Proveedor

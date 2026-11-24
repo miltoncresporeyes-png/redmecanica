@@ -208,7 +208,7 @@ export const LeadQualificationModal: React.FC<LeadQualificationModalProps> = ({
       aria-labelledby="modal-title"
     >
       <div
-        className="w-full max-w-lg min-w-0 bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[92dvh] sm:max-h-[88dvh] animate-slideUp text-slate-900"
+        className="w-full max-w-lg min-w-0 bg-white rounded-t-card sm:rounded-card shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[92dvh] sm:max-h-[88dvh] animate-slideUp text-slate-900"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Barra de Progreso Superior Fluida (solo activa cuando es conductor en el wizard) */}
@@ -228,7 +228,7 @@ export const LeadQualificationModal: React.FC<LeadQualificationModalProps> = ({
               <button
                 type="button"
                 onClick={handleBack}
-                className="p-1.5 -ml-1 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-xl transition shrink-0 cursor-pointer"
+                className="p-1.5 -ml-1 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-control transition shrink-0 cursor-pointer"
                 aria-label="Volver atrás"
               >
                 <ChevronLeft className="w-5 h-5" />
@@ -302,9 +302,9 @@ export const LeadQualificationModal: React.FC<LeadQualificationModalProps> = ({
                 <button
                   type="button"
                   onClick={() => setUserRole('driver')}
-                  className="flex flex-col xs:flex-row items-start gap-3 sm:gap-4 p-3.5 sm:p-4 rounded-2xl border-2 border-slate-200 hover:border-blue-500 hover:bg-blue-50/40 text-left transition-all active:scale-[0.99] group cursor-pointer min-w-0"
+                  className="flex flex-col xs:flex-row items-start gap-3 sm:gap-4 p-3.5 sm:p-4 rounded-card border-2 border-slate-200 hover:border-blue-500 hover:bg-blue-50/40 text-left transition-all active:scale-[0.99] group cursor-pointer min-w-0"
                 >
-                  <span className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform shadow-xs">
+                  <span className="w-10 h-10 sm:w-12 sm:h-12 rounded-control bg-blue-100 text-blue-600 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform shadow-xs">
                     <Car className="w-5 h-5 sm:w-6 sm:h-6" />
                   </span>
                   <div className="flex-1 min-w-0 w-full">
@@ -327,9 +327,9 @@ export const LeadQualificationModal: React.FC<LeadQualificationModalProps> = ({
                 <button
                   type="button"
                   onClick={() => setUserRole('provider')}
-                  className="flex flex-col xs:flex-row items-start gap-3 sm:gap-4 p-3.5 sm:p-4 rounded-2xl border-2 border-slate-200 hover:border-emerald-500 hover:bg-emerald-50/40 text-left transition-all active:scale-[0.99] group cursor-pointer min-w-0"
+                  className="flex flex-col xs:flex-row items-start gap-3 sm:gap-4 p-3.5 sm:p-4 rounded-card border-2 border-slate-200 hover:border-emerald-500 hover:bg-emerald-50/40 text-left transition-all active:scale-[0.99] group cursor-pointer min-w-0"
                 >
-                  <span className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform shadow-xs">
+                  <span className="w-10 h-10 sm:w-12 sm:h-12 rounded-control bg-emerald-100 text-emerald-600 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform shadow-xs">
                     <Wrench className="w-5 h-5 sm:w-6 sm:h-6" />
                   </span>
                   <div className="flex-1 min-w-0 w-full">
@@ -356,7 +356,7 @@ export const LeadQualificationModal: React.FC<LeadQualificationModalProps> = ({
           {/* ======================================================== */}
           {userRole === 'provider' && (
             <div className="space-y-3.5 animate-fadeIn min-w-0">
-              <div className="bg-gradient-to-br from-emerald-50 to-teal-50 border border-emerald-200/80 rounded-2xl p-3.5 sm:p-4 min-w-0">
+              <div className="bg-gradient-to-br from-emerald-50 to-teal-50 border border-emerald-200/80 rounded-card p-3.5 sm:p-4 min-w-0">
                 <span className="text-xl sm:text-2xl mb-1 block">🤝</span>
                 <h3 className="font-black text-emerald-950 text-sm sm:text-base leading-tight break-words">
                   Haz crecer tu cartera de clientes locales
@@ -367,21 +367,21 @@ export const LeadQualificationModal: React.FC<LeadQualificationModalProps> = ({
               </div>
 
               <div className="space-y-2 text-xs text-slate-700 min-w-0">
-                <div className="flex items-start gap-2.5 p-2.5 rounded-xl bg-slate-50 border border-slate-100 min-w-0">
+                <div className="flex items-start gap-2.5 p-2.5 rounded-control bg-slate-50 border border-slate-100 min-w-0">
                   <span className="text-emerald-600 font-bold shrink-0">✓</span>
                   <div className="min-w-0 flex-1">
                     <span className="font-bold text-slate-900 block truncate">Perfil público verificado</span>
                     <span className="text-[11px] text-slate-500 leading-tight block break-words">Aparece en búsquedas orgánicas de Google y en tu comuna.</span>
                   </div>
                 </div>
-                <div className="flex items-start gap-2.5 p-2.5 rounded-xl bg-slate-50 border border-slate-100 min-w-0">
+                <div className="flex items-start gap-2.5 p-2.5 rounded-control bg-slate-50 border border-slate-100 min-w-0">
                   <span className="text-emerald-600 font-bold shrink-0">✓</span>
                   <div className="min-w-0 flex-1">
                     <span className="font-bold text-slate-900 block truncate">Trato y cobro 100% directo</span>
                     <span className="text-[11px] text-slate-500 leading-tight block break-words">Tú fijas tus precios y el cliente te paga a ti directamente.</span>
                   </div>
                 </div>
-                <div className="flex items-start gap-2.5 p-2.5 rounded-xl bg-slate-50 border border-slate-100 min-w-0">
+                <div className="flex items-start gap-2.5 p-2.5 rounded-control bg-slate-50 border border-slate-100 min-w-0">
                   <span className="text-emerald-600 font-bold shrink-0">✓</span>
                   <div className="min-w-0 flex-1">
                     <span className="font-bold text-slate-900 block truncate">Alta en menos de 1 minuto</span>
@@ -394,7 +394,7 @@ export const LeadQualificationModal: React.FC<LeadQualificationModalProps> = ({
                 <button
                   type="button"
                   onClick={handleProviderWhatsApp}
-                  className="w-full py-3.5 px-4 bg-emerald-600 hover:bg-emerald-700 active:scale-98 text-white font-black text-xs sm:text-sm rounded-2xl shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer min-w-0 text-center"
+                  className="w-full py-3.5 px-4 bg-emerald-600 hover:bg-emerald-700 active:scale-98 text-white font-black text-xs sm:text-sm rounded-card shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer min-w-0 text-center"
                 >
                   <MessageCircle className="w-5 h-5 fill-white stroke-emerald-600 shrink-0" />
                   <span className="truncate">Hablar con Soporte de Prestadores</span>
@@ -402,7 +402,7 @@ export const LeadQualificationModal: React.FC<LeadQualificationModalProps> = ({
                 <a
                   href="/onboarding"
                   onClick={onClose}
-                  className="w-full py-3 px-4 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-2xl transition-all flex items-center justify-center gap-1.5 min-w-0 text-center"
+                  className="w-full py-3 px-4 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-card transition-all flex items-center justify-center gap-1.5 min-w-0 text-center"
                 >
                   <span className="truncate">Registrar mi taller / servicio gratis</span>
                   <ChevronRight className="w-4 h-4 shrink-0" />
@@ -417,7 +417,7 @@ export const LeadQualificationModal: React.FC<LeadQualificationModalProps> = ({
           {userRole === 'driver' && paso === 1 && (
             <div className="space-y-4 animate-fadeIn">
               <div className="text-center sm:text-left">
-                <span className="w-12 h-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mx-auto sm:mx-0 mb-3 shadow-inner">
+                <span className="w-12 h-12 bg-blue-50 text-blue-600 rounded-card flex items-center justify-center mx-auto sm:mx-0 mb-3 shadow-inner">
                   <Car className="w-6 h-6" />
                 </span>
                 <h3 className="text-lg font-black text-slate-900">
@@ -445,7 +445,7 @@ export const LeadQualificationModal: React.FC<LeadQualificationModalProps> = ({
                       handleNext();
                     }
                   }}
-                  className={`w-full px-4 py-3.5 rounded-2xl border bg-slate-50/50 text-sm font-bold text-slate-900 focus:outline-none focus:ring-2 shadow-inner transition-all ${
+                  className={`w-full px-4 py-3.5 rounded-card border bg-slate-50/50 text-sm font-bold text-slate-900 focus:outline-none focus:ring-2 shadow-inner transition-all ${
                     step1Error
                       ? 'border-red-400 focus:ring-red-400 bg-red-50/30'
                       : 'border-slate-300 focus:ring-blue-500'
@@ -465,7 +465,7 @@ export const LeadQualificationModal: React.FC<LeadQualificationModalProps> = ({
                     key={ej}
                     type="button"
                     onClick={() => setAutoInfo(ej)}
-                    className="text-[11px] bg-slate-100 hover:bg-slate-200 text-slate-700 px-2.5 py-1 rounded-lg font-semibold transition"
+                    className="text-[11px] bg-slate-100 hover:bg-slate-200 text-slate-700 px-2.5 py-1 rounded-control font-semibold transition"
                   >
                     + {ej}
                   </button>
@@ -500,13 +500,13 @@ export const LeadQualificationModal: React.FC<LeadQualificationModalProps> = ({
                         setProblema(item.id);
                         setPaso(3); // Avance automático táctil
                       }}
-                      className={`p-4 rounded-2xl border-2 text-left transition-all flex items-start gap-3.5 cursor-pointer active:scale-98 min-h-[76px] ${
+                      className={`p-4 rounded-card border-2 text-left transition-all flex items-start gap-3.5 cursor-pointer active:scale-98 min-h-[76px] ${
                         isSelected
                           ? 'border-blue-600 bg-blue-50/70 shadow-sm ring-1 ring-blue-600'
                           : `border-slate-200 bg-white ${item.color}`
                       }`}
                     >
-                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${item.iconColor}`}>
+                      <div className={`w-10 h-10 rounded-control flex items-center justify-center shrink-0 ${item.iconColor}`}>
                         <Icon className="w-5 h-5" />
                       </div>
                       <div className="flex-1">
@@ -530,7 +530,7 @@ export const LeadQualificationModal: React.FC<LeadQualificationModalProps> = ({
           {paso === 3 && (
             <div className="space-y-4 animate-fadeIn">
               <div className="text-center sm:text-left">
-                <span className="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center mx-auto sm:mx-0 mb-3 shadow-inner">
+                <span className="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-card flex items-center justify-center mx-auto sm:mx-0 mb-3 shadow-inner">
                   <MapPin className="w-6 h-6" />
                 </span>
                 <h3 className="text-lg font-black text-slate-900">
@@ -551,7 +551,7 @@ export const LeadQualificationModal: React.FC<LeadQualificationModalProps> = ({
                     id="comuna-select"
                     value={comuna}
                     onChange={(e) => setComuna(e.target.value)}
-                    className="w-full pl-11 pr-4 py-3.5 rounded-2xl border border-slate-300 bg-slate-50 text-sm font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer shadow-inner appearance-none"
+                    className="w-full pl-11 pr-4 py-3.5 rounded-card border border-slate-300 bg-slate-50 text-sm font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer shadow-inner appearance-none"
                   >
                     {ALL_COMUNAS.map((c) => (
                       <option key={c} value={c}>
@@ -562,7 +562,7 @@ export const LeadQualificationModal: React.FC<LeadQualificationModalProps> = ({
                 </div>
               </div>
 
-              <div className="p-3 bg-emerald-50 rounded-2xl border border-emerald-200 text-emerald-800 text-xs flex items-center gap-2">
+              <div className="p-3 bg-emerald-50 rounded-card border border-emerald-200 text-emerald-800 text-xs flex items-center gap-2">
                 <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
                 <span>
                   Prestador con cobertura activa confirmada en <strong>{comuna}</strong>.
@@ -593,7 +593,7 @@ export const LeadQualificationModal: React.FC<LeadQualificationModalProps> = ({
                       key={item.id}
                       type="button"
                       onClick={() => setUrgencia(item.id)}
-                      className={`w-full p-3 sm:p-4 rounded-2xl border-2 text-left transition-all flex items-center justify-between gap-2 cursor-pointer active:scale-98 min-w-0 ${
+                      className={`w-full p-3 sm:p-4 rounded-card border-2 text-left transition-all flex items-center justify-between gap-2 cursor-pointer active:scale-98 min-w-0 ${
                         isSelected
                           ? 'border-emerald-600 bg-emerald-50/70 shadow-sm ring-1 ring-emerald-600'
                           : `border-slate-200 ${item.color}`
@@ -623,7 +623,7 @@ export const LeadQualificationModal: React.FC<LeadQualificationModalProps> = ({
               </div>
 
               {/* Vista previa del mensaje */}
-              <div className="mt-3 p-3 bg-slate-50 rounded-2xl border border-slate-200 text-slate-600 text-xs min-w-0">
+              <div className="mt-3 p-3 bg-slate-50 rounded-card border border-slate-200 text-slate-600 text-xs min-w-0">
                 <span className="block text-[10px] font-black uppercase text-slate-400 mb-0.5">
                   Mensaje que se enviará:
                 </span>
@@ -642,7 +642,7 @@ export const LeadQualificationModal: React.FC<LeadQualificationModalProps> = ({
               <button
                 type="button"
                 onClick={handleNext}
-                className="w-full py-3.5 sm:py-4 px-4 sm:px-5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-black text-xs sm:text-sm rounded-2xl shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-98 min-w-0"
+                className="w-full py-3.5 sm:py-4 px-4 sm:px-5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-black text-xs sm:text-sm rounded-card shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-98 min-w-0"
               >
                 <span>Continuar</span>
                 <ChevronRight className="w-4 h-4 stroke-[3] shrink-0" />
@@ -651,7 +651,7 @@ export const LeadQualificationModal: React.FC<LeadQualificationModalProps> = ({
               <button
                 type="submit"
                 onClick={handleFinalSubmit}
-                className="w-full py-3.5 sm:py-4 px-3 sm:px-5 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-black text-xs sm:text-sm rounded-2xl shadow-xl transition-all flex flex-wrap items-center justify-center gap-1.5 sm:gap-2.5 cursor-pointer active:scale-98 tracking-tight min-w-0 text-center"
+                className="w-full py-3.5 sm:py-4 px-3 sm:px-5 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-black text-xs sm:text-sm rounded-card shadow-xl transition-all flex flex-wrap items-center justify-center gap-1.5 sm:gap-2.5 cursor-pointer active:scale-98 tracking-tight min-w-0 text-center"
               >
                 <MessageCircle className="w-5 h-5 fill-white stroke-emerald-500 shrink-0" />
                 <span className="break-words">Contactar Prestador por WhatsApp</span>

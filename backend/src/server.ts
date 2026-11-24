@@ -4,6 +4,7 @@ import app from './app.js';
 import { config } from './config/index.js';
 import { logger } from './lib/logger.js';
 import { prisma } from './prisma/index.js';
+import { startPoolWarmup } from './db.js';
 import { createServer } from 'http';
 import { setupWebSocket } from './lib/websocket.js';
 
@@ -25,6 +26,7 @@ const startServer = async () => {
         prisma.$connect()
             .then(() => {
                 logger.info('Connected to PostgreSQL');
+                startPoolWarmup();
             })
             .catch((dbError) => {
                 logger.error({ dbError }, 'Warning: Database connection failed on startup. Server is still running and listening.');

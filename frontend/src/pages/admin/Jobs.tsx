@@ -1,6 +1,9 @@
 
 import React, { useEffect, useState } from 'react';
 import api from '../../lib/http';
+import { downloadCsv } from '../../lib/csv';
+import { useToast } from '../../contexts/ToastContext';
+import { useConfirm } from '../../contexts/ConfirmContext';
 import { 
   Wrench, 
   Search, 
@@ -16,7 +19,10 @@ import {
   XCircle,
   AlertCircle,
   RefreshCw,
-  X
+  X,
+  Download,
+  Printer,
+  Activity
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -25,6 +31,10 @@ const Jobs: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [selectedJob, setSelectedJob] = useState<any | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('');
+  const [acting, setActing] = useState(false);
+  const { addToast } = useToast();
+  const confirm = useConfirm();
 
   const fetchJobs = async () => {
     setLoading(true);
@@ -51,11 +61,60 @@ const Jobs: React.FC = () => {
     }
   };
 
-  const filteredJobs = jobs.filter(job => 
-    job.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    job.status.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    job.request?.vehicle?.plate?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredJobs = jobs.filter((job) => {
+    if (statusFilter && job.status !== statusFilter) return false;
+    const q = searchTerm.trim().toLowerCase();
+    if (!q) return true;
+    return (
+      job.id.toLowerCase().includes(q) ||
+      (STATUS_LABEL[job.status] || job.status).toLowerCase().includes(q) ||
+      (job.request?.vehicle?.licensePlate || '').toLowerCase().includes(q) ||
+      (job.request?.vehicle?.make || '').toLowerCase().includes(q) ||
+      (job.request?.service?.name || '').toLowerCase().includes(q) ||
+      (job.provider?.user?.name || '').toLowerCase().includes(q)
+    );
+  });
+
+  const exportCsv = () =>
+    downloadCsv(`servicios-${new Date().toISOString().slice(0, 10)}`, filteredJobs, [
+      { header: 'ID', value: (j) => j.id },
+      { header: 'Servicio', value: (j) => j.request?.service?.name },
+      { header: 'Estado', value: (j) => STATUS_LABEL[j.status] || j.status },
+      { header: 'Cliente', value: (j) => j.request?.user?.name },
+      { header: 'Prestador', value: (j) => j.provider?.user?.name },
+      { header: 'Vehículo', value: (j) => [j.request?.vehicle?.make, j.request?.vehicle?.model].filter(Boolean).join(' ') },
+      { header: 'Patente', value: (j) => j.request?.vehicle?.licensePlate },
+      { header: 'Monto estimado (CLP)', value: (j) => j.estimatedCost },
+      { header: 'Pago', value: (j) => PAYMENT_LABEL[j.paymentStatus] || j.paymentStatus },
+      { header: 'Creado', value: (j) => new Date(j.createdAt).toLocaleString('es-CL') },
+    ]);
+
+  // Intervencion del administrador sobre un servicio
+  const adminAct = async (kind: 'cancel' | 'dispute') => {
+    if (!selectedJob) return;
+    const ok = await confirm({
+      title: kind === 'cancel' ? 'Cancelar servicio' : 'Marcar en disputa',
+      message: kind === 'cancel'
+        ? 'El servicio quedará cancelado para el cliente y el prestador. Esta acción queda registrada en la auditoría.'
+        : 'El servicio quedará marcado en disputa para su revisión. Esta acción queda registrada en la auditoría.',
+      confirmText: kind === 'cancel' ? 'Cancelar servicio' : 'Marcar en disputa',
+      confirmVariant: 'danger',
+      icon: 'warning',
+    });
+    if (!ok) return;
+    setActing(true);
+    try {
+      if (kind === 'cancel') await api.post(`/jobs/${selectedJob.id}/cancel`);
+      else await api.patch(`/jobs/${selectedJob.id}/status`, { status: 'DISPUTED', metadata: { by: 'admin' } });
+      addToast(kind === 'cancel' ? 'Servicio cancelado.' : 'Servicio marcado en disputa.', 'success');
+      await fetchJobs();
+      await fetchJobTimeline(selectedJob.id);
+    } catch (e: any) {
+      addToast(e?.response?.data?.error || e?.response?.data?.message || 'No se pudo completar la acción.', 'error');
+    } finally {
+      setActing(false);
+    }
+  };
 
   return (
     <div className="space-y-8 pb-12 font-sans">
@@ -67,18 +126,18 @@ const Jobs: React.FC = () => {
         <div className="flex items-center gap-3">
           <button 
             onClick={fetchJobs}
-            className="p-3 bg-white border border-gray-200 rounded-xl text-gray-600 hover:bg-gray-50 transition-all shadow-sm"
+            className="p-3 bg-white border border-gray-200 rounded-control text-gray-600 hover:bg-gray-50 transition-all shadow-sm"
           >
             <RefreshCw size={20} className={loading ? "animate-spin" : ""} />
           </button>
-          <div className="px-4 py-2 bg-blue-50 text-blue-700 rounded-xl text-xs font-black uppercase tracking-widest border border-blue-100">
+          <div className="px-4 py-2 bg-blue-50 text-blue-700 rounded-control text-xs font-black uppercase tracking-widest border border-blue-100">
              {jobs.length} Servicios
           </div>
         </div>
       </div>
 
       <div className="bg-white p-4 rounded-[24px] shadow-sm border border-gray-100 flex flex-col md:flex-row gap-4 items-center">
-        <div className="flex-1 flex items-center gap-3 bg-gray-50 px-4 py-2.5 rounded-xl border border-gray-100 w-full font-medium">
+        <div className="flex-1 flex items-center gap-3 bg-gray-50 px-4 py-2.5 rounded-control border border-gray-100 w-full font-medium">
           <Search size={18} className="text-gray-400" />
           <input 
             type="text" 
@@ -89,9 +148,13 @@ const Jobs: React.FC = () => {
           />
         </div>
         <div className="flex items-center gap-3 w-full md:w-auto">
-          <button className="flex items-center gap-2 px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm font-bold text-gray-700 hover:bg-gray-50 transition-all flex-1 md:flex-none justify-center">
-            <Filter size={16} />
-            Filtrar
+          <label htmlFor="job-status" className="sr-only">Filtrar por estado</label>
+          <select id="job-status" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="input-market !w-auto">
+            <option value="">Todos los estados</option>
+            {Object.entries(STATUS_LABEL).map(([k, label]) => <option key={k} value={k}>{label}</option>)}
+          </select>
+          <button onClick={exportCsv} disabled={filteredJobs.length === 0} className="btn-ghost !min-h-[44px] disabled:opacity-40">
+            <Download size={16} aria-hidden="true" /> Exportar
           </button>
         </div>
       </div>
@@ -121,7 +184,7 @@ const Jobs: React.FC = () => {
                   >
                     <td className="px-8 py-6">
                       <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform">
+                        <div className="w-10 h-10 rounded-control bg-blue-50 text-blue-600 flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform">
                           <Wrench size={20} />
                         </div>
                         <div>
@@ -134,9 +197,9 @@ const Jobs: React.FC = () => {
                       <div className="space-y-1">
                         <div className="flex items-center gap-2 text-xs font-bold text-gray-700">
                           <Car size={14} className="text-gray-400" />
-                          {job.request?.vehicle?.plate || 'S/P'}
+                          {job.request?.vehicle?.licensePlate || 'S/P'}
                         </div>
-                        <p className="text-[10px] text-gray-400 font-medium ml-5">{job.request?.vehicle?.brand} {job.request?.vehicle?.model}</p>
+                        <p className="text-[10px] text-gray-400 font-medium ml-5">{job.request?.vehicle?.make} {job.request?.vehicle?.model}</p>
                       </div>
                     </td>
                     <td className="px-8 py-6">
@@ -151,7 +214,7 @@ const Jobs: React.FC = () => {
                       </div>
                     </td>
                     <td className="px-8 py-6 text-right">
-                       <button className="p-2 text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-600 hover:text-white transition-all">
+                       <button type="button" aria-label="Ver detalle del servicio" onClick={(e) => { e.stopPropagation(); fetchJobTimeline(job.id); }} className="p-2 text-blue-600 bg-blue-50 rounded-control hover:bg-blue-600 hover:text-white transition-all">
                          <ChevronRight size={18} />
                        </button>
                     </td>
@@ -178,7 +241,7 @@ const Jobs: React.FC = () => {
                     <span className="text-[10px] font-black text-blue-600 uppercase tracking-[0.3em]">Auditoría Técnica</span>
                     <h2 className="text-2xl font-black text-gray-900 mt-1">Historial del Job</h2>
                   </div>
-                  <button onClick={() => setSelectedJob(null)} className="p-3 bg-gray-50 hover:bg-gray-100 rounded-2xl transition-all">
+                  <button onClick={() => setSelectedJob(null)} className="p-3 bg-gray-50 hover:bg-gray-100 rounded-card transition-all">
                     <X size={24} className="text-gray-400" />
                   </button>
               </div>
@@ -198,7 +261,7 @@ const Jobs: React.FC = () => {
                    </div>
                    <div className="col-span-2 flex items-center gap-3 pt-3 border-t border-blue-100/50">
                       <MapPin size={14} className="text-blue-500" />
-                      <span className="text-[11px] font-bold text-gray-500 uppercase tracking-tight">Comuna: {selectedJob.request?.commune || 'S/E'}</span>
+                      <span className="text-[11px] font-bold text-gray-500 uppercase tracking-tight">Comuna del prestador: {selectedJob.provider?.commune || 'sin dato'}</span>
                    </div>
                 </div>
 
@@ -220,7 +283,7 @@ const Jobs: React.FC = () => {
                               </div>
                               <p className="text-sm font-bold text-gray-700 leading-snug">{event.description}</p>
                               {event.metadata && (
-                                <div className="mt-3 p-3 bg-gray-50 rounded-xl font-mono text-[9px] text-gray-400 overflow-x-auto">
+                                <div className="mt-3 p-3 bg-gray-50 rounded-control font-mono text-[9px] text-gray-400 overflow-x-auto">
                                    {event.metadata}
                                 </div>
                               )}
@@ -235,24 +298,30 @@ const Jobs: React.FC = () => {
                 </div>
               </div>
 
-              <div className="p-10 bg-gray-900 text-white rounded-t-[40px]">
-                 <div className="flex items-center justify-between mb-4">
-                    <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">Resumen Financiero</p>
-                    <div className="px-3 py-1 bg-emerald-500/10 text-emerald-400 rounded-lg text-[10px] font-black uppercase tracking-widest border border-emerald-500/20">
-                       Validado
+              <div className="p-10 bg-gray-900 text-white rounded-t-[40px] space-y-5">
+                 <div className="flex items-center justify-between">
+                    <p className="text-xs font-bold text-gray-300 uppercase tracking-widest">Resumen financiero</p>
+                    <div className="px-3 py-1 bg-white/10 text-gray-100 rounded-control text-xs font-bold">
+                       Pago: {PAYMENT_LABEL[selectedJob.paymentStatus] || selectedJob.paymentStatus || '—'}
                     </div>
                  </div>
-                 <div className="flex items-end justify-between">
+                 <div className="flex items-end justify-between gap-4">
                     <div>
-                       <p className="text-3xl font-black text-white tracking-widest">$ {selectedJob.totalAmount || '0'}</p>
-                       <p className="text-[10px] text-gray-500 mt-2 font-bold uppercase tracking-widest flex items-center gap-2">
-                         <Layers size={14} /> Total Consolidado (IVA Incl)
+                       <p className="text-3xl font-black text-white">{selectedJob.estimatedCost != null ? `$ ${Number(selectedJob.estimatedCost).toLocaleString('es-CL')}` : 'Sin monto'}</p>
+                       <p className="text-xs text-gray-300 mt-2 font-semibold flex items-center gap-2">
+                         <Layers size={14} aria-hidden="true" /> Monto de la cotización aceptada
                        </p>
                     </div>
-                    <button className="px-6 py-3 bg-white text-black rounded-2xl font-black text-xs hover:bg-gray-100 transition-all active:scale-95 shadow-xl shadow-white/5">
-                       Imprimir Reporte
+                    <button onClick={() => window.print()} className="px-5 py-3 bg-white text-black rounded-card font-bold text-sm hover:bg-gray-100 transition-all active:scale-95 flex items-center gap-2">
+                       <Printer size={16} aria-hidden="true" /> Imprimir
                     </button>
                  </div>
+                 {!['CANCELLED', 'CLOSED', 'REFUNDED', 'DISPUTED'].includes(selectedJob.status) && (
+                   <div className="flex flex-wrap gap-2 pt-4 border-t border-white/10">
+                     <button disabled={acting} onClick={() => adminAct('dispute')} className="px-4 py-2.5 rounded-control bg-amber-400 text-gray-900 font-bold text-sm hover:bg-amber-300 disabled:opacity-50">Marcar en disputa</button>
+                     <button disabled={acting} onClick={() => adminAct('cancel')} className="px-4 py-2.5 rounded-control bg-red-500 text-white font-bold text-sm hover:bg-red-400 disabled:opacity-50">Cancelar servicio</button>
+                   </div>
+                 )}
               </div>
             </motion.div>
           </div>
@@ -262,34 +331,51 @@ const Jobs: React.FC = () => {
   );
 };
 
+const STATUS_LABEL: Record<string, string> = {
+  PENDING: 'Pendiente',
+  SEARCHING: 'Buscando prestador',
+  QUOTING: 'Recibiendo cotizaciones',
+  COMPARING_QUOTES: 'Comparando cotizaciones',
+  CONFIRMED: 'Confirmado',
+  PROVIDER_EN_ROUTE: 'Prestador en camino',
+  PROVIDER_ARRIVED: 'Prestador llegó',
+  DIAGNOSING: 'En diagnóstico',
+  IN_PROGRESS: 'Trabajo en curso',
+  WORK_COMPLETED: 'Trabajo terminado',
+  DELIVERED: 'Entregado',
+  REVIEWED: 'Calificado',
+  CLOSED: 'Cerrado',
+  CANCELLED: 'Cancelado',
+  DISPUTED: 'En disputa',
+  REFUNDED: 'Reembolsado',
+};
+
+const PAYMENT_LABEL: Record<string, string> = {
+  PENDING: 'Pendiente',
+  HELD: 'En custodia',
+  RELEASED: 'Liberado',
+  REFUNDED: 'Reembolsado',
+};
+
 const StatusBadge: React.FC<{status: string}> = ({ status }) => {
-  const styles: Record<string, string> = {
-    'SEARCHING': 'bg-amber-50 text-amber-700 border-amber-100',
-    'ASSIGNED': 'bg-blue-50 text-blue-700 border-blue-100',
-    'IN_PROGRESS': 'bg-indigo-50 text-indigo-700 border-indigo-100',
-    'ARRIVED': 'bg-emerald-50 text-emerald-700 border-emerald-100',
-    'DIAGNOSED': 'bg-purple-50 text-purple-700 border-purple-100',
-    'FINISHED': 'bg-teal-50 text-teal-700 border-teal-100',
-    'CANCELLED': 'bg-red-50 text-red-700 border-red-100',
-    'CLOSED': 'bg-gray-50 text-gray-700 border-gray-100'
-  };
-
-  const icons: Record<string, any> = {
-    'FINISHED': CheckCircle2,
-    'CANCELLED': XCircle,
-    'DIAGNOSED': Activity,
-    'SEARCHING': Clock
-  };
-
-  const Icon = icons[status] || AlertCircle;
+  const tone =
+    ['CANCELLED', 'DISPUTED'].includes(status) ? 'bg-red-50 text-red-700 border-red-100'
+    : ['DELIVERED', 'REVIEWED', 'CLOSED', 'WORK_COMPLETED'].includes(status) ? 'bg-emerald-50 text-emerald-700 border-emerald-100'
+    : ['PENDING', 'SEARCHING', 'QUOTING', 'COMPARING_QUOTES'].includes(status) ? 'bg-amber-50 text-amber-800 border-amber-100'
+    : status === 'REFUNDED' ? 'bg-gray-50 text-gray-700 border-gray-200'
+    : 'bg-blue-50 text-blue-700 border-blue-100';
+  const Icon = ['CANCELLED', 'DISPUTED'].includes(status) ? XCircle
+    : ['DELIVERED', 'REVIEWED', 'CLOSED', 'WORK_COMPLETED'].includes(status) ? CheckCircle2
+    : ['PENDING', 'SEARCHING', 'QUOTING', 'COMPARING_QUOTES'].includes(status) ? Clock
+    : Activity;
 
   return (
     <span className={cn(
-      "px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider flex items-center gap-2 w-fit border shadow-xs transition-transform hover:scale-105 cursor-default",
-      styles[status] || 'bg-gray-50 text-gray-500 border-gray-200'
+      "inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border",
+      tone
     )}>
-      <Icon size={12} />
-      {status}
+      <Icon size={12} aria-hidden="true" />
+      {STATUS_LABEL[status] || status}
     </span>
   );
 };
@@ -297,7 +383,5 @@ const StatusBadge: React.FC<{status: string}> = ({ status }) => {
 function cn(...inputs: any[]) {
   return inputs.filter(Boolean).join(' ');
 }
-
-import { Activity } from 'lucide-react';
 
 export default Jobs;

@@ -169,7 +169,7 @@ const FAQ: React.FC<FAQProps> = ({ onClose }) => {
       </div>
 
       {/* Hero */}
-      <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg p-8 mb-8 text-center">
+      <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-control p-8 mb-8 text-center">
         <h2 className="text-2xl font-bold mb-3">¿Tienes alguna duda?</h2>
         <p className="opacity-90">
           Aquí encontrarás respuestas a las preguntas más comunes sobre RedMecánica
@@ -185,7 +185,7 @@ const FAQ: React.FC<FAQProps> = ({ onClose }) => {
               setActiveCategory(category.id);
               setOpenQuestion(null);
             }}
-            className={`px-4 py-2 rounded-lg font-medium transition-all ${
+            className={`px-4 py-2 rounded-control font-medium transition-all ${
               activeCategory === category.id
                 ? 'bg-blue-600 text-white shadow-md'
                 : 'bg-white border border-gray-200 text-gray-700 hover:border-blue-400'
@@ -202,7 +202,7 @@ const FAQ: React.FC<FAQProps> = ({ onClose }) => {
         {filteredFaqs.map((faq, index) => (
           <div
             key={index}
-            className="bg-white border border-gray-200 rounded-lg overflow-hidden"
+            className="bg-white border border-gray-200 rounded-control overflow-hidden"
           >
             <button
               onClick={() => setOpenQuestion(openQuestion === index ? null : index)}
@@ -230,7 +230,7 @@ const FAQ: React.FC<FAQProps> = ({ onClose }) => {
       </div>
 
       {/* Contact CTA */}
-      <div className="bg-gradient-to-r from-green-50 to-blue-50 border border-green-200 rounded-lg p-6 text-center">
+      <div className="bg-gradient-to-r from-emerald-50 to-blue-50 border border-emerald-200 rounded-control p-6 text-center">
         <h3 className="text-xl font-bold text-gray-900 mb-2">¿No encontraste lo que buscabas?</h3>
         <p className="text-gray-600 mb-4">
           Nuestro equipo de soporte está disponible 24/7 para ayudarte
@@ -238,7 +238,7 @@ const FAQ: React.FC<FAQProps> = ({ onClose }) => {
         <div className="flex flex-wrap justify-center gap-3">
           <a
             href="mailto:contacto@redmecanica.cl"
-            className="bg-blue-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors"
+            className="bg-blue-600 text-white px-6 py-2 rounded-control font-medium hover:bg-blue-700 transition-colors"
           >
             📧 Email: contacto@redmecanica.cl
           </a>
@@ -246,7 +246,7 @@ const FAQ: React.FC<FAQProps> = ({ onClose }) => {
             href="https://wa.me/56983414730"
             target="_blank"
             rel="noopener noreferrer"
-            className="bg-green-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-green-700 transition-colors"
+            className="bg-emerald-600 text-white px-6 py-2 rounded-control font-medium hover:bg-emerald-700 transition-colors"
           >
             💬 WhatsApp: +56 9 83414730
           </a>

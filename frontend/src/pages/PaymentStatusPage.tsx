@@ -192,24 +192,24 @@ const PaymentStatusPage: React.FC = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-4">
-              <div className="rounded-3xl bg-slate-950 text-white p-5 shadow-lg">
+              <div className="rounded-card bg-slate-950 text-white p-5 shadow-lg">
                 <p className="text-[10px] font-black uppercase tracking-[0.28em] text-slate-400">Estado</p>
                 <p className="mt-2 text-2xl font-black">{statusLabel}</p>
                 <p className="mt-1 text-xs text-slate-300">{scope === 'unknown' ? 'Esperando identificador' : `Seguimiento por ${scope}`}</p>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
-                <div className="rounded-2xl border border-slate-200 p-4 bg-slate-50">
+                <div className="rounded-card border border-slate-200 p-4 bg-slate-50">
                   <p className="text-[10px] font-black uppercase tracking-[0.22em] text-slate-500">Job ID</p>
                   <p className="mt-2 text-sm font-bold text-slate-900 break-all">{jobId || 'No aplica'}</p>
                 </div>
-                <div className="rounded-2xl border border-slate-200 p-4 bg-slate-50">
+                <div className="rounded-card border border-slate-200 p-4 bg-slate-50">
                   <p className="text-[10px] font-black uppercase tracking-[0.22em] text-slate-500">Suscripción</p>
                   <p className="mt-2 text-sm font-bold text-slate-900 break-all">{subscriptionId || 'No aplica'}</p>
                 </div>
               </div>
 
-              <div className="rounded-2xl border border-slate-200 p-4">
+              <div className="rounded-card border border-slate-200 p-4">
                 <p className="text-xs font-black uppercase tracking-[0.22em] text-slate-500 mb-2">Detalle de verificación</p>
                 <p className="text-sm text-slate-600 leading-relaxed">
                   {scope === 'job'
@@ -232,13 +232,13 @@ const PaymentStatusPage: React.FC = () => {
                       {payload?.amount ? ` • $${Number(payload.amount).toLocaleString('es-CL')} CLP` : ''}
                     </p>
                   </div>
-                  <div className="rounded-2xl bg-white/10 border border-white/10 px-4 py-3 text-right">
+                  <div className="rounded-card bg-white/10 border border-white/10 px-4 py-3 text-right">
                     <p className="text-[10px] font-black uppercase tracking-[0.22em] text-slate-300">Intentos</p>
                     <p className="text-xl font-black">{Math.max(1, attempts)}</p>
                   </div>
                 </div>
                 {payload && (
-                  <div className="mt-4 rounded-2xl bg-black/20 p-4 text-xs text-slate-300 space-y-1.5">
+                  <div className="mt-4 rounded-card bg-black/20 p-4 text-xs text-slate-300 space-y-1.5">
                     <div className="flex justify-between gap-4"><span className="text-slate-400">Estado backend</span><span className="font-bold text-white">{payload.paymentStatus || payload.status || 'n/a'}</span></div>
                     {payload.jobStatus && <div className="flex justify-between gap-4"><span className="text-slate-400">Job status</span><span className="font-bold text-white">{payload.jobStatus}</span></div>}
                     {payload.lastPaymentDate && <div className="flex justify-between gap-4"><span className="text-slate-400">Último pago</span><span className="font-bold text-white">{new Date(payload.lastPaymentDate).toLocaleString('es-CL')}</span></div>}
@@ -250,19 +250,19 @@ const PaymentStatusPage: React.FC = () => {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <Link
                   to="/search"
-                  className="rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-black px-5 py-3.5 text-center transition-colors shadow-lg"
+                  className="rounded-card bg-blue-600 hover:bg-blue-700 text-white font-black px-5 py-3.5 text-center transition-colors shadow-lg"
                 >
                   Buscar servicio
                 </Link>
                 <Link
                   to={continueHref}
-                  className="rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-900 font-black px-5 py-3.5 text-center transition-colors"
+                  className="rounded-card bg-slate-100 hover:bg-slate-200 text-slate-900 font-black px-5 py-3.5 text-center transition-colors"
                 >
                   Continuar
                 </Link>
               </div>
 
-              <div className="rounded-2xl border border-dashed border-slate-300 p-4 text-xs text-slate-500 leading-relaxed">
+              <div className="rounded-card border border-dashed border-slate-300 p-4 text-xs text-slate-500 leading-relaxed">
                 Si el estado sigue en pendiente unos segundos, Mercado Pago puede seguir confirmando la transacción. Esta pantalla se actualizará sola mientras esté abierta.
               </div>
             </div>

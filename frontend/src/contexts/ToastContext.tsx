@@ -65,7 +65,7 @@ const ToastContainer: React.FC<ToastContainerProps> = ({ toasts, removeToast }) 
     switch (type) {
       case 'success':
         return (
-          <svg className="w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-6 h-6 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
           </svg>
         );
@@ -93,7 +93,7 @@ const ToastContainer: React.FC<ToastContainerProps> = ({ toasts, removeToast }) 
   const getStyles = (type: ToastType) => {
     switch (type) {
       case 'success':
-        return 'bg-green-50 border-green-200 text-green-800';
+        return 'bg-emerald-50 border-emerald-200 text-emerald-800';
       case 'error':
         return 'bg-red-50 border-red-200 text-red-800';
       case 'warning':
@@ -110,7 +110,7 @@ const ToastContainer: React.FC<ToastContainerProps> = ({ toasts, removeToast }) 
           key={toast.id}
           className={`
             ${getStyles(toast.type)}
-            border rounded-xl shadow-lg p-4 flex items-start gap-3
+            border rounded-control shadow-lg p-4 flex items-start gap-3
             transform transition-all duration-300 ease-out
             animate-in slide-in-from-right fade-in
           `}

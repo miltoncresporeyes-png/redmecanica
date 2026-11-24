@@ -49,6 +49,8 @@ router.get('/search', async (req, res) => {
     const response = filtered.map((p: any) => ({
       id: p.id,
       name: p.user?.name,
+      businessName: p.businessName,
+      experience: p.experience,
       type: p.type,
       status: p.status,
       rating: p.rating,

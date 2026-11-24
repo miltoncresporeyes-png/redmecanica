@@ -1,0 +1,36 @@
+{
+  "nav": { "home": "Home", "requests": "Requests", "business": "My business", "account": "Account" },
+  "home": {
+    "attention": "Needs your attention",
+    "allDone": "All caught up",
+    "allDoneHint": "When a new request arrives you will see it here.",
+    "newRequests_one": "{{count}} new request to quote",
+    "newRequests_other": "{{count}} new requests to quote",
+    "activeJobs_one": "{{count}} job in progress",
+    "activeJobs_other": "{{count}} jobs in progress",
+    "viewRequests": "View requests",
+    "continue": "Continue",
+    "upload": "Upload",
+    "uploadDocs": "Upload your documents to get the “Verified” badge",
+    "contactsWeek": "Contacts this week",
+    "views": "Profile views",
+    "rating": "Rating",
+    "noRatings": "No ratings yet",
+    "setupTitle": "Finish setting up your profile",
+    "stepData": "Complete your business details",
+    "stepDataHint": "Name, phone and {{zone}}."
+  },
+  "verification": {
+    "title": "Verification",
+    "verified": "Your profile is verified and shows the “Verified” badge.",
+    "reviewing": "We received your documents. Our team is reviewing them.",
+    "pending": "Upload your documents to get the “Verified” badge. Only our team can see them.",
+    "received": "Received",
+    "upload": "Upload",
+    "replace": "Replace",
+    "uploading": "Uploading…",
+    "idHint": "Clear photo of both sides.",
+    "backgroundHint": "Current photo or PDF."
+  },
+  "language": { "label": "Language" }
+}

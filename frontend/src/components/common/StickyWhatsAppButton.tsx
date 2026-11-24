@@ -2,14 +2,17 @@ import React, { useState } from 'react';
 import { MessageCircle, Phone } from 'lucide-react';
 import { trackEvent } from '../../lib/analytics';
 import LeadQualificationModal from './LeadQualificationModal';
+import { trackProviderEvent } from '../../lib/trackProvider';
 
 interface StickyWhatsAppButtonProps {
+  providerId?: string;
   phone?: string;
   providerName?: string;
   commune?: string;
 }
 
 export const StickyWhatsAppButton: React.FC<StickyWhatsAppButtonProps> = ({
+  providerId,
   phone,
   providerName = 'prestador',
   commune = '',
@@ -27,6 +30,7 @@ export const StickyWhatsAppButton: React.FC<StickyWhatsAppButtonProps> = ({
       commune,
       phone: sanitizedPhone,
     });
+    trackProviderEvent(providerId, 'WHATSAPP');
     setIsModalOpen(true);
   };
 
@@ -38,7 +42,7 @@ export const StickyWhatsAppButton: React.FC<StickyWhatsAppButtonProps> = ({
           <button
             type="button"
             onClick={handleClick}
-            className="flex-1 min-h-[48px] py-3 px-4 bg-emerald-500 hover:bg-emerald-600 active:bg-emerald-700 text-white font-black text-sm rounded-2xl shadow-lg transition-transform active:scale-98 flex items-center justify-center gap-2 tracking-tight cursor-pointer"
+            className="flex-1 min-h-[48px] py-3 px-4 bg-emerald-500 hover:bg-emerald-600 active:bg-emerald-700 text-white font-black text-sm rounded-card shadow-lg transition-transform active:scale-98 flex items-center justify-center gap-2 tracking-tight cursor-pointer"
             aria-label={`Contactar por WhatsApp a ${providerName}`}
           >
             <MessageCircle className="w-5 h-5 fill-white shrink-0 stroke-emerald-500" />
@@ -48,7 +52,7 @@ export const StickyWhatsAppButton: React.FC<StickyWhatsAppButtonProps> = ({
           {/* Botón Llamada Directa */}
           <a
             href={`tel:${phone}`}
-            className="min-h-[48px] min-w-[48px] p-3 bg-slate-900 hover:bg-slate-800 active:bg-slate-950 text-white rounded-2xl flex items-center justify-center shadow-md transition-transform active:scale-98"
+            className="min-h-[48px] min-w-[48px] p-3 bg-slate-900 hover:bg-slate-800 active:bg-slate-950 text-white rounded-card flex items-center justify-center shadow-md transition-transform active:scale-98"
             title={`Llamar a ${phone}`}
             aria-label={`Llamar al teléfono ${phone}`}
           >

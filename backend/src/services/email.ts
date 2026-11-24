@@ -421,3 +421,32 @@ export const sendLaunchLeadConfirmation = async (
     text: `Gracias por registrarte en RedMecánica. Te avisaremos cuando el servicio esté disponible. Tu ticket es: ${ticket}.${discountCode ? `\nTu código de descuento exclusivo es: ${discountCode}` : ''}`,
   });
 };
+
+export const sendPasswordResetEmail = async (userEmail: string, userName: string, resetLink: string) => {
+  const html = `
+    <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 580px; margin: 0 auto; padding: 24px; border: 1px solid #e2e8f0; border-radius: 12px; background-color: #ffffff;">
+      <div style="text-align: center; margin-bottom: 24px;">
+        <h1 style="color: #1e3a8a; margin: 0; font-size: 24px; font-weight: 800;">RedMecánica</h1>
+        <p style="color: #64748b; font-size: 13px; margin: 4px 0 0 0;">Notificaciones Oficiales</p>
+      </div>
+      <h2 style="color: #1e293b; font-size: 18px; margin-top: 0;">Restablecer tu contraseña</h2>
+      <p style="color: #334155; font-size: 14px; line-height: 1.6;">Hola <strong>${escapeHtml(userName)}</strong>, recibimos una solicitud para restablecer la contraseña de tu cuenta. Pulsa el botón para elegir una nueva:</p>
+      <div style="text-align: center; margin: 24px 0;">
+        <a href="${escapeHtml(resetLink)}" style="background-color: #2563eb; color: #ffffff; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 700; font-size: 14px; display: inline-block;">Elegir nueva contraseña</a>
+      </div>
+      <p style="color: #64748b; font-size: 12px; line-height: 1.5;">El enlace es válido por 30 minutos y solo se puede usar una vez. Si no fuiste tú, ignora este correo: tu contraseña actual no cambia.</p>
+      <p style="color: #64748b; font-size: 12px; line-height: 1.5; word-break: break-all;">Si el botón no funciona, copia este enlace en tu navegador:<br>${escapeHtml(resetLink)}</p>
+      <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 24px 0;" />
+      <p style="color: #64748b; font-size: 12px; margin: 0;">Este correo se envía desde notificaciones@redmecanica.cl. Para soporte escribe a contacto@redmecanica.cl.</p>
+    </div>
+  `;
+
+  return sendEmail({
+    to: userEmail,
+    subject: "Restablece tu contraseña - RedMecánica",
+    html,
+    text: `Hola ${userName}.\n\nPara elegir una nueva contraseña abre este enlace (válido 30 minutos, un solo uso):\n${resetLink}\n\nSi no fuiste tú, ignora este correo.\n\nRedMecánica - contacto@redmecanica.cl`,
+    from: `"RedMecánica Notificaciones" <${process.env.SMTP_USER || "notificaciones@redmecanica.cl"}>`,
+    replyTo: "contacto@redmecanica.cl",
+  });
+};

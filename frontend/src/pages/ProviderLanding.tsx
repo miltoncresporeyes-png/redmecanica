@@ -76,7 +76,7 @@ const ProviderLanding: React.FC = () => {
         keywords="publicar taller mecánico, registrar vulcanización, ofrecer servicios grúa, vitrina automotriz gratis Chile"
         canonicalUrl="https://redmecanica.cl/unete"
       />
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 -m-4 sm:-m-0 sm:rounded-2xl overflow-hidden">
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 -m-4 sm:-m-0 sm:rounded-card overflow-hidden">
         <header className="container mx-auto px-4 py-6">
           <div className="flex justify-between items-center">
             <button onClick={() => navigate('/')} className="flex items-center space-x-2" aria-label="Volver al inicio">
@@ -115,7 +115,7 @@ const ProviderLanding: React.FC = () => {
                   { n: '2', t: 'Aparece en el directorio', d: 'Te ordenamos primero en tu comuna cuando busquen tu categoría.' },
                   { n: '3', t: 'Recibe contactos directos', d: 'El conductor te escribe por WhatsApp o te llama. Tú cierras el trato.' },
                 ].map((s) => (
-                  <div key={s.n} className="flex gap-3 bg-white/5 border border-white/10 rounded-2xl p-4">
+                  <div key={s.n} className="flex gap-3 bg-white/5 border border-white/10 rounded-card p-4">
                     <div className="w-8 h-8 shrink-0 bg-yellow-400 text-blue-950 font-black rounded-full flex items-center justify-center text-sm">
                       {s.n}
                     </div>
@@ -127,19 +127,19 @@ const ProviderLanding: React.FC = () => {
                 ))}
               </div>
 
-              <div className="bg-white/5 border border-white/10 rounded-2xl p-4 text-xs sm:text-sm text-blue-100/80">
+              <div className="bg-white/5 border border-white/10 rounded-card p-4 text-xs sm:text-sm text-blue-100/80">
                 💰 <strong className="text-white">Modelo honesto:</strong> publicar y aparecer es gratis.
                 Si quieres destacar sobre tu competencia, hay planes de posicionamiento. Nunca pagas por cada contacto.
               </div>
             </div>
 
             {/* Form borrador */}
-            <div className="bg-white rounded-3xl shadow-2xl p-6 sm:p-8">
+            <div className="bg-white rounded-card shadow-2xl p-6 sm:p-8">
               <h2 className="text-xl font-black text-gray-900">Crea tu borrador de vitrina</h2>
               <p className="text-sm text-gray-500 mb-5">Te tomará 2 minutos. Después completas verificación.</p>
 
               {error && (
-                <div className="bg-red-50 border border-red-100 text-red-700 text-sm font-bold rounded-xl p-3 mb-4">
+                <div className="bg-red-50 border border-red-100 text-red-700 text-sm font-bold rounded-control p-3 mb-4">
                   ⚠️ {error}
                 </div>
               )}
@@ -152,7 +152,7 @@ const ProviderLanding: React.FC = () => {
                     value={formData.businessName}
                     onChange={handleChange}
                     placeholder="Ej: Vulca El Rayo, Taller Martínez, Grúas Sur"
-                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:outline-none"
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-control focus:border-blue-500 focus:outline-none"
                   />
                 </div>
 
@@ -164,7 +164,7 @@ const ProviderLanding: React.FC = () => {
                         key={cat.slug}
                         type="button"
                         onClick={() => setFormData((p) => ({ ...p, categorySlug: cat.slug }))}
-                        className={`text-left px-3 py-2 rounded-xl border-2 text-sm font-bold transition-all ${
+                        className={`text-left px-3 py-2 rounded-control border-2 text-sm font-bold transition-all ${
                           formData.categorySlug === cat.slug
                             ? 'border-blue-600 bg-blue-50 text-blue-800'
                             : 'border-gray-100 hover:border-blue-200 text-gray-600'
@@ -188,11 +188,11 @@ const ProviderLanding: React.FC = () => {
                     onFocus={() => setCommuneFocus(true)}
                     onBlur={() => setTimeout(() => setCommuneFocus(false), 150)}
                     placeholder="Ej: Maipú"
-                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:outline-none"
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-control focus:border-blue-500 focus:outline-none"
                     autoComplete="off"
                   />
                   {communeFocus && (
-                    <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-100 rounded-xl shadow-xl z-50 max-h-60 overflow-y-auto overscroll-contain">
+                    <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-100 rounded-control shadow-xl z-50 max-h-60 overflow-y-auto overscroll-contain">
                       {filteredComunas.map((c) => (
                         <button
                           key={c}
@@ -232,7 +232,7 @@ const ProviderLanding: React.FC = () => {
                         }
                       }}
                       placeholder="+56 9 1234 5678"
-                      className={`w-full px-4 py-3 border-2 rounded-xl focus:outline-none transition-all ${
+                      className={`w-full px-4 py-3 border-2 rounded-control focus:outline-none transition-all ${
                         formData.phone && formData.phone.trim() !== '+56' && !validarWhatsAppChile(formData.phone).isValid
                           ? 'border-rose-400 bg-rose-50/20 focus:border-rose-500'
                           : 'border-gray-200 focus:border-blue-500'
@@ -252,7 +252,7 @@ const ProviderLanding: React.FC = () => {
                       value={formData.email}
                       onChange={handleChange}
                       placeholder="tu@negocio.cl"
-                      className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:outline-none"
+                      className="w-full px-4 py-3 border-2 border-gray-200 rounded-control focus:border-blue-500 focus:outline-none"
                     />
                   </div>
                 </div>
@@ -265,13 +265,13 @@ const ProviderLanding: React.FC = () => {
                     onChange={handleChange}
                     rows={3}
                     placeholder="Ej: pinchazos, cambio de neumáticos, balanceo, frenos…"
-                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:outline-none"
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-control focus:border-blue-500 focus:outline-none"
                   />
                 </div>
 
                 <button
                   type="submit"
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-xl font-black transition-all shadow-lg active:scale-[0.99]"
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-control font-black transition-all shadow-lg active:scale-[0.99]"
                 >
                   Continuar → completar verificación
                 </button>

@@ -134,9 +134,9 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
   }
 
   return (
-    <div className="flex flex-col h-[500px] bg-white rounded-lg shadow-lg">
+    <div className="flex flex-col h-[500px] bg-white rounded-control shadow-lg">
       {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b bg-gray-50 rounded-t-lg">
+      <div className="flex items-center justify-between p-4 border-b bg-gray-50 rounded-t-control">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold">
             {otherUserName.charAt(0).toUpperCase()}
@@ -163,7 +163,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
               className={`flex ${isOwn ? 'justify-end' : 'justify-start'}`}
             >
               <div
-                className={`max-w-[75%] p-3 rounded-lg ${
+                className={`max-w-[75%] p-3 rounded-control ${
                   isOwn
                     ? 'bg-blue-600 text-white rounded-br-none'
                     : 'bg-gray-100 text-gray-800 rounded-bl-none'
@@ -188,13 +188,13 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
             placeholder="Escribe un mensaje..."
-            className="flex-1 border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="flex-1 border border-gray-300 rounded-control px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             disabled={sending}
           />
           <button
             type="submit"
             disabled={!newMessage.trim() || sending}
-            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="bg-blue-600 text-white px-4 py-2 rounded-control hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {sending ? '...' : 'Enviar'}
           </button>

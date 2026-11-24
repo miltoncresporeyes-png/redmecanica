@@ -1,4 +1,5 @@
 import { prisma } from '../db.js';
+import { VISIBLE_PROVIDER_STATUSES } from '../lib/providerStatus.js';
 
 export interface GeoPoint {
   lat: number;
@@ -44,7 +45,7 @@ export async function findNearbyProviders(params: ProviderSearchParams) {
 
   const providers = await prisma.serviceProvider.findMany({
     where: {
-      status: 'ACTIVE',
+      status: { in: [...VISIBLE_PROVIDER_STATUSES] },
       latitude: { not: null },
       longitude: { not: null },
       ...(categoryId && {
@@ -119,9 +120,7 @@ export async function findNearbyProvidersRaw(lat: number, lng: number, radiusKm:
       )) AS distance
     FROM "ServiceProvider" sp
     JOIN "User" u ON sp."userId" = u.id
-    JOIN "Subscription" sub ON sp.id = sub."providerId"
-    WHERE sp.status = 'ACTIVE'
-      AND sub.status = 'ACTIVE'
+    WHERE sp.status IN ('ACTIVE', 'APPROVED')
       AND sp.latitude IS NOT NULL
       AND sp.longitude IS NOT NULL
       AND (6371 * acos(

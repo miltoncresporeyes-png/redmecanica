@@ -198,6 +198,9 @@ app.use(helmet());
 app.use(securityHeadersMiddleware);
 app.use(globalLimiter);
 
+// Documentos de verificacion (cedula, antecedentes): llegan como data URL. El parser global limita a 1 MB, lo que
+// rechazaba (413) cualquier foto normal; esta ruta admite hasta 8 MB y debe ir ANTES del parser global.
+app.use('/api/providers/me/documents', express.json({ limit: '8mb' }));
 app.use(express.json({ limit: '1mb' }));
 app.use(express.urlencoded({ extended: true, limit: '1mb' }));
 app.use(cookieParser());

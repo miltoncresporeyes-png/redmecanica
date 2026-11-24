@@ -184,7 +184,7 @@ const ProgrammaticLandingPage: React.FC = () => {
       </Helmet>
 
       {/* Hero Premium Section */}
-      <div className="relative rounded-3xl overflow-hidden mb-10 bg-gradient-to-br from-slate-900 via-blue-950 to-slate-900 text-white shadow-2xl p-8 md:p-12">
+      <div className="relative rounded-card overflow-hidden mb-10 bg-gradient-to-br from-slate-900 via-blue-950 to-slate-900 text-white shadow-2xl p-8 md:p-12">
         <div className="absolute inset-0 bg-grid-white opacity-5 pointer-events-none"></div>
         <div className="relative z-10 max-w-3xl">
           <span className="inline-block bg-blue-600/30 text-blue-400 border border-blue-500/20 text-xs px-3 py-1.5 rounded-full font-bold uppercase tracking-wider mb-4">
@@ -199,13 +199,13 @@ const ProgrammaticLandingPage: React.FC = () => {
           <div className="flex flex-wrap gap-4">
             <Link
               to={`/solicitar?service=${serviceInfo.slug}&commune=${communeInfo.slug}`}
-              className="bg-blue-600 hover:bg-blue-700 text-white font-extrabold px-6 py-3.5 rounded-xl transition-all shadow-lg hover:shadow-blue-500/20 shadow-blue-500/10 active:scale-95"
+              className="bg-blue-600 hover:bg-blue-700 text-white font-extrabold px-6 py-3.5 rounded-control transition-all shadow-lg hover:shadow-blue-500/20 shadow-blue-500/10 active:scale-95"
             >
               🚀 Solicitar Servicio Ahora
             </Link>
             <a
               href="#prestadores"
-              className="bg-white/10 hover:bg-white/20 border border-white/10 text-white font-semibold px-6 py-3.5 rounded-xl transition-all backdrop-blur"
+              className="bg-white/10 hover:bg-white/20 border border-white/10 text-white font-semibold px-6 py-3.5 rounded-control transition-all backdrop-blur"
             >
               🔍 Ver Proveedores ({providers.length})
             </a>
@@ -235,10 +235,10 @@ const ProgrammaticLandingPage: React.FC = () => {
               {/* Simple Filter Toggle */}
               <button
                 onClick={() => setFilterCertified(!filterCertified)}
-                className={`px-4 py-2 rounded-xl text-xs font-bold transition-all border ${
+                className={`px-4 py-2 rounded-control text-xs font-bold transition-all border ${
                   filterCertified
-                    ? 'bg-green-600 text-white border-green-600 shadow-md'
-                    : 'bg-white text-gray-600 border-gray-200 hover:border-green-300'
+                    ? 'bg-emerald-600 text-white border-emerald-600 shadow-md'
+                    : 'bg-white text-gray-600 border-gray-200 hover:border-emerald-300'
                 }`}
               >
                 {filterCertified ? '✓ Solo Destacados' : '🌟 Mostrar Solo Destacados'}
@@ -250,7 +250,7 @@ const ProgrammaticLandingPage: React.FC = () => {
                 <LoadingSpinner />
               </div>
             ) : displayedProviders.length === 0 ? (
-              <Card className="p-10 text-center border border-dashed border-gray-300 text-gray-500 rounded-2xl">
+              <Card className="p-10 text-center border border-dashed border-gray-300 text-gray-500 rounded-card">
                 <span className="text-4xl block mb-3">📍</span>
                 <p className="font-bold text-gray-800 text-lg">No encontramos mecánicos registrados en esta zona aún</p>
                 <p className="text-sm mt-1 mb-6">
@@ -258,7 +258,7 @@ const ProgrammaticLandingPage: React.FC = () => {
                 </p>
                 <Link
                   to="/solicitar"
-                  className="bg-blue-600 text-white px-6 py-2.5 rounded-xl font-bold shadow-md hover:bg-blue-700"
+                  className="bg-blue-600 text-white px-6 py-2.5 rounded-control font-bold shadow-md hover:bg-blue-700"
                 >
                   Pedir Diagnóstico Remoto
                 </Link>
@@ -282,14 +282,14 @@ const ProgrammaticLandingPage: React.FC = () => {
 
         {/* Right Side: Sidebar / CTA & Quick Info */}
         <div className="space-y-6">
-          <Card className="p-6 bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100 shadow-sm rounded-2xl">
+          <Card className="p-6 bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100 shadow-sm rounded-card">
             <h3 className="font-bold text-lg text-blue-900 mb-2">⚡ Cotizador Express</h3>
             <p className="text-sm text-blue-800/80 mb-6">
               Recibe hasta 4 cotizaciones en menos de 30 minutos de expertos mecánicos locales calificados.
             </p>
             <Link
               to={`/solicitar?service=${serviceInfo.slug}`}
-              className="w-full text-center block bg-blue-600 hover:bg-blue-700 text-white font-extrabold py-3.5 rounded-xl transition-all shadow-md"
+              className="w-full text-center block bg-blue-600 hover:bg-blue-700 text-white font-extrabold py-3.5 rounded-control transition-all shadow-md"
             >
               Comenzar Solicitud 💬
             </Link>
@@ -312,7 +312,7 @@ const ProgrammaticLandingPage: React.FC = () => {
               </div>
               <div className="flex justify-between pb-2">
                 <span className="text-gray-500">Radio de Cobertura:</span>
-                <span className="font-bold text-green-600">Completa en {communeInfo.name}</span>
+                <span className="font-bold text-emerald-600">Completa en {communeInfo.name}</span>
               </div>
             </div>
           </Card>
@@ -328,7 +328,7 @@ const ProgrammaticLandingPage: React.FC = () => {
                   <Link
                     key={c.slug}
                     to={`/${serviceInfo.slug}-en-${c.slug}`}
-                    className="text-xs bg-gray-100 hover:bg-blue-50 text-gray-600 hover:text-blue-600 px-3 py-1.5 rounded-lg font-bold transition-all border border-gray-100"
+                    className="text-xs bg-gray-100 hover:bg-blue-50 text-gray-600 hover:text-blue-600 px-3 py-1.5 rounded-control font-bold transition-all border border-gray-100"
                   >
                     {serviceInfo.name} en {c.name}
                   </Link>

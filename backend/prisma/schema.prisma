@@ -38,6 +38,8 @@ model ServiceProvider {
   type         String   @default("MECHANIC") // MECHANIC, WORKSHOP, TOWING, INSURANCE
   status       String   @default("PENDING") // PENDING, UNDER_REVIEW, APPROVED, REJECTED, SUSPENDED
   bio          String?
+  businessName String?  // Nombre de fantasia o empresa (publico)
+  experience   Int?     // Anos de experiencia (publico)
   rating       Float    @default(0.0)
   vehicle      String?  // Optional for workshops
   licensePlate String?  // Optional for workshops
@@ -88,6 +90,7 @@ model ServiceProvider {
   categories   ProviderCategory[]
   zones        ProviderZone[]
   availability ProviderAvailability[]
+  events       ProviderEvent[]
   conversations Conversation[]
   reviews      Review[]
   createdAt    DateTime @default(now())
@@ -522,4 +525,16 @@ model CoverageExpansion {
 
   @@index([providerId])
   @@index([status])
+}
+
+// Contactos y visitas a la vitrina de un prestador (metricas del panel). Sin datos personales.
+// Tabla creada con prisma/manual/2026-11-24_provider_events.sql
+model ProviderEvent {
+  id         String          @id @default(uuid())
+  providerId String
+  provider   ServiceProvider @relation(fields: [providerId], references: [id], onDelete: Cascade)
+  type       String          // VIEW | WHATSAPP | CALL
+  createdAt  DateTime        @default(now())
+
+  @@index([providerId, createdAt])
 }

@@ -20,7 +20,7 @@ const Terms: React.FC<TermsProps> = ({ onClose }) => {
       </div>
 
       {/* Last Update */}
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+      <div className="bg-blue-50 border border-blue-200 rounded-control p-4 mb-6">
         <p className="text-sm text-gray-600">
           <strong>Última actualización:</strong> 09 de Febrero de 2026
         </p>
@@ -30,7 +30,7 @@ const Terms: React.FC<TermsProps> = ({ onClose }) => {
       </div>
 
       {/* Content */}
-      <div className="bg-white border border-gray-200 rounded-lg p-8 space-y-6 text-gray-700">
+      <div className="bg-white border border-gray-200 rounded-control p-8 space-y-6 text-gray-700">
         
         <section>
           <h2 className="text-2xl font-bold text-gray-900 mb-3">1. Aceptación de los Términos</h2>
@@ -342,7 +342,7 @@ const Terms: React.FC<TermsProps> = ({ onClose }) => {
       <div className="text-center mt-6">
         <button
           onClick={onClose}
-          className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-3 rounded-lg font-bold hover:shadow-lg transition-shadow"
+          className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-3 rounded-control font-bold hover:shadow-lg transition-shadow"
         >
           He Leído y Acepto los Términos
         </button>

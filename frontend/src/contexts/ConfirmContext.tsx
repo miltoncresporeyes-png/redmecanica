@@ -128,7 +128,7 @@ export const ConfirmProvider: React.FC<{ children: React.ReactNode }> = ({ child
           {/* Dialog */}
           <div className="flex min-h-full items-center justify-center p-4">
             <div 
-              className="relative bg-white rounded-2xl shadow-xl max-w-md w-full p-6 animate-in zoom-in-95 fade-in"
+              className="relative bg-white rounded-card shadow-xl max-w-md w-full p-6 animate-in zoom-in-95 fade-in"
               role="dialog"
               aria-modal="true"
               aria-labelledby="confirm-title"
@@ -156,14 +156,14 @@ export const ConfirmProvider: React.FC<{ children: React.ReactNode }> = ({ child
                 <div className="flex gap-3 w-full">
                   <button
                     onClick={handleCancel}
-                    className="flex-1 px-4 py-2.5 border border-gray-300 text-gray-700 rounded-xl font-medium hover:bg-gray-50 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+                    className="flex-1 px-4 py-2.5 border border-gray-300 text-gray-700 rounded-control font-medium hover:bg-gray-50 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
                   >
                     {state.cancelText}
                   </button>
                   
                   <button
                     onClick={handleConfirm}
-                    className={`flex-1 px-4 py-2.5 rounded-xl font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 ${getConfirmButtonStyles()}`}
+                    className={`flex-1 px-4 py-2.5 rounded-control font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 ${getConfirmButtonStyles()}`}
                     autoFocus
                   >
                     {state.confirmText}
