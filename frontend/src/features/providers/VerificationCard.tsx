@@ -60,7 +60,7 @@ const VerificationCard: React.FC<Props> = ({ provider, onSaved }) => {
             {verified
               ? t('verification.verified')
               : allUploaded
-              ? t('verification.reviewing')
+              ? (provider?.status === 'PENDING' ? t('verification.readyToPublish') : t('verification.reviewing'))
               : t('verification.pending')}
           </p>
         </div>

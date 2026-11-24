@@ -223,9 +223,7 @@ const ProviderHome: React.FC<Props> = ({
       {status === 'ACTIVE' && (
         <p className="text-sm text-slate-600 flex items-start gap-2">
           <CircleDashed className="w-4 h-4 mt-0.5 shrink-0 text-slate-400" aria-hidden="true" />
-          {provider?.hasIdDocument && provider?.hasBackgroundCheck
-            ? 'Tu vitrina está visible. Nuestro equipo está revisando tus documentos.'
-            : 'Tu vitrina está visible.'}
+          Tu vitrina está visible. Sube tu cédula y tu certificado de antecedentes para verificarla.
         </p>
       )}
     </div>

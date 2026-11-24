@@ -119,10 +119,10 @@ const ProviderDashboard: React.FC<ProviderDashboardProps> = ({ onClose }) => {
     return (
       <section className="bg-white border border-slate-200 rounded-control p-6 shadow-sm" aria-labelledby="pay-title">
         <h3 id="pay-title" className="text-base font-bold text-slate-900 mb-4">Pagos por la plataforma</h3>
-        <dl className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div><dt className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Liberado a tu favor</dt><dd className="text-2xl font-bold text-slate-900 mt-1">{formatMoney(gross - commission)}</dd><dd className="text-xs text-slate-500">Descontada la comisión ({platformFeePercent} %)</dd></div>
+        <dl className={`grid grid-cols-1 gap-4 ${platformFeePercent > 0 ? 'sm:grid-cols-3' : 'sm:grid-cols-2'}`}>
+          <div><dt className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Liberado a tu favor</dt><dd className="text-2xl font-bold text-slate-900 mt-1">{formatMoney(gross - commission)}</dd><dd className="text-xs text-slate-500">{platformFeePercent > 0 ? `Descontada la comisión (${platformFeePercent} %)` : 'Sin comisión: recibes el total'}</dd></div>
           <div><dt className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Retenido</dt><dd className="text-2xl font-bold text-blue-700 mt-1">{formatMoney(sum(held))}</dd><dd className="text-xs text-slate-500">Se libera al cerrar cada servicio</dd></div>
-          <div><dt className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Comisión</dt><dd className="text-2xl font-bold text-slate-600 mt-1">{formatMoney(commission)}</dd><dd className="text-xs text-slate-500">{platformFeePercent} % de lo liberado</dd></div>
+          {platformFeePercent > 0 && <div><dt className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Comisión</dt><dd className="text-2xl font-bold text-slate-600 mt-1">{formatMoney(commission)}</dd><dd className="text-xs text-slate-500">{platformFeePercent} % de lo liberado</dd></div>}
         </dl>
       </section>
     );

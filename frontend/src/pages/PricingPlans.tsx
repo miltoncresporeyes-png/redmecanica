@@ -454,9 +454,9 @@ const PricingPlans: React.FC<PricingPlansProps> = ({ onSelectPlan, onNavigateToO
           <p className="section-sub text-center mb-8">Sin letra chica: así funciona el modelo</p>
           <div className="max-w-4xl mx-auto grid md:grid-cols-2 gap-x-12 gap-y-8 px-2 sm:px-6">
             {[
-              { q: '¿Cobran comisión por cada trabajo?', a: 'No por contactos: el trato con el conductor es directo y no pagas por cada contacto. Solo si cobras un servicio mediante el pago protegido de la plataforma se descuenta una comisión del 12 %, que verás desglosada en tu panel.' },
+              { q: '¿Cobran comisión por cada trabajo?', a: 'No. El contacto y el pago son directos entre tú y el conductor. Solo pagas tu plan de visibilidad si eliges uno, nunca un % por servicio.' },
               { q: '¿Qué obtengo con la vitrina gratuita?', a: 'Tu perfil público, aparición en tu comuna base y contacto directo por WhatsApp. Gratis para siempre. Tu vitrina aparece también en las últimas publicadas de la portada.' },
-              { q: '¿Qué significa "Verificado"?', a: 'Revisamos tu cédula y certificado de antecedentes. Es gratis: sube tus documentos desde Mi negocio y, al aprobarlos, tu vitrina muestra la insignia.' },
+              { q: '¿Qué significa "Verificado"?', a: 'Es gratis y automático: sube tu cédula y tu certificado de antecedentes desde Mi negocio y tu vitrina muestra la insignia. Sin documentos, igual apareces publicado.' },
               { q: '¿Puedo cancelar cuando quiera?', a: 'Sí. Los planes mensuales se cancelan sin multas y tu vitrina gratuita sigue activa.' },
               { q: '¿Los conductores pagan algo?', a: 'Nunca. Buscar, comparar y contactar es 100% gratis y sin cuenta para ellos.' },
               { q: '¿Cómo destaco en más comunas?', a: 'Con Destacado cubres hasta 3 comunas y con Premium hasta 10. Las agregas desde Cobertura en tu panel.' },

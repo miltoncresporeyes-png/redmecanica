@@ -23,8 +23,9 @@
   "verification": {
     "title": "Verification",
     "verified": "Your profile is verified and shows the “Verified” badge.",
-    "reviewing": "We received your documents. Our team is reviewing them.",
-    "pending": "Upload your documents to get the “Verified” badge. Only our team can see them.",
+    "reviewing": "We received your documents.",
+    "readyToPublish": "Documents complete. Your profile will be verified when you publish it.",
+    "pending": "Upload your ID and background certificate and your profile is verified instantly. Only our team can see them.",
     "received": "Received",
     "upload": "Upload",
     "replace": "Replace",

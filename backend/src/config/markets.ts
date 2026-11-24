@@ -31,7 +31,7 @@ export const MARKETS: Record<string, Market> = {
     zoneLabel: { singular: 'comuna', plural: 'comunas' },
     taxId: { label: 'RUT', validator: 'cl-rut' },
     documents: { identity: 'Cédula de identidad', background: 'Certificado de antecedentes' },
-    platformFeePercent: 12,
+    platformFeePercent: 0, // RedMecanica no cobra comision por servicios ni contactos (solo planes de visibilidad)
     contactChannel: 'whatsapp',
   },
 };

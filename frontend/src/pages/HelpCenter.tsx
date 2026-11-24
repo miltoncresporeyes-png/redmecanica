@@ -41,7 +41,7 @@ const HelpCenter: React.FC<HelpCenterProps> = ({ onClose }) => {
               <li>Verificación de identidad y certificaciones</li>
             </ul>
           </li>
-          <li><strong>Espera la verificación:</strong> Revisaremos tu documentación en 24-48 horas</li>
+          <li><strong>Sube tus documentos:</strong> Con tu cédula y certificado de antecedentes, tu vitrina queda verificada al instante</li>
           <li><strong>Activa tu plan:</strong> Elige entre Plan Básico (gratis) o planes de pago</li>
           <li><strong>¡Comienza a recibir solicitudes!</strong></li>
         </ol>
@@ -80,9 +80,9 @@ const HelpCenter: React.FC<HelpCenterProps> = ({ onClose }) => {
         
         <h3>Estados del Proceso</h3>
         <ol>
-          <li><strong>En Revisión:</strong> Estamos verificando tu documentación</li>
+          <li><strong>Publicada:</strong> Tu vitrina ya aparece en el directorio</li>
           <li><strong>Información Adicional Requerida:</strong> Te contactaremos por email</li>
-          <li><strong>Aprobado:</strong> ¡Ya puedes activar tu plan y comenzar!</li>
+          <li><strong>Verificada:</strong> Subiste tus documentos y tu vitrina muestra la insignia</li>
           <li><strong>Rechazado:</strong> Te explicaremos las razones y cómo corregirlo</li>
         </ol>
       `
@@ -99,7 +99,7 @@ const HelpCenter: React.FC<HelpCenterProps> = ({ onClose }) => {
           <li>✓ Sin costo mensual</li>
           <li>✓ Sin comisión por contacto</li>
           <li>✓ Apareces en tu comuna base</li>
-          <li>✓ Insignia "Verificado" al aprobar tus documentos (gratis)</li>
+          <li>✓ Insignia "Verificado" al subir tus documentos (gratis)</li>
           <li>✗ Sin posición destacada ni estadísticas</li>
         </ul>
         

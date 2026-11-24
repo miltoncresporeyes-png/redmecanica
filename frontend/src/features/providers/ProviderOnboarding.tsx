@@ -586,7 +586,7 @@ const ProviderOnboarding: React.FC<ProviderOnboardingProps> = ({ onComplete, onC
   const renderStep4_Docs = () => (
     <div className="space-y-4">
        <h3 className="text-xl text-slate-900">Documentación (opcional)</h3>
-       <p className="text-sm text-slate-500 mb-4">Puedes publicar ahora y subir tus documentos después. Nuestro equipo los revisa para entregarte la insignia «Verificado».</p>
+       <p className="text-sm text-slate-500 mb-4">Puedes publicar ahora y subir tus documentos después. Con tu cédula y tu certificado de antecedentes obtienes la insignia «Verificado».</p>
       
       <div className="grid grid-cols-1 gap-4">
         {/* Certificado de Antecedentes */}

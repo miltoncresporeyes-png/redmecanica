@@ -17,7 +17,7 @@ export const FREE_BENEFITS: Benefit[] = [
   { text: 'Apareces en tu comuna base (1 comuna)', included: true },
   { text: 'Contacto directo por WhatsApp', included: true },
   { text: 'Sin comisión por contacto', included: true },
-  { text: 'Insignia "Verificado" al aprobar tus documentos', included: true },
+  { text: 'Insignia "Verificado" al subir tus documentos', included: true },
   { text: 'Soporte por email', included: true },
   { text: 'Primeros lugares del directorio', included: false },
   { text: 'Insignia "Destacado" y portada', included: false },

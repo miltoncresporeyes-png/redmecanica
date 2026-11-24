@@ -493,7 +493,7 @@ const validateDocument = (value: unknown): { dataUrl: string } | { error: string
 };
 
 // PUT /api/providers/me/documents  { idDocumentUrl?, backgroundCheckUrl? }
-// Solo el dueño. Al completar ambos, la vitrina entra a la cola de revision del equipo.
+// Solo el dueño. Al completar ambos, la vitrina publicada queda verificada automaticamente (el equipo puede revocarlo).
 router.put('/me/documents', documentsLimiter, authenticateToken, async (req: AuthRequest, res) => {
   try {
     const provider = await prisma.serviceProvider.findUnique({ where: { userId: req.user!.id } });
@@ -527,10 +527,25 @@ router.put('/me/documents', documentsLimiter, authenticateToken, async (req: Aut
 
     const hasId = !!updated.idDocumentUrl;
     const hasBg = !!updated.backgroundCheckUrl;
+    // Verificacion automatica: con cedula y certificado de antecedentes la vitrina publicada queda verificada.
+    // Una vitrina sin publicar (PENDING) se verifica al publicarla; pausada, rechazada o en revision no cambia de estado aqui.
+    let status = provider.status;
+    if (hasId && hasBg && provider.status === 'ACTIVE') {
+      await prisma.serviceProvider.update({ where: { id: provider.id }, data: { status: 'APPROVED' } });
+      await prisma.providerHistory.create({
+        data: { providerId: provider.id, action: 'AUTO_VERIFIED', description: 'Verificada automáticamente al presentar cédula y certificado de antecedentes' },
+      });
+      status = 'APPROVED';
+    }
     return res.json({
       hasIdDocument: hasId,
       hasBackgroundCheck: hasBg,
-      message: hasId && hasBg ? 'Recibimos tus documentos. Nuestro equipo los revisará pronto.' : 'Documento guardado. Falta el otro para completar la verificación.',
+      status,
+      message: status === 'APPROVED' && provider.status !== 'APPROVED'
+        ? '¡Listo! Tu vitrina quedó verificada.'
+        : hasId && hasBg
+        ? (provider.status === 'PENDING' ? 'Documentos guardados. Tu vitrina quedará verificada al publicarla.' : 'Documentos guardados.')
+        : 'Documento guardado. Falta el otro para completar la verificación.',
     });
   } catch (error) {
     console.error('Error uploading documents:', error);
@@ -556,14 +571,17 @@ router.post('/me/publish', authenticateToken, async (req: AuthRequest, res) => {
     if (missing.length) {
       return res.status(400).json({ error: `Completa estos datos para publicar: ${missing.join(', ')}.`, missing });
     }
+    // Con cedula y antecedentes presentados, la vitrina sale publicada y verificada.
+    const verified = !!provider.idDocumentUrl && !!provider.backgroundCheckUrl;
+    const nextStatus = verified ? 'APPROVED' : 'ACTIVE';
     await prisma.serviceProvider.update({
       where: { id: provider.id },
-      data: { status: 'ACTIVE', submittedAt: provider.submittedAt ?? new Date() },
+      data: { status: nextStatus, submittedAt: provider.submittedAt ?? new Date() },
     });
     await prisma.providerHistory.create({
-      data: { providerId: provider.id, action: 'ACTIVATION', description: 'Vitrina publicada por el prestador' },
+      data: { providerId: provider.id, action: 'ACTIVATION', description: verified ? 'Vitrina publicada y verificada (documentos presentados)' : 'Vitrina publicada por el prestador' },
     });
-    return res.json({ message: '¡Tu vitrina ya está publicada!', status: 'ACTIVE' });
+    return res.json({ message: verified ? '¡Tu vitrina está publicada y verificada!' : '¡Tu vitrina ya está publicada!', status: nextStatus });
   } catch (error) {
     console.error('Error publishing provider:', error);
     return res.status(500).json({ error: 'No se pudo publicar la vitrina' });

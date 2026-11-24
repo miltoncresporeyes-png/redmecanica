@@ -305,8 +305,8 @@ const ProviderProfilePage: React.FC = () => {
             <p className="text-center text-[11px] text-slate-500 mt-2.5">Sin cuenta · sin comisión para ti · trato directo con el prestador</p>
             <p className="flex items-center justify-center gap-1.5 text-[11px] font-semibold mt-2 pt-2 border-t border-slate-100 text-slate-600">
               {verified
-                ? <><BadgeCheck className="w-3.5 h-3.5 text-emerald-600" aria-hidden="true" /> Verificado por RedMecánica</>
-                : <><ShieldCheck className="w-3.5 h-3.5 text-slate-400" aria-hidden="true" /> Aún sin verificar por RedMecánica</>}
+                ? <><BadgeCheck className="w-3.5 h-3.5 text-emerald-600" aria-hidden="true" /> Documentos presentados</>
+                : <><ShieldCheck className="w-3.5 h-3.5 text-slate-400" aria-hidden="true" /> Sin documentos de verificación</>}
             </p>
           </Card>
 

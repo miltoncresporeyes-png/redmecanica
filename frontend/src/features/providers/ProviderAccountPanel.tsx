@@ -56,7 +56,7 @@ const PlanIncludes: React.FC<{ provider: any; planInfo?: { plan: string; commune
   const docs = provider?.hasIdDocument && provider?.hasBackgroundCheck;
   const rows: Array<{ ok: boolean; text: string }> = [
     { ok: published, text: published ? 'Tu vitrina está publicada en el directorio' : 'Tu vitrina aún no está publicada' },
-    { ok: status === 'APPROVED', text: status === 'APPROVED' ? 'Insignia “Verificado” activa' : docs ? 'Documentos en revisión para la insignia “Verificado”' : 'Sube tus documentos para la insignia “Verificado” (gratis)' },
+    { ok: status === 'APPROVED', text: status === 'APPROVED' ? 'Insignia “Verificado” activa' : 'Sube tu cédula y certificado de antecedentes para quedar verificado (gratis)' },
     { ok: tier !== 'FREE', text: tier === 'FREE' ? 'Posición normal en tu comuna' : 'Apareces primero en tu comuna y en Anuncios Destacados' },
     { ok: tier !== 'FREE', text: tier === 'FREE' ? 'Sin insignia de plan' : `Insignia “${TIER_LABEL[tier]}” visible en tu vitrina y listados` },
     { ok: true, text: `Cobertura: ${used} de ${limit} ${limit === 1 ? 'comuna' : 'comunas'} usadas` },

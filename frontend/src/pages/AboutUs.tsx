@@ -94,7 +94,7 @@ const AboutUs: React.FC<AboutUsProps> = ({ onClose, onNavigateToOnboarding }) =>
               <div className="w-10 h-10 bg-blue-100 text-blue-600 rounded-control flex items-center justify-center font-black text-lg shrink-0">1</div>
               <div>
                 <h4 className="font-bold text-slate-900">Validación de Identidad y Antecedentes</h4>
-                <p className="text-sm text-slate-500">Verificamos RUT, cédula de identidad vigente y realizamos una revisión de antecedentes comerciales y judiciales a través de los registros públicos de Chile.</p>
+                <p className="text-sm text-slate-500">Los prestadores que presentan su cédula de identidad y su certificado de antecedentes muestran la insignia «Verificado» en su vitrina.</p>
               </div>
             </div>
             <div className="flex items-start gap-4">

@@ -23,8 +23,9 @@
   "verification": {
     "title": "Verificación",
     "verified": "Tu vitrina está verificada y muestra la insignia “Verificado”.",
-    "reviewing": "Recibimos tus documentos. Nuestro equipo los está revisando.",
-    "pending": "Sube tus documentos para obtener la insignia “Verificado”. Solo los ve nuestro equipo.",
+    "reviewing": "Recibimos tus documentos.",
+    "readyToPublish": "Documentos completos. Tu vitrina quedará verificada al publicarla.",
+    "pending": "Sube tu cédula y tu certificado de antecedentes y tu vitrina queda verificada al instante. Solo los ve nuestro equipo.",
     "received": "Recibido",
     "upload": "Subir",
     "replace": "Reemplazar",

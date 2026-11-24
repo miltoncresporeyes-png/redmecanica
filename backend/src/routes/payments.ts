@@ -634,8 +634,8 @@ router.post('/release', authenticateToken, async (req: AuthRequest, res) => {
       }
     });
 
-    // Crear Factura al Proveedor por Cobro de Comisión de Plataforma
-    await prisma.invoice.create({
+    // Comision de plataforma: hoy es 0 % (no se cobra). Si algun mercado la define, se factura aparte.
+    if (platformFee > 0) await prisma.invoice.create({
       data: {
         invoiceNumber: `INV-COM-${job.id.substring(0, 8)}-${Date.now()}`,
         type: 'JOB',
@@ -657,7 +657,7 @@ router.post('/release', authenticateToken, async (req: AuthRequest, res) => {
             total: platformFee
           }
         ]),
-        notes: `Cobro de comisión del 12% retenida del pago total de $${amount.toLocaleString('es-CL')} CLP. Monto neto transferido al mecánico: $${providerPayout.toLocaleString('es-CL')} CLP.`
+        notes: `Cobro de comisión del ${PLATFORM_FEE_PERCENT}% retenida del pago total de $${amount.toLocaleString('es-CL')} CLP. Monto neto transferido al mecánico: $${providerPayout.toLocaleString('es-CL')} CLP.`
       }
     });
 
@@ -666,7 +666,9 @@ router.post('/release', authenticateToken, async (req: AuthRequest, res) => {
       data: {
         providerId: job.providerId,
         action: 'JOB_COMPLETED',
-        description: `Servicio finalizado. Pago liberado: $${providerPayout.toLocaleString('es-CL')} CLP (Comisión $${platformFee.toLocaleString('es-CL')} CLP retenida).`
+        description: platformFee > 0
+          ? `Servicio finalizado. Pago liberado: $${providerPayout.toLocaleString('es-CL')} CLP (Comisión $${platformFee.toLocaleString('es-CL')} CLP retenida).`
+          : `Servicio finalizado. Pago liberado: $${providerPayout.toLocaleString('es-CL')} CLP (sin comisión).`
       }
     });
 

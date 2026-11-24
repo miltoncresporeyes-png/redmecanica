@@ -80,14 +80,14 @@ const PitchBanners: React.FC = () => {
 
         <div className="card-market p-6 sm:p-8 flex flex-col">
           <p className="text-xs font-bold uppercase tracking-wider text-emerald-700 mb-2">Insignia Verificado</p>
-          <h3 className="text-xl sm:text-2xl text-slate-900 mb-2">Prestadores con documentos revisados</h3>
+          <h3 className="text-xl sm:text-2xl text-slate-900 mb-2">Prestadores con documentos presentados</h3>
           <p className="text-sm text-slate-600 mb-5">
-            Los prestadores pueden subir su cédula de identidad y su certificado de antecedentes. Nuestro equipo los revisa antes de entregar la insignia.
+            Los prestadores pueden subir su cédula de identidad y su certificado de antecedentes. Quien presenta ambos muestra la insignia «Verificado».
           </p>
           <ul className="space-y-3 flex-1">
             <li className="flex items-start gap-3 text-sm text-slate-700">
               <FileCheck2 className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" aria-hidden="true" />
-              Documentos subidos por el prestador y revisados por RedMecánica.
+              Documentos subidos por el prestador y guardados de forma privada por RedMecánica.
             </li>
             <li className="flex items-start gap-3 text-sm text-slate-700">
               <BadgeCheck className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" aria-hidden="true" />
