@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { CreditCard, FileText, PauseCircle, PlayCircle, ShieldCheck } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { LANGUAGES } from '../../i18n';
+import { tierOf, TIER_LABEL } from '../../config/plans';
 import api from '../../lib/http';
 import { useAuth } from '../../app/providers';
 import { useToast } from '../../contexts/ToastContext';
@@ -12,6 +13,8 @@ interface Props {
   invoices: any[];
   onChanged: () => void;
   onOpenBilling: () => void;
+  /** Plan efectivo segun el servidor (un plan vencido cuenta como gratuito) */
+  planInfo?: { plan: string; communes: number; statsLocked: boolean };
   onClose: () => void;
   /** Resumen de pagos por la plataforma (solo si existen); se muestra entre el plan y las facturas */
   paymentsSection?: React.ReactNode;
@@ -24,12 +27,6 @@ const PLAN_NAMES: Record<string, string> = {
   PROFESSIONAL: 'Plan Profesional',
 };
 
-const PLAN_INFO: Record<string, string> = {
-  FREE: 'Vitrina visible en el directorio, 1 comuna de cobertura y contacto directo por WhatsApp.',
-  MONTHLY: 'Hasta 20 trabajos al mes, perfil verificado y soporte prioritario.',
-  YEARLY: 'Hasta 300 trabajos al año, soporte prioritario 24/7 y dashboard avanzado.',
-  PROFESSIONAL: 'Trabajos ilimitados, perfil destacado y posicionamiento prioritario.',
-};
 
 const SUB_STATUS: Record<string, string> = {
   ACTIVE: 'Activa',
@@ -49,7 +46,41 @@ const clp = (n?: number | null) => `$${Number(n || 0).toLocaleString('es-CL')}`;
 const date = (d?: string | null) => (d ? new Date(d).toLocaleDateString('es-CL', { day: '2-digit', month: 'short', year: 'numeric' }) : '—');
 const errMsg = (e: any, fallback: string) => e?.response?.data?.error || e?.response?.data?.message || fallback;
 
-const ProviderAccountPanel: React.FC<Props> = ({ provider, invoices, onChanged, onOpenBilling, onClose, paymentsSection }) => {
+// "Lo que incluye tu plan": cada linea refleja lo que realmente ocurre con esta vitrina, no una promesa generica.
+const PlanIncludes: React.FC<{ provider: any; planInfo?: { plan: string; communes: number; statsLocked: boolean }; onUpgrade: () => void }> = ({ provider, planInfo, onUpgrade }) => {
+  const tier = tierOf(planInfo?.plan);
+  const status: string = provider?.status || 'PENDING';
+  const published = status === 'ACTIVE' || status === 'APPROVED';
+  const used = Number(provider?.coveredCommunes) || (provider?.commune ? 1 : 0);
+  const limit = planInfo?.communes ?? 1;
+  const docs = provider?.hasIdDocument && provider?.hasBackgroundCheck;
+  const rows: Array<{ ok: boolean; text: string }> = [
+    { ok: published, text: published ? 'Tu vitrina está publicada en el directorio' : 'Tu vitrina aún no está publicada' },
+    { ok: status === 'APPROVED', text: status === 'APPROVED' ? 'Insignia “Verificado” activa' : docs ? 'Documentos en revisión para la insignia “Verificado”' : 'Sube tus documentos para la insignia “Verificado” (gratis)' },
+    { ok: tier !== 'FREE', text: tier === 'FREE' ? 'Posición normal en tu comuna' : 'Apareces primero en tu comuna y en Anuncios Destacados' },
+    { ok: tier !== 'FREE', text: tier === 'FREE' ? 'Sin insignia de plan' : `Insignia “${TIER_LABEL[tier]}” visible en tu vitrina y listados` },
+    { ok: true, text: `Cobertura: ${used} de ${limit} ${limit === 1 ? 'comuna' : 'comunas'} usadas` },
+    { ok: tier !== 'FREE', text: tier === 'FREE' ? 'Estadísticas de visitas y contactos: incluidas en Destacado' : 'Estadísticas de visitas y contactos en tu Inicio' },
+  ];
+  return (
+    <div className="mb-4">
+      <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Lo que incluye tu plan</p>
+      <ul className="space-y-1.5">
+        {rows.map((r) => (
+          <li key={r.text} className={`flex items-start gap-2 text-sm ${r.ok ? 'text-slate-800' : 'text-slate-500'}`}>
+            <span className={`mt-0.5 w-4 h-4 shrink-0 rounded-full flex items-center justify-center text-[10px] font-bold ${r.ok ? 'bg-emerald-600 text-white' : 'bg-slate-200 text-slate-500'}`} aria-hidden="true">{r.ok ? '✓' : '–'}</span>
+            {r.text}
+          </li>
+        ))}
+      </ul>
+      {tier === 'FREE' && (
+        <button type="button" onClick={onUpgrade} className="mt-3 text-sm font-bold text-primary hover:underline">Ver qué suma el plan Destacado</button>
+      )}
+    </div>
+  );
+};
+
+const ProviderAccountPanel: React.FC<Props> = ({ provider, invoices, onChanged, onOpenBilling, planInfo, onClose, paymentsSection }) => {
   const { t, i18n } = useTranslation();
   const { logout } = useAuth();
   const { addToast } = useToast();
@@ -59,6 +90,9 @@ const ProviderAccountPanel: React.FC<Props> = ({ provider, invoices, onChanged, 
   const planKey = sub?.plan || 'FREE';
   const status: string = provider?.status || 'PENDING';
   const isVisible = status === 'ACTIVE' || status === 'APPROVED';
+  const effPlan = planInfo?.plan ?? planKey;
+  const expired = planKey !== 'FREE' && effPlan === 'FREE';
+  const effectiveName = expired ? 'Plan vencido' : PLAN_NAMES[effPlan] || effPlan;
 
   const [busy, setBusy] = useState(false);
   const [pwd, setPwd] = useState({ current: '', next: '', repeat: '' });
@@ -202,9 +236,9 @@ const ProviderAccountPanel: React.FC<Props> = ({ provider, invoices, onChanged, 
           <h3 id="plan-title" className="text-base font-bold text-slate-900 flex items-center gap-2">
             <CreditCard className="w-5 h-5 text-primary" aria-hidden="true" /> Plan vigente
           </h3>
-          <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-blue-100 text-blue-800">{PLAN_NAMES[planKey] || planKey}</span>
+          <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-blue-100 text-blue-800">{effectiveName}</span>
         </div>
-        <p className="text-sm text-slate-600 mb-4">{PLAN_INFO[planKey] || ''}</p>
+        <PlanIncludes provider={provider} planInfo={planInfo} onUpgrade={onOpenBilling} />
 
         {sub ? (
           <dl className="grid sm:grid-cols-2 gap-x-6 gap-y-2 text-sm mb-4">

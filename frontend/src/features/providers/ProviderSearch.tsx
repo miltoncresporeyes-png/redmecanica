@@ -135,6 +135,8 @@ const ProviderSearch: React.FC = () => {
           if (tokens.length > 0 && hits === 0) score -= 50;
         }
 
+        // Plan de pago vigente: primeros lugares (el servidor ya entrega el plan efectivo)
+        if (p.plan && p.plan !== 'FREE') score += p.plan === 'PROFESSIONAL' ? 40 : 30;
         if (p.isVerified || p.emailVerified) score += 10;
         score += Math.min(p.rating || 0, 5);
 

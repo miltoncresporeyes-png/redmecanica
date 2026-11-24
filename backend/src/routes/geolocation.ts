@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { prisma } from '../db.js';
+import { effectivePlan } from '../lib/plans.js';
 import { z } from 'zod';
 import { 
   findNearbyProviders, 
@@ -65,7 +66,7 @@ router.get('/search', async (req, res) => {
         paymentMethods: 'paymentMethods' in provider ? provider.paymentMethods : undefined,
         trustScore: 'trustScore' in provider ? provider.trustScore : undefined,
         completedJobs: 'completedJobs' in provider ? provider.completedJobs : undefined,
-        plan: 'subscription' in provider ? (provider.subscription?.plan ?? 'FREE') : 'FREE',
+        plan: 'subscription' in provider ? effectivePlan(provider.subscription) : 'FREE',
         distance: Math.round(provider.distance * 10) / 10,
         etaMinutes,
         isAvailableNow: 'availability' in provider ? isProviderAvailableNow(provider.availability || []) : null,

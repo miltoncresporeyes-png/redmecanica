@@ -13,6 +13,9 @@ interface Props {
   rating: number;
   /** Contactos y visitas de los ultimos 7 dias y de los 7 anteriores; null si aun no se registran */
   engagement: { views: number; contacts: number; previousViews: number; previousContacts: number } | null;
+  /** Las estadisticas de visitas y contactos son parte de los planes de pago */
+  statsLocked?: boolean;
+  onUpgrade?: () => void;
   onChanged: () => void;
   onGoRequests: (view: 'new' | 'quoted' | 'active') => void;
   onGoBusiness: () => void;
@@ -34,7 +37,7 @@ const errMsg = (e: any, fallback: string) => e?.response?.data?.error || e?.resp
  * ya publicada, lo que requiere atencion y tres numeros. Nada de estadisticas de relleno.
  */
 const ProviderHome: React.FC<Props> = ({
-  provider, openRequestsCount, activeJobsCount, sentQuotesCount, rating, engagement, onChanged, onGoRequests, onGoBusiness, onGoAccount,
+  provider, openRequestsCount, activeJobsCount, sentQuotesCount, rating, engagement, statsLocked, onUpgrade, onChanged, onGoRequests, onGoBusiness, onGoAccount,
 }) => {
   const { addToast } = useToast();
   const { t } = useTranslation();
@@ -207,6 +210,12 @@ const ProviderHome: React.FC<Props> = ({
           <p className="text-xs font-semibold text-slate-600 mt-0.5">{rating > 0 ? t('home.rating') : t('home.noRatings')}</p>
         </div>
       </section>
+      {statsLocked && (
+        <p className="text-xs text-slate-600 -mt-3">
+          Las estadísticas de visitas y contactos están incluidas en el plan Destacado.{' '}
+          {onUpgrade && <button type="button" onClick={onUpgrade} className="font-bold text-primary hover:underline">Ver planes</button>}
+        </p>
+      )}
       {engagement && engagement.contacts === 0 && engagement.views === 0 && (
         <p className="text-xs text-slate-500 -mt-3">Contamos las visitas a tu vitrina y los clics en WhatsApp y teléfono. Comparte tu enlace para empezar a recibirlos.</p>
       )}

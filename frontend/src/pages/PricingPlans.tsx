@@ -5,6 +5,7 @@ import SEO from '../components/SEO';
 import { useAuth } from '../app/providers';
 import { trackEvent } from '../lib/analytics';
 import { createSubscription } from '../services/api';
+import { FREE_BENEFITS, PAID_BENEFITS, PREMIUM_BENEFITS } from '../config/plans';
 import LoginModal from '../features/auth/LoginModal';
 import { POPULAR_COMUNAS } from '../data/marketplace';
 
@@ -28,15 +29,7 @@ const plans = [
     icon: <Wrench className="w-8 h-8" />,
     popular: false,
     cta: 'Publicar mi vitrina',
-    features: [
-      { text: 'Vitrina pública con tus servicios', included: true },
-      { text: 'Apareces en tu comuna base', included: true },
-      { text: 'Contacto directo por WhatsApp', included: true },
-      { text: 'Sin comisión por contacto', included: true },
-      { text: 'Soporte por email', included: true },
-      { text: 'Insignia "Verificado"', included: false },
-      { text: 'Primeros lugares del directorio', included: false },
-    ],
+    features: FREE_BENEFITS,
   },
   {
     id: 'destacado',
@@ -50,15 +43,7 @@ const plans = [
     icon: <Star className="w-8 h-8" />,
     popular: true,
     cta: 'Destacar mi negocio',
-    features: [
-      { text: 'Todo lo de Vitrina Gratis', included: true },
-      { text: 'Primeros lugares en tu comuna', included: true },
-      { text: 'Insignia "Verificado"', included: true },
-      { text: 'Hasta 3 comunas de cobertura', included: true },
-      { text: 'Estadísticas de visitas y contactos', included: true },
-      { text: 'Sin comisión por contacto', included: true },
-      { text: 'Soporte vía WhatsApp', included: true },
-    ],
+    features: PAID_BENEFITS,
   },
   {
     id: 'premium',
@@ -73,15 +58,7 @@ const plans = [
     icon: <Rocket className="w-8 h-8" />,
     popular: false,
     cta: 'Ir a Premium',
-    features: [
-      { text: 'Todo lo del plan Destacado', included: true },
-      { text: 'Cobertura regional y nacional', included: true },
-      { text: 'Insignia "Premium"', included: true },
-      { text: 'Multiusuario (5 cuentas)', included: true },
-      { text: 'Dashboard con analytics', included: true },
-      { text: 'Gestor de cuenta dedicado', included: true },
-      { text: 'API para tu sistema', included: true },
-    ],
+    features: PREMIUM_BENEFITS,
   },
   {
     id: 'enterprise',
@@ -439,7 +416,10 @@ const PricingPlans: React.FC<PricingPlansProps> = ({ onSelectPlan, onNavigateToO
                           ) : (
                             <X className="w-4 h-4 text-slate-300 mt-0.5 shrink-0" />
                           )}
-                          <span className="font-medium leading-snug">{feature.text}</span>
+                          <span className="font-medium leading-snug">
+                            {feature.text}
+                            {(feature as any).soon && <span className="ml-1.5 text-[10px] font-bold uppercase tracking-wide text-amber-800 bg-amber-100 rounded px-1.5 py-0.5">Próximamente</span>}
+                          </span>
                         </li>
                       ))}
                     </ul>
@@ -474,12 +454,12 @@ const PricingPlans: React.FC<PricingPlansProps> = ({ onSelectPlan, onNavigateToO
           <p className="section-sub text-center mb-8">Sin letra chica: así funciona el modelo</p>
           <div className="max-w-4xl mx-auto grid md:grid-cols-2 gap-x-12 gap-y-8 px-2 sm:px-6">
             {[
-              { q: '¿Cobran comisión por cada trabajo?', a: 'No. El contacto es directo entre tú y el conductor. Solo pagas tu plan de visibilidad, nunca un % por servicio.' },
-              { q: '¿Qué obtengo con la vitrina gratuita?', a: 'Tu perfil público, aparición en tu comuna base y contacto directo por WhatsApp. Gratis para siempre.' },
-              { q: '¿Qué significa "Verificado"?', a: 'Validamos tu identidad y datos del negocio. La insignia aumenta la confianza y tus contactos.' },
+              { q: '¿Cobran comisión por cada trabajo?', a: 'No por contactos: el trato con el conductor es directo y no pagas por cada contacto. Solo si cobras un servicio mediante el pago protegido de la plataforma se descuenta una comisión del 12 %, que verás desglosada en tu panel.' },
+              { q: '¿Qué obtengo con la vitrina gratuita?', a: 'Tu perfil público, aparición en tu comuna base y contacto directo por WhatsApp. Gratis para siempre. Tu vitrina aparece también en las últimas publicadas de la portada.' },
+              { q: '¿Qué significa "Verificado"?', a: 'Revisamos tu cédula y certificado de antecedentes. Es gratis: sube tus documentos desde Mi negocio y, al aprobarlos, tu vitrina muestra la insignia.' },
               { q: '¿Puedo cancelar cuando quiera?', a: 'Sí. Los planes mensuales se cancelan sin multas y tu vitrina gratuita sigue activa.' },
               { q: '¿Los conductores pagan algo?', a: 'Nunca. Buscar, comparar y contactar es 100% gratis y sin cuenta para ellos.' },
-              { q: '¿Cómo destaco en más comunas?', a: 'Con Destacado cubres hasta 3 comunas; con Premium, tu región completa y todo Chile.' },
+              { q: '¿Cómo destaco en más comunas?', a: 'Con Destacado cubres hasta 3 comunas y con Premium hasta 10. Las agregas desde Cobertura en tu panel.' },
             ].map((item, i) => (
               <div key={i}>
                 <h3 className="font-black text-slate-900 mb-2 text-sm sm:text-base">{item.q}</h3>

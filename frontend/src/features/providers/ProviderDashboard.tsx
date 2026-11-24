@@ -54,6 +54,10 @@ const ProviderDashboard: React.FC<ProviderDashboardProps> = ({ onClose }) => {
   const [engagement, setEngagement] = useState<any>(cached?.engagement ?? null);
   // Condiciones comerciales que informa el servidor (p. ej. la comision). Si no llegan, no se muestran montos derivados.
   const [platformFeePercent, setPlatformFeePercent] = useState<number | null>(cached?.config?.platformFeePercent ?? null);
+  // Plan vigente y sus limites segun el servidor (un plan vencido cuenta como gratuito)
+  const [planInfo, setPlanInfo] = useState<{ plan: string; communes: number; statsLocked: boolean }>({
+    plan: cached?.plan ?? 'FREE', communes: cached?.limits?.communes ?? 1, statsLocked: cached?.engagementLocked ?? true,
+  });
   const [showPaymentModal, setShowPaymentModal] = useState(false);
 
   const applyPanel = (panel: any) => {
@@ -63,6 +67,7 @@ const ProviderDashboard: React.FC<ProviderDashboardProps> = ({ onClose }) => {
     setInvoices(panel.invoices || []);
     setOpenRequestsCount(Number(panel.openRequestsCount) || 0);
     setEngagement(panel.engagement ?? null);
+    setPlanInfo({ plan: panel.plan ?? 'FREE', communes: panel.limits?.communes ?? 1, statsLocked: panel.engagementLocked ?? false });
     setMarket(panel.config?.market);
     setPlatformFeePercent(typeof panel.config?.platformFeePercent === 'number' ? panel.config.platformFeePercent : null);
     if (cacheKey) writeCache(cacheKey, panel);
@@ -205,6 +210,8 @@ const ProviderDashboard: React.FC<ProviderDashboardProps> = ({ onClose }) => {
             sentQuotesCount={sentQuotes.length}
             rating={Number(stats.avgRating) || 0}
             engagement={engagement}
+            statsLocked={planInfo.statsLocked}
+            onUpgrade={() => setShowPaymentModal(true)}
             onChanged={fetchData}
             onGoRequests={goRequests}
             onGoBusiness={() => setTab('business')}
@@ -233,6 +240,7 @@ const ProviderDashboard: React.FC<ProviderDashboardProps> = ({ onClose }) => {
             invoices={invoices}
             onChanged={fetchData}
             onOpenBilling={() => setShowPaymentModal(true)}
+            planInfo={planInfo}
             onClose={onClose}
             paymentsSection={paymentsSection}
           />

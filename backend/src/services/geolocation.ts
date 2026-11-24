@@ -1,5 +1,6 @@
 import { prisma } from '../db.js';
 import { VISIBLE_PROVIDER_STATUSES } from '../lib/providerStatus.js';
+import { effectivePlan } from '../lib/plans.js';
 
 export interface GeoPoint {
   lat: number;
@@ -74,7 +75,7 @@ export async function findNearbyProviders(params: ProviderSearchParams) {
   const userLocation: GeoPoint = { lat, lng };
   
   const planPriority = (p: any) => {
-    const plan = p.subscription?.plan;
+    const plan = effectivePlan(p.subscription);
     if (plan === 'PROFESSIONAL') return 0;
     if (plan === 'MONTHLY' || plan === 'YEARLY') return 1;
     return 2;

@@ -166,7 +166,7 @@ const ProviderProfilePage: React.FC = () => {
   };
 
   return (
-    <div className="max-w-5xl mx-auto px-4 py-6 sm:py-8 pb-24 md:pb-8">
+    <div className="max-w-5xl mx-auto px-4 py-4 sm:py-5 pb-24 md:pb-8">
       <Helmet>
         <title>{pageTitle}</title>
         <meta name="description" content={pageDesc} />
@@ -179,272 +179,190 @@ const ProviderProfilePage: React.FC = () => {
         <script type="application/ld+json">{JSON.stringify(schemaJson)}</script>
       </Helmet>
 
-      {/* Breadcrumb marketplace */}
-      <div className="flex flex-wrap items-center gap-2 text-xs font-semibold text-slate-600 mb-4" aria-label="Migas de pan">
+      {/* Migas (una linea, compactas) */}
+      <nav className="flex flex-wrap items-center gap-1.5 text-xs font-semibold text-slate-600 mb-3" aria-label="Migas de pan">
         <Link to="/" className="hover:text-blue-600 transition-colors">Inicio</Link>
         <span aria-hidden="true">/</span>
         <Link to="/search" className="hover:text-blue-600 transition-colors">Directorio</Link>
         <span aria-hidden="true">/</span>
-        {provider.commune && (
-          <>
-            <Link to={`/search?commune=${encodeURIComponent(provider.commune)}`} className="hover:text-blue-600 transition-colors">
-              {provider.commune}
-            </Link>
-            <span aria-hidden="true">/</span>
-          </>
-        )}
-        <span className="text-slate-900 font-bold truncate max-w-[200px]">{name}</span>
-      </div>
+        <span className="text-slate-900 font-bold truncate max-w-[220px]">{name}</span>
+      </nav>
 
-      {/* Header vitrina */}
-      <Card className="p-6 md:p-8 mb-6 shadow-md overflow-hidden">
-        <p className="inline-flex items-center gap-1.5 bg-emerald-50 text-emerald-800 border border-emerald-100 text-xs font-bold py-1.5 px-3 rounded-full mb-5">
-          <CircleCheck className="w-4 h-4" aria-hidden="true" /> Vitrina gratuita · contacto directo
-        </p>
-        <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
-          <div className="relative shrink-0">
-            <div className="w-24 h-24 sm:w-28 sm:h-28 bg-blue-50 text-primary rounded-card flex items-center justify-center border border-blue-100">
-              <TypeIcon className="w-11 h-11" />
-            </div>
-            {verified && (
-              <div className="absolute -bottom-2 -right-2 inline-flex items-center gap-1 bg-emerald-600 text-white font-bold text-xs px-2.5 py-1 rounded-full shadow-lg border-4 border-white">
-                <BadgeCheck className="w-3.5 h-3.5" aria-hidden="true" /> Verificado
+      {/* Vitrina: todo lo esencial en una sola vista (sin scroll en escritorio). Lo demas queda debajo. */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-5 items-start">
+        {/* Columna principal: quien es y que ofrece */}
+        <Card className="lg:col-span-2 p-5 md:p-6 shadow-md">
+          <div className="flex items-start gap-4">
+            <div className="relative shrink-0">
+              <div className="w-16 h-16 sm:w-20 sm:h-20 bg-blue-50 text-primary rounded-card flex items-center justify-center border border-blue-100">
+                <TypeIcon className="w-8 h-8 sm:w-9 sm:h-9" />
               </div>
-            )}
-          </div>
-
-          <div className="flex-1 text-center md:text-left min-w-0">
-            <div className="flex flex-col md:flex-row md:items-center gap-2 mb-1 justify-center md:justify-start">
-              <h1 className="text-slate-900">
-                {name}
-              </h1>
-            </div>
-            <div className="flex flex-wrap justify-center md:justify-start gap-1.5 mb-3">
-              <span className="bg-slate-900 text-white font-bold text-xs px-2.5 py-1 rounded uppercase tracking-wider">{typeLabel}</span>
-              {provider.commune && (
-                <Link
-                  to={`/search?commune=${encodeURIComponent(provider.commune)}`}
-                  className="inline-flex items-center gap-1 bg-blue-50 text-blue-700 border border-blue-100 font-bold text-xs px-2.5 py-1 rounded hover:bg-blue-100"
-                >
-                  <MapPin className="w-3 h-3" aria-hidden="true" /> {provider.commune}
-                </Link>
-              )}
-              {openToday ? (
-                <span className="inline-flex items-center gap-1 bg-emerald-50 text-emerald-800 border border-emerald-100 font-bold text-xs px-2.5 py-1 rounded">
-                  <Clock className="w-3 h-3" aria-hidden="true" /> Hoy {openToday.startTime}–{openToday.endTime}
-                </span>
-              ) : (
-                <span className="inline-flex items-center gap-1 bg-slate-100 text-slate-600 font-bold text-xs px-2.5 py-1 rounded">
-                  <Clock className="w-3 h-3" aria-hidden="true" /> Horario por confirmar
-                </span>
-              )}
-            </div>
-
-            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 justify-center md:justify-start mb-3 text-sm">
-              {hasRating ? (
-                <span className="inline-flex items-center gap-1 bg-amber-50 px-2 py-0.5 rounded border border-amber-100 font-bold text-slate-800">
-                  <Star className="w-4 h-4 fill-amber-400 text-amber-400" aria-hidden="true" /> {provider.rating.toFixed(1)}
-                </span>
-              ) : (
-                <span className="text-xs font-semibold text-slate-600 bg-slate-100 px-2 py-0.5 rounded">Nuevo en RedMecánica</span>
-              )}
-              <span className="text-xs text-slate-600 font-medium">{provider.completedJobs || 0} servicios</span>
-              {provider.experience && <span className="text-xs text-slate-600 font-medium">{provider.experience} años de experiencia</span>}
-              <button onClick={handleShare} className="inline-flex items-center gap-1 text-xs font-bold text-primary hover:text-blue-800 min-h-[32px]">
-                {copied ? <><Check className="w-3.5 h-3.5" aria-hidden="true" /> Link copiado</> : <><Share2 className="w-3.5 h-3.5" aria-hidden="true" /> Compartir</>}
-              </button>
-            </div>
-
-            {specialtiesList.length > 0 && (
-              <div className="flex flex-wrap justify-center md:justify-start gap-1.5">
-                {specialtiesList.slice(0, 8).map((spec: string) => (
-                  <span key={spec} className="bg-slate-50 text-slate-700 border border-slate-200 rounded px-2.5 py-0.5 text-xs font-semibold">
-                    {spec}
-                  </span>
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* CTA contacto directo con pre-calificación */}
-        <div className="mt-6 grid sm:grid-cols-2 gap-2">
-          {provider.phone ? (
-            <button
-              type="button"
-              onClick={() => { trackProviderEvent(provider.id, 'WHATSAPP'); setIsLeadModalOpen(true); }}
-              className="btn-whatsapp"
-            >
-              <MessageCircle className="w-5 h-5" aria-hidden="true" /> Contactar por WhatsApp
-            </button>
-          ) : (
-            <button
-              type="button"
-              disabled
-              className="btn bg-slate-200 text-slate-600 cursor-not-allowed"
-            >
-              Sin WhatsApp disponible
-            </button>
-          )}
-          {provider.phone ? (
-            <a
-              onClick={() => trackProviderEvent(provider.id, 'CALL')}
-              href={`tel:${provider.phone}`}
-              className="btn-dark"
-            >
-              <Phone className="w-4 h-4" aria-hidden="true" /> {provider.phone}
-            </a>
-          ) : (
-            <Link
-              to={`/search?commune=${encodeURIComponent(provider.commune || '')}`}
-              className="btn-ghost"
-            >
-              <Search className="w-4 h-4" aria-hidden="true" /> Ver más en {provider.commune || 'tu comuna'}
-            </Link>
-          )}
-        </div>
-        <p className="text-center text-xs text-slate-500 mt-3">Sin cuenta · sin comisión para ti como conductor · el trato es directo con el prestador</p>
-      </Card>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 space-y-6">
-          {/* Servicios */}
-          <Card className="p-6 shadow-sm">
-            <h2 className="text-lg text-slate-900 mb-1 flex items-center gap-2"><Hammer className="w-5 h-5 text-primary" aria-hidden="true" /> Servicios que promociona</h2>
-            <p className="text-xs text-slate-400 mb-4">Publicados por el prestador en su vitrina</p>
-            {specialtiesList.length === 0 ? (
-              <p className="text-sm text-slate-500">Este prestador aún no detalla sus servicios. Contáctalo por WhatsApp y pide su lista de precios.</p>
-            ) : (
-              <div className="grid sm:grid-cols-2 gap-2">
-                {specialtiesList.map((spec: string) => (
-                  <div key={spec} className="flex items-center gap-2 bg-slate-50 border border-slate-100 rounded-control px-3 py-2.5 text-sm font-semibold text-slate-700">
-                    <Check className="w-4 h-4 text-emerald-600 shrink-0" aria-hidden="true" /> {spec}
-                  </div>
-                ))}
-              </div>
-            )}
-            {provider.bio && (
-              <div className="mt-4 pt-4 border-t border-slate-50">
-                <h3 className="text-sm text-slate-900 mb-1 flex items-center gap-2"><ScrollText className="w-4 h-4 text-primary" aria-hidden="true" /> Presentación</h3>
-                <p className="text-sm text-slate-600 leading-relaxed whitespace-pre-line">{provider.bio}</p>
-              </div>
-            )}
-          </Card>
-
-          {/* Horarios */}
-          <Card className="p-6 shadow-sm">
-            <h2 className="text-lg text-slate-900 mb-1 flex items-center gap-2"><Clock className="w-5 h-5 text-primary" aria-hidden="true" /> Horario de atención</h2>
-            <p className="text-xs text-slate-400 mb-4">Confirma por WhatsApp antes de ir, especialmente fines de semana</p>
-            {availability.length === 0 ? (
-              <div className="bg-amber-50 border border-amber-100 rounded-control p-4 text-sm text-amber-800">
-                Este prestador aún no publica su horario. Toca WhatsApp y pregúntale directamente — responde como negocio local.
-              </div>
-            ) : (
-              <div className="divide-y divide-slate-50">
-                {DAYS.map((day, idx) => {
-                  const row = availability.find((a: any) => a.dayOfWeek === idx);
-                  const isToday = new Date().getDay() === idx;
-                  return (
-                    <div key={day} className={`flex justify-between py-2 text-sm ${isToday ? 'font-extrabold text-slate-900' : 'text-slate-600'}`}>
-                      <span>{day} {isToday && <span className="text-xs bg-blue-100 text-blue-800 px-1.5 py-0.5 rounded ml-1">Hoy</span>}</span>
-                      <span>{row && row.isActive !== false ? `${row.startTime} – ${row.endTime}` : 'Cerrado'}</span>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-          </Card>
-
-          {/* Reseñas honestas */}
-          <Card className="p-6 shadow-sm">
-            <h2 className="text-lg text-slate-900 mb-1 flex items-center gap-2"><Star className="w-5 h-5 text-primary" aria-hidden="true" /> Reputación</h2>
-            <p className="text-xs text-slate-400 mb-4">Basada en servicios completados en la plataforma</p>
-            {hasRating ? (
-              <div className="flex items-center gap-4 bg-slate-50 rounded-control p-4">
-                <div className="text-4xl font-black text-slate-900">{provider.rating.toFixed(1)}</div>
-                <div className="text-sm text-slate-600">
-                  <div className="flex gap-0.5" aria-hidden="true">
-                    {[1, 2, 3, 4, 5].map((n) => (
-                      <Star key={n} className={`w-4 h-4 ${n <= Math.round(provider.rating) ? 'fill-amber-400 text-amber-400' : 'text-slate-300'}`} />
-                    ))}
-                  </div>
-                  <p className="mt-1"><strong>{provider.completedJobs}</strong> servicios completados{provider.trustScore > 0 ? ` · confianza ${Math.round(provider.trustScore)}%` : ''}</p>
+              {verified && (
+                <div className="absolute -bottom-2 -right-2 inline-flex items-center gap-1 bg-emerald-600 text-white font-bold text-[10px] px-2 py-0.5 rounded-full shadow border-2 border-white">
+                  <BadgeCheck className="w-3 h-3" aria-hidden="true" /> Verificado
                 </div>
-              </div>
-            ) : (
-              <div className="bg-slate-50 rounded-control p-4 text-sm text-slate-600">
-                Este prestador aún no tiene calificaciones. Se publican solo después de servicios completados en la plataforma.
-              </div>
-            )}
-            <p className="text-xs text-slate-500 mt-3">Las reseñas escritas se habilitan después de cada servicio verificado. Sin reseñas inventadas.</p>
-          </Card>
-        </div>
-
-        <div className="space-y-6">
-          {/* Cobertura */}
-          <Card className="p-6 shadow-sm">
-            <h3 className="text-slate-900 mb-3 flex items-center gap-2"><MapPin className="w-5 h-5 text-primary" aria-hidden="true" /> Cobertura</h3>
-            <div className="space-y-2 text-sm">
-              <div className="flex justify-between border-b border-slate-50 pb-2">
-                <span className="text-slate-400">Comuna base</span>
-                <Link to={`/search?commune=${encodeURIComponent(provider.commune || '')}`} className="font-bold text-blue-700 hover:underline">
-                  {provider.commune || '—'}
-                </Link>
-              </div>
-              <div className="flex justify-between border-b border-slate-50 pb-2">
-                <span className="text-slate-400">Región</span>
-                <span className="font-bold text-slate-800">{provider.region || '—'}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-slate-400">Dirección</span>
-                <span className="font-bold text-slate-800 text-right max-w-[60%]">{provider.address || 'Atención a domicilio'}</span>
-              </div>
-            </div>
-            <Link
-              to={`/search?commune=${encodeURIComponent(provider.commune || '')}`}
-              className="mt-4 flex items-center justify-center gap-1.5 text-sm font-bold bg-blue-50 hover:bg-blue-100 text-blue-700 py-2.5 rounded-control transition-colors"
-            >
-              Ver más prestadores en {provider.commune || 'la comuna'} <ArrowRight className="w-4 h-4" aria-hidden="true" />
-            </Link>
-          </Card>
-
-          {/* Pagos */}
-          <Card className="p-6 shadow-sm">
-            <h3 className="text-slate-900 mb-3 flex items-center gap-2"><CreditCard className="w-5 h-5 text-primary" aria-hidden="true" /> Pagos</h3>
-            <div className="flex flex-wrap gap-1.5">
-              {paymentMethodsList.length === 0 ? (
-                <span className="bg-slate-100 text-slate-600 px-2 py-1 rounded text-xs font-bold">A convenir por WhatsApp</span>
-              ) : (
-                paymentMethodsList.map((m: string) => (
-                  <span key={m} className="bg-slate-100 text-slate-700 px-2 py-1 rounded text-xs font-bold uppercase">
-                    {m === 'CASH' ? 'Efectivo' : m === 'DEBIT' ? 'Débito' : m === 'CREDIT' ? 'Crédito' : m === 'TRANSFER' ? 'Transferencia' : m}
-                  </span>
-                ))
               )}
             </div>
-            <p className="text-xs text-slate-500 mt-2">El pago es directo al prestador. RedMecánica no cobra comisión al conductor.</p>
+            <div className="min-w-0 flex-1">
+              <h1 className="text-slate-900 !text-2xl sm:!text-3xl leading-tight">{name}</h1>
+              {provider.plan && provider.plan !== 'FREE' && (
+                <span className="inline-flex items-center gap-1 mt-1.5 bg-amber-100 text-amber-900 text-xs font-bold uppercase px-2 py-0.5 rounded border border-amber-200">
+                  <Star className="w-3 h-3 fill-amber-500 text-amber-500" aria-hidden="true" /> {provider.plan === 'PROFESSIONAL' ? 'Premium' : 'Destacado'}
+                </span>
+              )}
+              <div className="flex flex-wrap items-center gap-1.5 mt-2">
+                <span className="bg-slate-900 text-white font-bold text-[11px] px-2 py-0.5 rounded uppercase tracking-wider">{typeLabel}</span>
+                {provider.commune && (
+                  <Link to={`/search?commune=${encodeURIComponent(provider.commune)}`} className="inline-flex items-center gap-1 bg-blue-50 text-blue-700 border border-blue-100 font-bold text-xs px-2 py-0.5 rounded hover:bg-blue-100">
+                    <MapPin className="w-3 h-3" aria-hidden="true" /> {provider.commune}
+                  </Link>
+                )}
+                {hasRating ? (
+                  <span className="inline-flex items-center gap-1 bg-amber-50 px-2 py-0.5 rounded border border-amber-100 font-bold text-xs text-slate-800">
+                    <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" aria-hidden="true" /> {provider.rating.toFixed(1)}
+                  </span>
+                ) : (
+                  <span className="text-xs font-semibold text-slate-600 bg-slate-100 px-2 py-0.5 rounded">Nuevo en RedMecánica</span>
+                )}
+                <span className="text-xs text-slate-600 font-medium">{provider.completedJobs || 0} servicios</span>
+                {provider.experience && <span className="text-xs text-slate-600 font-medium">· {provider.experience} años de experiencia</span>}
+                <button onClick={handleShare} className="inline-flex items-center gap-1 text-xs font-bold text-primary hover:text-blue-800 min-h-[32px] ml-auto">
+                  {copied ? <><Check className="w-3.5 h-3.5" aria-hidden="true" /> Copiado</> : <><Share2 className="w-3.5 h-3.5" aria-hidden="true" /> Compartir</>}
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {provider.bio && (
+            <div className="mt-4">
+              <h2 className="text-sm text-slate-900 mb-1 flex items-center gap-1.5"><ScrollText className="w-4 h-4 text-primary" aria-hidden="true" /> Presentación</h2>
+              <p className="text-sm text-slate-600 leading-relaxed whitespace-pre-line line-clamp-4">{provider.bio}</p>
+            </div>
+          )}
+
+          <div className="mt-4">
+            <h2 className="text-sm text-slate-900 mb-2 flex items-center gap-1.5"><Hammer className="w-4 h-4 text-primary" aria-hidden="true" /> Servicios que promociona</h2>
+            {specialtiesList.length === 0 ? (
+              <p className="text-sm text-slate-500">Aún no detalla sus servicios. Contáctalo por WhatsApp y pide su lista de precios.</p>
+            ) : (
+              <div className="flex flex-wrap gap-1.5">
+                {specialtiesList.slice(0, 14).map((spec: string) => (
+                  <span key={spec} className="inline-flex items-center gap-1 bg-slate-50 border border-slate-200 rounded-control px-2.5 py-1 text-xs font-semibold text-slate-700">
+                    <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" aria-hidden="true" /> {spec}
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <div className="mt-4 pt-4 border-t border-slate-100 grid sm:grid-cols-2 gap-x-6 gap-y-3 text-sm">
+            <div>
+              <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1 flex items-center gap-1.5"><MapPin className="w-3.5 h-3.5" aria-hidden="true" /> Cobertura</h3>
+              <p className="text-slate-800 font-semibold">{provider.commune || '—'}{provider.region ? `, ${provider.region}` : ''}</p>
+              <p className="text-slate-600 text-xs">{provider.address || 'Atención a domicilio'}</p>
+            </div>
+            <div>
+              <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1 flex items-center gap-1.5"><CreditCard className="w-3.5 h-3.5" aria-hidden="true" /> Pagos</h3>
+              <div className="flex flex-wrap gap-1">
+                {paymentMethodsList.length === 0 ? (
+                  <span className="bg-slate-100 text-slate-600 px-2 py-0.5 rounded text-xs font-bold">A convenir por WhatsApp</span>
+                ) : (
+                  paymentMethodsList.map((m: string) => (
+                    <span key={m} className="bg-slate-100 text-slate-700 px-2 py-0.5 rounded text-xs font-bold uppercase">
+                      {m === 'CASH' ? 'Efectivo' : m === 'DEBIT' ? 'Débito' : m === 'CREDIT' ? 'Crédito' : m === 'TRANSFER' ? 'Transferencia' : m}
+                    </span>
+                  ))
+                )}
+              </div>
+            </div>
+          </div>
+        </Card>
+
+        {/* Columna de contacto: la accion principal siempre a la vista */}
+        <div className="space-y-4 lg:sticky lg:top-20">
+          <Card className="p-5 shadow-md border-emerald-100">
+            <p className="inline-flex items-center gap-1.5 bg-emerald-50 text-emerald-800 border border-emerald-100 text-[11px] font-bold py-1 px-2.5 rounded-full mb-3">
+              <CircleCheck className="w-3.5 h-3.5" aria-hidden="true" /> Vitrina gratuita · contacto directo
+            </p>
+            <div className="grid gap-2">
+              {provider.phone ? (
+                <button type="button" onClick={() => { trackProviderEvent(provider.id, 'WHATSAPP'); setIsLeadModalOpen(true); }} className="btn-whatsapp">
+                  <MessageCircle className="w-5 h-5" aria-hidden="true" /> Contactar por WhatsApp
+                </button>
+              ) : (
+                <button type="button" disabled className="btn bg-slate-200 text-slate-600 cursor-not-allowed">Sin WhatsApp disponible</button>
+              )}
+              {provider.phone ? (
+                <a onClick={() => trackProviderEvent(provider.id, 'CALL')} href={`tel:${provider.phone}`} className="btn-dark">
+                  <Phone className="w-4 h-4" aria-hidden="true" /> {provider.phone}
+                </a>
+              ) : (
+                <Link to={`/search?commune=${encodeURIComponent(provider.commune || '')}`} className="btn-ghost">
+                  <Search className="w-4 h-4" aria-hidden="true" /> Ver más en {provider.commune || 'tu comuna'}
+                </Link>
+              )}
+            </div>
+            <p className="text-center text-[11px] text-slate-500 mt-2.5">Sin cuenta · sin comisión para ti · trato directo con el prestador</p>
+            <p className="flex items-center justify-center gap-1.5 text-[11px] font-semibold mt-2 pt-2 border-t border-slate-100 text-slate-600">
+              {verified
+                ? <><BadgeCheck className="w-3.5 h-3.5 text-emerald-600" aria-hidden="true" /> Verificado por RedMecánica</>
+                : <><ShieldCheck className="w-3.5 h-3.5 text-slate-400" aria-hidden="true" /> Aún sin verificar por RedMecánica</>}
+            </p>
           </Card>
 
-          {/* Confianza */}
-          <Card className="p-6 shadow-sm">
-            <h3 className="text-slate-900 mb-3 flex items-center gap-2"><ShieldCheck className="w-5 h-5 text-primary" aria-hidden="true" /> Verificación</h3>
-            <ul className="space-y-2 text-sm text-slate-600">
-              <li className="flex items-start gap-2">
-                {verified ? <BadgeCheck className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" aria-hidden="true" /> : <Clock className="w-4 h-4 text-slate-400 shrink-0 mt-0.5" aria-hidden="true" />}
-                {verified ? 'Perfil verificado por RedMecánica' : 'Perfil aún sin verificar por RedMecánica'}
-              </li>
-              <li className="flex items-start gap-2">
-                {provider.phoneVerified ? <Check className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" aria-hidden="true" /> : <Clock className="w-4 h-4 text-slate-400 shrink-0 mt-0.5" aria-hidden="true" />}
-                {provider.phoneVerified ? 'Teléfono validado' : 'Teléfono publicado por el prestador'}
-              </li>
-              <li className="flex items-start gap-2">
-                <ShieldCheck className="w-4 h-4 text-slate-400 shrink-0 mt-0.5" aria-hidden="true" />
-                Reporta cualquier problema a contacto@redmecanica.cl
-              </li>
-            </ul>
+          <Card className="p-4 shadow-sm">
+            <details className="group">
+              <summary className="flex items-center justify-between gap-2 cursor-pointer list-none min-h-[36px]">
+                <span className="flex items-center gap-2 text-sm font-bold text-slate-900"><Clock className="w-4 h-4 text-primary" aria-hidden="true" /> Horario</span>
+                <span className="text-xs font-semibold text-slate-600 flex items-center gap-1">
+                  {openToday ? `Hoy ${openToday.startTime}–${openToday.endTime}` : availability.length ? 'Hoy cerrado' : 'Por confirmar'}
+                  <span className="text-primary group-open:rotate-90 transition-transform" aria-hidden="true">›</span>
+                </span>
+              </summary>
+              {availability.length === 0 ? (
+                <p className="mt-2 text-xs text-amber-800 bg-amber-50 border border-amber-100 rounded-control p-3">Aún no publica su horario. Pregúntale por WhatsApp.</p>
+              ) : (
+                <div className="mt-2 divide-y divide-slate-50">
+                  {DAYS.map((day, idx) => {
+                    const row = availability.find((a: any) => a.dayOfWeek === idx);
+                    const isToday = new Date().getDay() === idx;
+                    return (
+                      <div key={day} className={`flex justify-between py-1.5 text-xs ${isToday ? 'font-extrabold text-slate-900' : 'text-slate-600'}`}>
+                        <span>{day}{isToday && <span className="text-[10px] bg-blue-100 text-blue-800 px-1.5 py-0.5 rounded ml-1">Hoy</span>}</span>
+                        <span>{row && row.isActive !== false ? `${row.startTime} – ${row.endTime}` : 'Cerrado'}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </details>
           </Card>
+
         </div>
       </div>
+
+      {/* Reputación: debajo del primer pantallazo (se extiende solo porque rompe la reseña) */}
+      <Card className="p-5 shadow-sm mt-5">
+        <h2 className="text-base text-slate-900 mb-1 flex items-center gap-2"><Star className="w-5 h-5 text-primary" aria-hidden="true" /> Reputación</h2>
+        <p className="text-xs text-slate-500 mb-3">Basada en servicios completados en la plataforma. Sin reseñas inventadas.</p>
+        {hasRating ? (
+          <div className="flex items-center gap-4 bg-slate-50 rounded-control p-4">
+            <div className="text-4xl font-black text-slate-900">{provider.rating.toFixed(1)}</div>
+            <div className="text-sm text-slate-600">
+              <div className="flex gap-0.5" aria-hidden="true">
+                {[1, 2, 3, 4, 5].map((n) => (
+                  <Star key={n} className={`w-4 h-4 ${n <= Math.round(provider.rating) ? 'fill-amber-400 text-amber-400' : 'text-slate-300'}`} />
+                ))}
+              </div>
+              <p className="mt-1"><strong>{provider.completedJobs}</strong> servicios completados{provider.trustScore > 0 ? ` · confianza ${Math.round(provider.trustScore)}%` : ''}</p>
+            </div>
+          </div>
+        ) : (
+          <div className="bg-slate-50 rounded-control p-4 text-sm text-slate-600">
+            Este prestador aún no tiene calificaciones. Se publican solo después de servicios completados. Reporta cualquier problema a contacto@redmecanica.cl
+          </div>
+        )}
+      </Card>
 
       {/* Similares */}
       {similar.length > 0 && (

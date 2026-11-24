@@ -15,9 +15,9 @@ const SubscriptionPaymentModal: React.FC<SubscriptionPaymentModalProps> = ({ pro
   const [error, setError] = useState<string | null>(null);
 
   const plans = {
-    MONTHLY: { name: 'Plan Mensual', price: 15000, description: 'Hasta 20 trabajos al mes' },
-    YEARLY: { name: 'Plan Anual', price: 150000, description: 'Hasta 300 trabajos al año (Ahorra 17%)' },
-    PROFESSIONAL: { name: 'Plan Profesional', price: 500000, description: 'Trabajos ilimitados + destacado' }
+    MONTHLY: { name: 'Plan Mensual', price: 15000, description: 'Primeros lugares, insignia Destacado y hasta 3 comunas' },
+    YEARLY: { name: 'Plan Anual', price: 150000, description: 'Lo mismo que el mensual, ahorrando 17%' },
+    PROFESSIONAL: { name: 'Plan Profesional', price: 500000, description: 'Todo Destacado, insignia Premium y hasta 10 comunas' }
   };
 
   // Redirige al portal real de Webpay mediante POST con token_ws.

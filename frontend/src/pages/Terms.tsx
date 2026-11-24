@@ -142,8 +142,8 @@ const Terms: React.FC<TermsProps> = ({ onClose }) => {
           </p>
           <ul className="list-disc list-inside space-y-1 ml-4">
             <li><strong>Vitrina Gratis:</strong> $0 — aparición en comuna base y contacto directo</li>
-            <li><strong>Destacado:</strong> $15.000/mes o $150.000/año — primeros lugares y hasta 3 comunas</li>
-            <li><strong>Taller Premium:</strong> $500.000/año — cobertura regional/nacional y multiusuario</li>
+            <li><strong>Destacado:</strong> $15.000/mes o $150.000/año — primeros lugares, insignia "Destacado", estadísticas y hasta 3 comunas</li>
+            <li><strong>Taller Premium:</strong> $500.000/año — hasta 10 comunas e insignia "Premium" (multiusuario, analytics avanzado, gestor y API: próximamente)</li>
             <li><strong>Empresarial:</strong> Personalizado — sucursales, ERP y facturación centralizada</li>
           </ul>
           <p className="mt-3">

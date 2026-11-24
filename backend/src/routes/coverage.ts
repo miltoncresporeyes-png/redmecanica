@@ -1,3 +1,4 @@
+import { effectivePlan, planCommuneLimit } from '../lib/plans.js';
 import { Router } from 'express';
 import { prisma } from '../db.js';
 import { requireAuth as authenticateToken, AuthRequest } from '../middlewares/requireAuth.js';
@@ -72,8 +73,8 @@ router.get('/my-coverage', async (req: AuthRequest, res) => {
       return res.status(404).json({ error: 'Perfil de prestador no encontrado' });
     }
 
-    const planCode = provider.subscription?.plan || 'FREE';
-    const planMaxCommunes = provider.subscription?.maxCommunes ?? (planCode === 'FREE' ? 1 : planCode === 'MONTHLY' ? 3 : 10);
+    const planCode = effectivePlan(provider.subscription);
+    const planMaxCommunes = planCommuneLimit(provider.subscription);
 
     const expansionSlots = provider.expansions.reduce((acc, exp) => acc + exp.blockSize, 0);
     const totalAllowedCommunes = planMaxCommunes + expansionSlots;
@@ -137,8 +138,8 @@ router.post('/add-commune', async (req: AuthRequest, res) => {
       return res.status(404).json({ error: 'Prestador no encontrado' });
     }
 
-    const planCode = provider.subscription?.plan || 'FREE';
-    const planMaxCommunes = provider.subscription?.maxCommunes ?? (planCode === 'FREE' ? 1 : planCode === 'MONTHLY' ? 3 : 10);
+    const planCode = effectivePlan(provider.subscription);
+    const planMaxCommunes = planCommuneLimit(provider.subscription);
     const expansionSlots = provider.expansions.reduce((acc, exp) => acc + exp.blockSize, 0);
     const totalAllowed = planMaxCommunes + expansionSlots;
 

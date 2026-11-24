@@ -109,7 +109,7 @@ const ProviderCard: React.FC<ProviderCardProps> = ({ provider, onSelect }) => {
                 )}
                 {provider.plan && provider.plan !== 'FREE' && (
                   <span className="inline-flex items-center gap-1 bg-amber-100 text-amber-900 text-xs font-bold uppercase px-2 py-0.5 rounded border border-amber-200">
-                    <Star className="w-3 h-3 fill-amber-500 text-amber-500" aria-hidden="true" /> Destacado
+                    <Star className="w-3 h-3 fill-amber-500 text-amber-500" aria-hidden="true" /> {provider.plan === 'PROFESSIONAL' ? 'Premium' : 'Destacado'}
                   </span>
                 )}
                 {specs.map((spec) => (

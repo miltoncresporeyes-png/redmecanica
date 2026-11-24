@@ -166,7 +166,7 @@ const ProviderBenefits: React.FC<ProviderBenefitsProps> = ({
               </li>
               <li className="flex items-start">
                 <span className="text-emerald-600 mr-2">✓</span>
-                <span className="text-sm">Badge "Verificado" destacado</span>
+                <span className="text-sm">Insignia "Destacado" y aparición en Anuncios Destacados</span>
               </li>
               <li className="flex items-start">
                 <span className="text-emerald-600 mr-2">✓</span>
@@ -178,7 +178,7 @@ const ProviderBenefits: React.FC<ProviderBenefitsProps> = ({
               </li>
               <li className="flex items-start">
                 <span className="text-emerald-600 mr-2">✓</span>
-                <span className="text-sm">Soporte por WhatsApp</span>
+                <span className="text-sm">Soporte prioritario por email</span>
               </li>
               <li className="flex items-start">
                 <span className="text-emerald-600 mr-2">✓</span>
@@ -212,27 +212,27 @@ const ProviderBenefits: React.FC<ProviderBenefitsProps> = ({
               </li>
               <li className="flex items-start">
                 <span className="text-emerald-600 mr-2">✓</span>
-                <span className="text-sm">Destacado en primera posición</span>
+                <span className="text-sm">Hasta 10 comunas de cobertura</span>
               </li>
               <li className="flex items-start">
                 <span className="text-emerald-600 mr-2">✓</span>
-                <span className="text-sm">Cobertura regional y nacional</span>
+                <span className="text-sm">Insignia "Premium" en tu vitrina y listados</span>
               </li>
               <li className="flex items-start">
                 <span className="text-emerald-600 mr-2">✓</span>
-                <span className="text-sm">Multi-usuario (hasta 5 cuentas)</span>
+                <span className="text-sm">Multi-usuario (hasta 5 cuentas) · Próximamente</span>
               </li>
               <li className="flex items-start">
                 <span className="text-emerald-600 mr-2">✓</span>
-                <span className="text-sm">Dashboard con analytics</span>
+                <span className="text-sm">Dashboard con analytics avanzado · Próximamente</span>
               </li>
               <li className="flex items-start">
                 <span className="text-emerald-600 mr-2">✓</span>
-                <span className="text-sm">Gestor de cuenta dedicado</span>
+                <span className="text-sm">Gestor de cuenta dedicado · Próximamente</span>
               </li>
               <li className="flex items-start">
                 <span className="text-emerald-600 mr-2">✓</span>
-                <span className="text-sm">API para integración con tu sistema</span>
+                <span className="text-sm">API para integración con tu sistema · Próximamente</span>
               </li>
             </ul>
             <div className="mt-4 pt-4 border-t border-yellow-300">

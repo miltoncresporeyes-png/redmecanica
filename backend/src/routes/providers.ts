@@ -6,6 +6,7 @@ import { withUtc } from '../lib/pgJson.js';
 import { PLATFORM_FEE_PERCENT } from '../config/pricing.js';
 import { documentsLimiter, providerEventsLimiter } from '../middlewares/rateLimiter.js';
 import { requireAuth as authenticateToken, AuthRequest } from '../middlewares/requireAuth.js';
+import { effectivePlan, isPaidPlan, planCommuneLimit } from '../lib/plans.js';
 import { validateTaxId } from '../utils/taxId.js';
 import { getMarket, publicMarket } from '../config/markets.js';
 
@@ -55,7 +56,7 @@ router.get('/search', async (req, res) => {
 
     const providers = await prisma.serviceProvider.findMany({
       where: whereClause,
-      include: { user: true }
+      include: { user: { select: { name: true } }, subscription: { select: { plan: true, status: true, endDate: true } } }
     });
 
     // Precise distance AND Specialty filtering
@@ -73,10 +74,11 @@ router.get('/search', async (req, res) => {
         if (!matches) return null;
       }
 
-      return { ...p, distance: dist };
+      const { subscription, ...rest } = p;
+      return { ...rest, plan: effectivePlan(subscription), distance: dist };
     })
     .filter(p => p !== null && p.distance <= rad)
-    .sort((a, b) => (a?.distance || 0) - (b?.distance || 0));
+    .sort((a, b) => ((a?.plan === 'FREE' ? 1 : 0) - (b?.plan === 'FREE' ? 1 : 0)) || (a?.distance || 0) - (b?.distance || 0));
 
     return res.json(results);
   } catch (error) {
@@ -130,6 +132,7 @@ const PUBLIC_PROFILE_SELECT = {
   phoneVerified: true,
   createdAt: true,
   user: { select: { name: true } },
+  subscription: { select: { plan: true, status: true, endDate: true } },
 } as const;
 
 // Identifica (sin exigirlo) a quien consulta, para que el dueño o un administrador vean su vitrina aunque no sea publica.
@@ -267,8 +270,8 @@ router.get('/:id', async (req, res) => {
       if (!allowed) return res.status(404).json({ error: 'Provider not found' });
     }
 
-    const { userId: _owner, ...publicProfile } = provider;
-    return res.json(publicProfile);
+    const { userId: _owner, subscription, ...publicProfile } = provider;
+    return res.json({ ...publicProfile, plan: effectivePlan(subscription) });
   } catch (error) {
     console.error("Error fetching provider:", error);
     return res.status(500).json({ error: 'Failed to fetch provider' });
@@ -693,6 +696,7 @@ router.get('/me/panel', authenticateToken, async (req: AuthRequest, res) => {
               'subscription', (SELECT to_jsonb(s) FROM "Subscription" s WHERE s."providerId" = p.id),
               'history', COALESCE((SELECT jsonb_agg(to_jsonb(h) ORDER BY h."createdAt" DESC)
                                    FROM (SELECT * FROM "ProviderHistory" WHERE "providerId" = p.id ORDER BY "createdAt" DESC LIMIT 10) h), '[]'::jsonb),
+              'coveredCommunes', (SELECT COUNT(*) FROM "ProviderCoverage" c WHERE c."providerId" = p.id AND c.active = true),
               'hasIdDocument', ("idDocumentUrl" IS NOT NULL),
               'hasBackgroundCheck', ("backgroundCheckUrl" IS NOT NULL)
             )
@@ -790,7 +794,11 @@ router.get('/me/panel', authenticateToken, async (req: AuthRequest, res) => {
       quotes: data.quotes || [],
       invoices: data.invoices || [],
       openRequestsCount: canQuoteNow ? Number(data.openRequestsCount) || 0 : 0,
+      limits: { communes: planCommuneLimit(provider.subscription) },
+      plan: effectivePlan(provider.subscription),
+      engagementLocked: !isPaidPlan(provider.subscription),
       engagement: (() => {
+        if (!isPaidPlan(provider.subscription)) return null; // estadisticas: incluidas en planes de pago
         if (!engagementRows) return null; // tabla de eventos no disponible todavia
         const pick = (t: string) => engagementRows.find((r) => r.type === t);
         const n = (v: any) => Number(v) || 0;

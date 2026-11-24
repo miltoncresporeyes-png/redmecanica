@@ -99,7 +99,8 @@ const HelpCenter: React.FC<HelpCenterProps> = ({ onClose }) => {
           <li>✓ Sin costo mensual</li>
           <li>✓ Sin comisión por contacto</li>
           <li>✓ Apareces en tu comuna base</li>
-          <li>✗ Sin insignia "Verificado"</li>
+          <li>✓ Insignia "Verificado" al aprobar tus documentos (gratis)</li>
+          <li>✗ Sin posición destacada ni estadísticas</li>
         </ul>
         
         <h4>Destacado ($15.000/mes o $150.000/año)</h4>
@@ -107,8 +108,8 @@ const HelpCenter: React.FC<HelpCenterProps> = ({ onClose }) => {
         <ul>
           <li>✓ Primeros lugares en tu comuna</li>
           <li>✓ Sin comisión por contacto</li>
-          <li>✓ Badge "Verificado"</li>
-          <li>✓ Posicionamiento prioritario</li>
+          <li>✓ Insignia "Destacado" y aparición en Anuncios Destacados</li>
+          <li>✓ Estadísticas de visitas y contactos</li>
           <li>✓ Hasta 3 comunas de cobertura</li>
         </ul>
         
@@ -116,11 +117,9 @@ const HelpCenter: React.FC<HelpCenterProps> = ({ onClose }) => {
         <p><strong>Ideal para:</strong> Talleres y empresas establecidas</p>
         <ul>
           <li>✓ Todo lo de Destacado, más:</li>
-          <li>✓ Cobertura regional y nacional</li>
-          <li>✓ Badge "Premium"</li>
-          <li>✓ Destacado en búsquedas</li>
-          <li>✓ Multi-usuario (5 cuentas)</li>
-          <li>✓ Gestor de cuenta dedicado</li>
+          <li>✓ Hasta 10 comunas de cobertura</li>
+          <li>✓ Insignia "Premium"</li>
+          <li>Próximamente: multiusuario, analytics avanzado, gestor de cuenta y API</li>
         </ul>
         
         <h3>Recomendación</h3>
