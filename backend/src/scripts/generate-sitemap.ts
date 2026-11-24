@@ -112,10 +112,7 @@ async function generateSitemap() {
     console.log('🗄️ Querying database for active provider profiles...');
     const activeProviders = await prisma.serviceProvider.findMany({
       where: {
-        status: 'ACTIVE',
-        subscription: {
-          status: 'ACTIVE'
-        }
+        status: { in: ['ACTIVE', 'APPROVED'] }
       },
       select: {
         id: true,

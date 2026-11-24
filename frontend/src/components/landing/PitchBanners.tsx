@@ -1,314 +1,106 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router';
-import Card from '../common/Card';
+import { Search, GitCompareArrows, MessageCircle, Truck, CircleDot, BatteryCharging, ArrowRight, BadgeCheck, FileCheck2 } from 'lucide-react';
+
+const STEPS = [
+  {
+    icon: Search,
+    title: '1. Busca',
+    text: 'Elige el servicio y tu comuna. Sin crear cuenta y sin costo.',
+  },
+  {
+    icon: GitCompareArrows,
+    title: '2. Compara',
+    text: 'Revisa vitrinas con servicios, ubicación, calificación e insignia de verificación.',
+  },
+  {
+    icon: MessageCircle,
+    title: '3. Contacta',
+    text: 'Escríbele directo por WhatsApp al prestador que elijas, sin intermediarios.',
+  },
+];
+
+const EMERGENCY = [
+  { icon: Truck, label: 'Grúa y remolque', to: '/search?category=grua' },
+  { icon: CircleDot, label: 'Vulcanización y pinchazos', to: '/search?category=vulcanizacion' },
+  { icon: BatteryCharging, label: 'Batería y electricidad', to: '/search?category=electrico' },
+];
 
 const PitchBanners: React.FC = () => {
   const navigate = useNavigate();
 
-  // --- STATE 1: Calculadora de Transparencia ---
-  const [sliderValue, setSliderValue] = useState(80000); // CLP
-
-  // --- STATE 2: Simulador de Seguridad ---
-  const [activeSeal, setActiveSeal] = useState<string>('rut');
-
-  // Cálculos dinámicos para calculadora
-  const estimatedTraditionalSurcharge = Math.round(sliderValue * 0.35);
-  const estimatedTraditionalTotal = sliderValue + estimatedTraditionalSurcharge;
-  const redMecanicaDiscount = estimatedTraditionalTotal - sliderValue;
-
-  const seals = [
-    {
-      id: 'rut',
-      icon: '🪪',
-      title: 'Identidad y Antecedentes',
-      desc: 'Validamos el RUT en el Registro Civil y exigimos el Certificado de Antecedentes penales actualizado cada 6 meses.',
-      badge: '100% LIMPIO'
-    },
-    {
-      id: 'cert',
-      icon: '🎓',
-      title: 'Certificación Técnica',
-      desc: 'Comprobamos títulos de mecánica automotriz, certificaciones de marcas oficiales (INACAP, DUOC) y experiencia comprobada.',
-      badge: 'APROBADO'
-    },
-    {
-      id: 'escrow',
-      icon: '💸',
-      title: 'Pago Escrow Seguro',
-      desc: 'Tu pago queda retenido de forma segura en la plataforma y solo se libera al mecánico cuando confirmas que estás conforme.',
-      badge: 'GARANTIZADO'
-    },
-    {
-      id: 'insur',
-      icon: '🛡️',
-      title: 'Seguro de Daños',
-      desc: 'Todos los trabajos cuentan con respaldo de póliza de responsabilidad civil activa que protege tu auto ante imprevistos.',
-      badge: 'COBERTURA GLOBAL'
-    }
-  ];
-
   return (
-    <div className="max-w-6xl mx-auto px-4 space-y-10 sm:space-y-12">
-      
-      {/* Sección Header con Estilo Checkered de Carreras */}
-      <div className="text-center max-w-2xl mx-auto relative">
-        {/* Decoración de carreras sutil */}
-        <div className="flex justify-center gap-1.5 mb-3 opacity-30 select-none" aria-hidden>
-          <span className="w-3 h-3 bg-slate-900"></span><span className="w-3 h-3 bg-slate-300"></span>
-          <span className="w-3 h-3 bg-slate-900"></span><span className="w-3 h-3 bg-slate-300"></span>
-          <span className="w-3 h-3 bg-slate-900"></span><span className="w-3 h-3 bg-slate-300"></span>
-        </div>
-        <span className="inline-block bg-emerald-100 text-emerald-700 border border-emerald-200 text-xs px-3 py-1 rounded-full font-extrabold uppercase tracking-widest">
-          ⚙️ Cómo funciona el marketplace
-        </span>
-        <h2 className="section-title mt-3 !text-2xl sm:!text-3xl md:!text-4xl">
-          Busca gratis por comuna · <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-emerald-500">contacta directo</span>
+    <section className="max-w-6xl mx-auto px-4 space-y-8 sm:space-y-10" aria-labelledby="how-title">
+      <div className="text-center max-w-2xl mx-auto">
+        <p className="badge-free mx-auto mb-3">Cómo funciona</p>
+        <h2 id="how-title">
+          Busca gratis por comuna y <span className="text-primary">contacta directo</span>
         </h2>
-        <p className="section-sub mt-2">
-          Sin cuenta, sin intermediarios. Compara vitrinas verificadas y cierra por WhatsApp.
+        <p className="section-sub !text-base mt-2">
+          Un directorio automotriz simple: encuentras, comparas y hablas con el prestador.
         </p>
       </div>
 
-      {/* Grid de Banners Interactivos */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        
-        {/* BANNER 1: CALCULADORA DE TRANSPARENCIA */}
-        <Card className="p-6 flex flex-col border border-slate-800 shadow-2xl transition-all duration-500 rounded-[2rem] bg-carbon-fiber text-white relative overflow-hidden neon-border-blue hover:scale-102 group">
-          {/* Engranajes giratorios de decoración de fondo en SVG */}
-          <div className="absolute -bottom-10 -left-10 w-32 h-32 text-slate-800/10 pointer-events-none z-0">
-            <svg fill="currentColor" viewBox="0 0 24 24" className="w-full h-full animate-spin-slow">
-              <path d="M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.46 2.18 14.25 2 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61.25-1.17.59-1.69.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64l2.11 1.65c-.04.32-.07.65-.07.98s.03.66.07.98l-2.11 1.65c-.19.15-.24.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1c.52.4 1.08.73 1.69.98l.38 2.65c.03.24.24.42.49.42h4c.25 0 .46-.18.49-.42l.38-2.65c.61-.25 1.17-.59 1.69-.98l2.49 1c.23.09.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.65zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z"/>
-            </svg>
-          </div>
-          
-          <div className="absolute top-0 right-0 bg-blue-600/80 text-white text-[10px] font-black py-1.5 px-6 rounded-bl-3xl uppercase tracking-widest border-l border-b border-blue-500/20">
-            📊 DINÁMICO
-          </div>
-          
-          <div className="mb-4 relative z-10">
-            <span className="text-4xl filter drop-shadow-[0_0_8px_rgba(59,130,246,0.8)]">⚙️</span>
-            <h3 className="font-extrabold text-2xl text-white mt-3 tracking-tight flex items-center gap-2">
-              Calculadora de Tarifas y RPM
-            </h3>
-            <p className="text-xs text-slate-400 mt-1.5 leading-relaxed">
-              Mueva el acelerador de tarifas y compruebe cómo el depósito en garantía de RedMecánica le protege de cobros inesperados.
-            </p>
-          </div>
-
-          {/* Slider interactivo con look de tablero de instrumentos */}
-          <div className="my-6 p-5 bg-slate-950/80 backdrop-blur border border-slate-800 rounded-3xl relative z-10 shadow-2xl">
-            <label className="block text-[9px] font-black text-slate-500 uppercase tracking-widest mb-3 text-center">
-              PRESUPUESTO ACORDADO (DIAGNOSTICADO)
-            </label>
-            <div className="text-3xl font-black text-blue-400 text-center mb-5 tracking-tighter drop-shadow-[0_0_10px_rgba(96,165,250,0.4)]">
-              ${sliderValue.toLocaleString('clp')} <span className="text-xs font-bold text-slate-500">CLP</span>
-            </div>
-            <input
-              type="range"
-              min="30000"
-              max="300000"
-              step="5000"
-              value={sliderValue}
-              onChange={(e) => setSliderValue(Number(e.target.value))}
-              className="w-full h-2.5 bg-slate-800 rounded-full appearance-none cursor-pointer accent-blue-500 border border-slate-700 shadow-inner"
-            />
-            <div className="flex justify-between text-[8px] text-slate-600 font-black mt-2 tracking-wider">
-              <span>RPM MIN (30K)</span>
-              <span>LÍMITE (300K)</span>
-            </div>
-          </div>
-
-          {/* Comparativa con Glow Neon */}
-          <div className="space-y-3.5 flex-1 relative z-10">
-            <div className="p-3.5 bg-red-950/40 border border-red-500/20 rounded-2xl flex items-center justify-between transition-all hover:bg-red-950/60">
-              <div>
-                <span className="text-xs font-bold text-red-400 block">Taller Tradicional Común</span>
-                <span className="text-[10px] text-red-500/80 block">Sobrecargos típicos de repuestos (+35%)</span>
-              </div>
-              <span className="font-extrabold text-red-400 text-sm">
-                ${estimatedTraditionalTotal.toLocaleString('clp')}
-              </span>
-            </div>
-
-            <div className="p-3.5 bg-emerald-950/40 border border-emerald-500/20 rounded-2xl flex items-center justify-between transition-all hover:bg-emerald-950/60 shadow-[0_0_15px_rgba(16,185,129,0.05)]">
-              <div>
-                <span className="text-xs font-bold text-emerald-400 block">Depósito Escrow RedMecánica</span>
-                <span className="text-[10px] text-emerald-500/80 block">Precios cerrados, seguros y garantizados</span>
-              </div>
-              <span className="font-extrabold text-emerald-400 text-sm">
-                ${sliderValue.toLocaleString('clp')}
-              </span>
-            </div>
-          </div>
-
-          {/* Ahorro Estimado */}
-          <div className="mt-6 pt-5 border-t border-slate-800 flex items-center justify-between relative z-10">
-            <div>
-              <span className="text-[10px] font-black text-slate-500 uppercase tracking-wider">Ahorro Neto:</span>
-              <span className="text-xs font-black text-yellow-400 block tracking-tight animate-pulse-fast">⚡ Evitas pagar ${redMecanicaDiscount.toLocaleString('clp')} de más</span>
-            </div>
-            <button 
-              onClick={() => navigate('/solicitar')} 
-              className="px-4 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-extrabold text-xs rounded-2xl transition-all shadow-md active:scale-95 hover-rev-vibrate flex items-center justify-center whitespace-nowrap"
-            >
-              Cotizar ⚡
-            </button>
-          </div>
-        </Card>
-
-        {/* BANNER 2: SIMULADOR DE SEGURIDAD (CONTRATO / REPUTACIÓN) */}
-        <Card className="p-6 flex flex-col border border-slate-800 shadow-2xl transition-all duration-500 rounded-[2rem] bg-carbon-fiber text-white relative overflow-hidden neon-border-yellow hover:scale-102 group">
-          {/* Engranajes de decoración contrarrotativos */}
-          <div className="absolute -top-10 -right-10 w-28 h-28 text-slate-800/10 pointer-events-none z-0">
-            <svg fill="currentColor" viewBox="0 0 24 24" className="w-full h-full animate-spin-reverse-slow">
-              <path d="M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.46 2.18 14.25 2 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61.25-1.17.59-1.69.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64l2.11 1.65c-.04.32-.07.65-.07.98s.03.66.07.98l-2.11 1.65c-.19.15-.24.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1c.52.4 1.08.73 1.69.98l.38 2.65c.03.24.24.42.49.42h4c.25 0 .46-.18.49-.42l.38-2.65c.61-.25 1.17-.59 1.69-.98l2.49 1c.23.09.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.65zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z"/>
-            </svg>
-          </div>
-
-          <div className="absolute top-0 right-0 bg-yellow-500 text-slate-950 text-[10px] font-black py-1.5 px-6 rounded-bl-3xl uppercase tracking-widest border-l border-b border-yellow-400/20">
-            🛡️ AUDITORÍA
-          </div>
-
-          <div className="mb-4 relative z-10">
-            <span className="text-4xl filter drop-shadow-[0_0_8px_rgba(234,179,8,0.8)]">🏁</span>
-            <h3 className="font-extrabold text-2xl text-white mt-3 tracking-tight">
-              Filtros de Seguridad Elite
-            </h3>
-            <p className="text-xs text-slate-400 mt-1.5 leading-relaxed">
-              Audita y comprueba la hoja de ruta de los mecánicos haciendo clic en los sellos digitales del tacómetro de seguridad.
-            </p>
-          </div>
-
-          {/* Credencial Interactiva en Dashboard Look */}
-          <div className="my-4 p-4.5 bg-slate-950 text-white rounded-3xl border border-slate-800 shadow-inner relative z-10">
-            <div className="absolute top-3.5 right-3.5 text-[8px] font-black tracking-widest text-yellow-400 uppercase bg-yellow-500/10 px-2.5 py-0.5 rounded border border-yellow-400/20">
-              CLASE S 🏁
-            </div>
-            
-            <div className="flex gap-3 items-center mb-4 pr-20">
-              <div className="w-12 h-12 bg-slate-850 rounded-2xl flex items-center justify-center text-2xl shadow-inner border border-slate-700" aria-hidden>
-                🔧
-              </div>
-              <div>
-                <span className="font-black text-sm block text-slate-100">Prestador verificado</span>
-                <span className="text-[10px] text-yellow-400 font-bold block uppercase tracking-wider">Vitrina verificada · Ilustrativa</span>
-              </div>
-            </div>
-
-            {/* Fila de Sellos Interactivos */}
-            <div className="grid grid-cols-4 gap-2 bg-slate-900 p-2 rounded-2xl border border-slate-800">
-              {seals.map(seal => (
-                <button
-                  key={seal.id}
-                  onClick={() => setActiveSeal(seal.id)}
-                  className={`h-11 rounded-xl flex items-center justify-center text-xl transition-all ${
-                    activeSeal === seal.id
-                      ? 'bg-gradient-to-br from-yellow-400 to-yellow-500 text-slate-950 shadow-lg scale-110 rotate-2'
-                      : 'bg-slate-800 text-slate-400 hover:bg-slate-750 hover:text-white'
-                  }`}
-                  title={seal.title}
-                >
-                  {seal.icon}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Detalle Dinámico del Sello */}
-          <div className="p-4 bg-slate-950/80 border border-slate-850 rounded-2xl flex-1 flex flex-col justify-center relative z-10 shadow-inner">
-            {(() => {
-              const current = seals.find(s => s.id === activeSeal);
-              return (
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="font-black text-xs text-yellow-400 uppercase tracking-widest">{current?.title}</span>
-                    <span className="bg-yellow-400/10 text-yellow-400 text-[8px] font-black px-2 py-0.5 rounded border border-yellow-400/20">
-                      {current?.badge}
-                    </span>
-                  </div>
-                  <p className="text-[11px] text-slate-300 leading-relaxed">
-                    {current?.desc}
-                  </p>
-                </div>
-              );
-            })()}
-          </div>
-
-          <div className="mt-6 pt-5 border-t border-slate-800 flex items-center justify-between relative z-10">
-            <span className="text-[9px] text-slate-500 font-black uppercase tracking-wider flex items-center gap-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-yellow-500"></span> INSPECCIONADO
+      {/* Pasos */}
+      <ol className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
+        {STEPS.map(({ icon: Icon, title, text }) => (
+          <li key={title} className="card-market p-6 flex flex-col items-start">
+            <span className="inline-flex w-12 h-12 items-center justify-center rounded-control bg-blue-50 text-primary mb-4" aria-hidden="true">
+              <Icon className="w-6 h-6" />
             </span>
-            <button 
-              onClick={() => navigate('/unete')}
-              className="text-xs font-black text-yellow-400 hover:text-yellow-300 flex items-center gap-1 hover:underline hover-rev-vibrate"
-            >
-              Registrar Taller 🏭
-            </button>
-          </div>
-        </Card>
+            <h3 className="text-slate-900 mb-1.5">{title}</h3>
+            <p className="text-sm text-slate-600 leading-relaxed">{text}</p>
+          </li>
+        ))}
+      </ol>
 
-        {/* BANNER 3: GRÚAS Y AUXILIO REAL POR COMUNA */}
-        <Card className="p-6 flex flex-col border border-slate-800 shadow-2xl transition-all duration-500 rounded-[2rem] bg-carbon-fiber text-white relative overflow-hidden neon-border-red hover:scale-102 group">
-          {/* Engranaje giratorio de decoración */}
-          <div className="absolute -bottom-10 -right-10 w-28 h-28 text-slate-800/10 pointer-events-none z-0" aria-hidden>
-            <svg fill="currentColor" viewBox="0 0 24 24" className="w-full h-full animate-spin-slow">
-              <path d="M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.46 2.18 14.25 2 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61.25-1.17.59-1.69.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64l2.11 1.65c-.04.32-.07.65-.07.98s.03.66.07.98l-2.11 1.65c-.19.15-.24.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1c.52.4 1.08.73 1.69.98l.38 2.65c.03.24.24.42.49.42h4c.25 0 .46-.18.49-.42l.38-2.65c.61-.25 1.17-.59 1.69-.98l2.49 1c.23.09.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.65zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z"/>
-            </svg>
+      {/* Auxilio + Verificación */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+        <div className="rounded-card bg-slate-900 text-white p-6 sm:p-8 flex flex-col">
+          <p className="text-xs font-bold uppercase tracking-wider text-amber-300 mb-2">Auxilio por comuna</p>
+          <h3 className="text-xl sm:text-2xl text-white mb-2">Grúas y auxilio cerca de ti</h3>
+          <p className="text-sm text-slate-300 mb-5">
+            Busca prestadores publicados en tu comuna y llámalos directo. En una emergencia real, llama primero al número de la vitrina.
+          </p>
+          <div className="space-y-2.5 flex-1">
+            {EMERGENCY.map(({ icon: Icon, label, to }) => (
+              <button
+                key={label}
+                type="button"
+                onClick={() => navigate(to)}
+                className="w-full flex items-center gap-3 bg-slate-800 hover:bg-slate-700 p-3.5 rounded-control border border-slate-700 transition-colors text-left min-h-[48px]"
+              >
+                <Icon className="w-5 h-5 text-amber-300 shrink-0" aria-hidden="true" />
+                <span className="text-sm font-semibold text-slate-100">{label}</span>
+                <ArrowRight className="w-4 h-4 ml-auto text-slate-400" aria-hidden="true" />
+              </button>
+            ))}
           </div>
+        </div>
 
-          <div className="absolute top-0 right-0 bg-red-600 text-white text-[10px] font-black py-1.5 px-6 rounded-bl-3xl uppercase tracking-widest border-l border-b border-red-500/20">
-            🚨 AUXILIO POR COMUNA
-          </div>
-
-          <div className="mb-4 relative z-10">
-            <span className="text-4xl filter drop-shadow-[0_0_8px_rgba(239,68,68,0.8)]" aria-hidden>🚛</span>
-            <h3 className="font-extrabold text-2xl text-white mt-3 tracking-tight">
-              Grúas y auxilio reales cerca de ti
-            </h3>
-            <p className="text-xs text-slate-400 mt-1.5 leading-relaxed">
-              Sin simuladores: busca grúas publicadas en tu comuna, revisa su teléfono y llámalas directo. Gratis y sin cuenta.
-            </p>
-          </div>
-
-          {/* Directorio real de auxilio */}
-          <div className="my-3 p-4 bg-slate-950 text-white rounded-3xl border border-slate-800 shadow-2xl relative z-10 flex-1 flex flex-col justify-between min-h-[150px]">
-            <div className="space-y-2.5">
-              {[
-                { icon: '🚛', label: 'Grúa y remolque', to: '/search?category=grua' },
-                { icon: '🛞', label: 'Vulcanización y pinchazos', to: '/search?category=vulcanizacion' },
-                { icon: '⚡', label: 'Batería y electricidad', to: '/search?category=electrico' },
-              ].map((item) => (
-                <button
-                  key={item.label}
-                  onClick={() => navigate(item.to)}
-                  className="w-full flex items-center gap-3 bg-slate-900 hover:bg-slate-800 p-3 rounded-2xl border border-slate-800 transition-all text-left min-h-[44px]"
-                >
-                  <span className="text-xl" aria-hidden>{item.icon}</span>
-                  <span className="text-xs font-extrabold uppercase tracking-wider text-slate-200">{item.label}</span>
-                  <span className="ml-auto text-red-400 font-black">→</span>
-                </button>
-              ))}
-              <p className="text-[11px] text-slate-500 leading-relaxed pt-1">
-                El contacto es directo con cada prestador. En emergencia real llama primero al número publicado en la vitrina.
-              </p>
-            </div>
-          </div>
-
-          <div className="mt-4 pt-4 border-t border-slate-800 flex items-center justify-between relative z-10">
-            <span className="text-[9px] text-slate-500 font-black uppercase tracking-wider flex items-center gap-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-red-600"></span> DIRECTORIO REAL
-            </span>
-            <button
-              onClick={() => navigate('/search?category=grua')}
-              className="text-xs font-black text-red-400 hover:text-red-300 flex items-center gap-1 hover:underline"
-            >
-              Buscar grúas ahora 🚨
-            </button>
-          </div>
-        </Card>
-
+        <div className="card-market p-6 sm:p-8 flex flex-col">
+          <p className="text-xs font-bold uppercase tracking-wider text-emerald-700 mb-2">Insignia Verificado</p>
+          <h3 className="text-xl sm:text-2xl text-slate-900 mb-2">Prestadores con documentos revisados</h3>
+          <p className="text-sm text-slate-600 mb-5">
+            Los prestadores pueden subir su cédula de identidad y su certificado de antecedentes. Nuestro equipo los revisa antes de entregar la insignia.
+          </p>
+          <ul className="space-y-3 flex-1">
+            <li className="flex items-start gap-3 text-sm text-slate-700">
+              <FileCheck2 className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" aria-hidden="true" />
+              Documentos subidos por el prestador y revisados por RedMecánica.
+            </li>
+            <li className="flex items-start gap-3 text-sm text-slate-700">
+              <BadgeCheck className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" aria-hidden="true" />
+              La insignia aparece en su vitrina y en los resultados de búsqueda.
+            </li>
+          </ul>
+          <button type="button" onClick={() => navigate('/unete')} className="btn-ghost mt-6 self-start">
+            Publicar mi negocio
+            <ArrowRight className="w-4 h-4" aria-hidden="true" />
+          </button>
+        </div>
       </div>
-    </div>
+    </section>
   );
 };
 

@@ -1,7 +1,7 @@
 // Service Worker Premium para RedMecánica PWA
 // Optimizado para rendimiento UX/UI premium y experiencia offline fluida
 
-const VERSION = 'v3.6';
+const VERSION = 'v3.7'; // v3.7: ya no cachea respuestas autenticadas (sesion/perfil)
 const CACHE_NAME = `redmecanica-${VERSION}`;
 const API_CACHE_NAME = `redmecanica-api-${VERSION}`;
 
@@ -298,6 +298,23 @@ async function precachePopularRoutes() {
   }
 }
 
+// Peticiones de API que dependen del usuario (no deben cachearse jamas)
+function isPrivateApiRequest(request, url) {
+  if (request.headers.has('Authorization')) return true;
+  const p = url.pathname;
+  return (
+    p.startsWith('/api/auth') ||
+    p.startsWith('/api/admin') ||
+    p.startsWith('/api/users') ||
+    p.startsWith('/api/payments') ||
+    p.startsWith('/api/subscriptions') ||
+    p.startsWith('/api/conversations') ||
+    p.startsWith('/api/notifications') ||
+    p.includes('/me/') ||
+    p.endsWith('/me')
+  );
+}
+
 // Fetch event - serve from cache or network
 self.addEventListener('fetch', (event) => {
   const { request } = event;
@@ -316,6 +333,12 @@ self.addEventListener('fetch', (event) => {
   
   // Rutas API - Estrategia optimizada
   if (url.pathname.startsWith('/api/')) {
+    // Nunca cachear respuestas privadas: la clave de cache es solo la URL, asi que
+    // /api/auth/me o /api/providers/me/* podrian servirse a otra sesion o quedar viejos
+    // tras login/logout. Se deja pasar directo a la red.
+    if (isPrivateApiRequest(request, url)) {
+      return;
+    }
     event.respondWith(apiStrategy(request, event));
     return;
   }

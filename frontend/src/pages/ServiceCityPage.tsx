@@ -313,7 +313,7 @@ const ServiceCityPage: React.FC = () => {
       </nav>
 
       {/* Hero */}
-      <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden mb-6 sm:mb-10 bg-gradient-to-br from-slate-900 via-blue-950 to-slate-900 text-white shadow-2xl p-6 sm:p-8 md:p-12">
+      <div className="relative rounded-card sm:rounded-card overflow-hidden mb-6 sm:mb-10 bg-gradient-to-br from-slate-900 via-blue-950 to-slate-900 text-white shadow-2xl p-6 sm:p-8 md:p-12">
         <div className="absolute inset-0 bg-grid-white opacity-5 pointer-events-none"></div>
         <div className="relative z-10 max-w-3xl">
           <span className="inline-block bg-emerald-400/15 text-emerald-300 border border-emerald-300/20 text-[11px] sm:text-xs px-3 py-1.5 rounded-full font-bold uppercase tracking-wider mb-4">
@@ -330,7 +330,7 @@ const ServiceCityPage: React.FC = () => {
           <div className="flex flex-col sm:flex-row gap-3">
             <a
               href="#prestadores"
-              className="btn-accent"
+              className="btn-cta"
             >
               Ver vitrinas ({providers.length})
             </a>
@@ -363,10 +363,10 @@ const ServiceCityPage: React.FC = () => {
 
               <button
                 onClick={() => setFilterCertified(!filterCertified)}
-                className={`px-4 py-2 rounded-xl text-xs font-bold transition-all border ${
+                className={`px-4 py-2 rounded-control text-xs font-bold transition-all border ${
                   filterCertified
-                    ? 'bg-green-600 text-white border-green-600 shadow-md'
-                    : 'bg-white text-gray-600 border-gray-200 hover:border-green-300'
+                    ? 'bg-emerald-600 text-white border-emerald-600 shadow-md'
+                    : 'bg-white text-gray-600 border-gray-200 hover:border-emerald-300'
                 }`}
               >
                 {filterCertified ? 'Solo Destacados' : 'Mostrar Solo Destacados'}
@@ -376,7 +376,7 @@ const ServiceCityPage: React.FC = () => {
             {loading ? (
               <div className="py-20"><LoadingSpinner /></div>
             ) : displayedProviders.length === 0 ? (
-              <Card className="p-8 sm:p-10 text-center border border-dashed border-gray-300 text-gray-500 rounded-2xl">
+              <Card className="p-8 sm:p-10 text-center border border-dashed border-gray-300 text-gray-500 rounded-card">
                 <span className="text-4xl block mb-3">{serviceInfo.icon}</span>
                 <p className="font-bold text-gray-800 text-lg">
                   Sé el primero: {serviceInfo.pluralName} en {communeInfo.name}
@@ -388,7 +388,7 @@ const ServiceCityPage: React.FC = () => {
                 <div className="flex flex-col sm:flex-row justify-center gap-2">
                   <Link
                     to={`/search?commune=${encodeURIComponent(communeInfo.name)}`}
-                    className="btn-primary"
+                    className="btn-cta"
                   >
                     🔍 Buscar cerca
                   </Link>
@@ -418,7 +418,7 @@ const ServiceCityPage: React.FC = () => {
         </div>
 
         <div className="space-y-6">
-          <Card className="p-6 bg-gradient-to-br from-emerald-50 to-teal-50 border border-emerald-100 shadow-sm rounded-2xl">
+          <Card className="p-6 bg-gradient-to-br from-emerald-50 to-teal-50 border border-emerald-100 shadow-sm rounded-card">
             <h3 className="font-bold text-lg text-emerald-900 mb-2">🔍 Directorio gratuito</h3>
             <p className="text-sm text-emerald-800/80 mb-4">
               Filtra por comuna y categoría, compara vitrinas y contacta directo por WhatsApp. Sin cuenta.
@@ -454,7 +454,7 @@ const ServiceCityPage: React.FC = () => {
               </div>
               <div className="flex justify-between pb-2">
                 <span className="text-gray-500">Cobertura:</span>
-                <span className="font-bold text-green-600">Disponible en {communeInfo.name}</span>
+                <span className="font-bold text-emerald-600">Disponible en {communeInfo.name}</span>
               </div>
             </div>
           </Card>
@@ -466,7 +466,7 @@ const ServiceCityPage: React.FC = () => {
                 <Link
                   key={s}
                   to={`/${s}/${citySlug}`}
-                  className="text-xs bg-gray-100 hover:bg-blue-50 text-gray-600 hover:text-blue-600 px-3 py-1.5 rounded-lg font-bold transition-all border border-gray-100"
+                  className="text-xs bg-gray-100 hover:bg-blue-50 text-gray-600 hover:text-blue-600 px-3 py-1.5 rounded-control font-bold transition-all border border-gray-100"
                 >
                   {SEO_SERVICES[SERVICE_PLURAL_MAP[s]]?.pluralName || s} en {communeInfo.name}
                 </Link>
@@ -484,7 +484,7 @@ const ServiceCityPage: React.FC = () => {
                   <Link
                     key={c.slug}
                     to={`/${servicePlural}/${c.slug}`}
-                    className="text-xs bg-gray-100 hover:bg-blue-50 text-gray-600 hover:text-blue-600 px-3 py-1.5 rounded-lg font-bold transition-all border border-gray-100"
+                    className="text-xs bg-gray-100 hover:bg-blue-50 text-gray-600 hover:text-blue-600 px-3 py-1.5 rounded-control font-bold transition-all border border-gray-100"
                   >
                     {c.name}
                   </Link>

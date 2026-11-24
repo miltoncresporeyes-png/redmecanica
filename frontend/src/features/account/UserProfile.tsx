@@ -82,7 +82,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
         {!editMode ? (
           <button
             onClick={() => setEditMode(true)}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            className="px-4 py-2 bg-blue-600 text-white rounded-control hover:bg-blue-700"
           >
             ✏️ Editar
           </button>
@@ -90,13 +90,13 @@ const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
           <div className="space-x-2">
             <button
               onClick={handleSaveProfile}
-              className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
+              className="px-4 py-2 bg-emerald-600 text-white rounded-control hover:bg-emerald-700"
             >
               💾 Guardar
             </button>
             <button
               onClick={() => setEditMode(false)}
-              className="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400"
+              className="px-4 py-2 bg-gray-300 text-gray-700 rounded-control hover:bg-gray-400"
             >
               Cancelar
             </button>
@@ -112,7 +112,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
             value={userData.name}
             onChange={(e) => setUserData({ ...userData, name: e.target.value })}
             disabled={!editMode}
-            className={`w-full p-3 border rounded-lg ${editMode ? 'border-blue-300' : 'border-gray-200 bg-gray-50'}`}
+            className={`w-full p-3 border rounded-control ${editMode ? 'border-blue-300' : 'border-gray-200 bg-gray-50'}`}
           />
         </div>
 
@@ -134,7 +134,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
             value={userData.rut}
             onChange={(e) => setUserData({ ...userData, rut: formatearRUT(e.target.value) })}
             disabled={!editMode}
-            className={`w-full p-3 border rounded-lg transition-colors ${
+            className={`w-full p-3 border rounded-control transition-colors ${
               editMode && userData.rut && !validarRUT(userData.rut)
                 ? 'border-rose-400 bg-rose-50/20'
                 : editMode ? 'border-blue-300' : 'border-gray-200 bg-gray-50'
@@ -154,7 +154,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
             value={userData.email}
             onChange={(e) => setUserData({ ...userData, email: e.target.value })}
             disabled={!editMode}
-            className={`w-full p-3 border rounded-lg ${editMode ? 'border-blue-300' : 'border-gray-200 bg-gray-50'}`}
+            className={`w-full p-3 border rounded-control ${editMode ? 'border-blue-300' : 'border-gray-200 bg-gray-50'}`}
           />
         </div>
 
@@ -182,7 +182,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
             }}
             disabled={!editMode}
             placeholder="+56 9 8341 4730"
-            className={`w-full p-3 border rounded-lg transition-colors ${
+            className={`w-full p-3 border rounded-control transition-colors ${
               editMode && userData.phone && userData.phone.trim() !== '+56' && !validarWhatsAppChile(userData.phone).isValid
                 ? 'border-rose-400 bg-rose-50/20'
                 : editMode ? 'border-blue-300' : 'border-gray-200 bg-gray-50'
@@ -202,7 +202,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
             value={userData.address}
             onChange={(e) => setUserData({ ...userData, address: e.target.value })}
             disabled={!editMode}
-            className={`w-full p-3 border rounded-lg ${editMode ? 'border-blue-300' : 'border-gray-200 bg-gray-50'}`}
+            className={`w-full p-3 border rounded-control ${editMode ? 'border-blue-300' : 'border-gray-200 bg-gray-50'}`}
           />
         </div>
 
@@ -213,7 +213,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
             value={userData.region}
             onChange={(e) => setUserData({ ...userData, region: e.target.value })}
             disabled={!editMode}
-            className={`w-full p-3 border rounded-lg ${editMode ? 'border-blue-300' : 'border-gray-200 bg-gray-50'}`}
+            className={`w-full p-3 border rounded-control ${editMode ? 'border-blue-300' : 'border-gray-200 bg-gray-50'}`}
           />
         </div>
 
@@ -224,7 +224,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
             value={userData.commune}
             onChange={(e) => setUserData({ ...userData, commune: e.target.value })}
             disabled={!editMode}
-            className={`w-full p-3 border rounded-lg ${editMode ? 'border-blue-300' : 'border-gray-200 bg-gray-50'}`}
+            className={`w-full p-3 border rounded-control ${editMode ? 'border-blue-300' : 'border-gray-200 bg-gray-50'}`}
           />
         </div>
       </div>
@@ -232,13 +232,13 @@ const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
       <div className="pt-6 border-t">
         <h4 className="text-lg font-semibold mb-4">Configuración de Cuenta</h4>
         <div className="space-y-3">
-          <button className="w-full text-left px-4 py-3 border rounded-lg hover:bg-gray-50 transition-colors">
+          <button className="w-full text-left px-4 py-3 border rounded-control hover:bg-gray-50 transition-colors">
             🔒 Cambiar contraseña
           </button>
-          <button className="w-full text-left px-4 py-3 border rounded-lg hover:bg-gray-50 transition-colors">
+          <button className="w-full text-left px-4 py-3 border rounded-control hover:bg-gray-50 transition-colors">
             🔔 Notificaciones
           </button>
-          <button className="w-full text-left px-4 py-3 border rounded-lg hover:bg-gray-50 transition-colors">
+          <button className="w-full text-left px-4 py-3 border rounded-control hover:bg-gray-50 transition-colors">
             🌐 Preferencias de idioma
           </button>
         </div>
@@ -252,7 +252,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
         <h3 className="text-2xl font-bold text-gray-800">Mis Vehículos</h3>
         <button
           onClick={handleAddVehicle}
-          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+          className="px-4 py-2 bg-blue-600 text-white rounded-control hover:bg-blue-700"
         >
           + Agregar Vehículo
         </button>
@@ -263,7 +263,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
           <Card key={vehicle.id} className="p-6">
             <div className="flex items-start justify-between mb-4">
               <div className="flex items-center">
-                <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-700 rounded-lg flex items-center justify-center text-white text-2xl">
+                <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-700 rounded-control flex items-center justify-center text-white text-2xl">
                   🚗
                 </div>
                 <div className="ml-4">
@@ -296,7 +296,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
               <div className="flex-1">
                 <div className="flex items-center mb-2">
                   <h4 className="font-bold text-lg">{service.service}</h4>
-                  <span className="ml-3 px-3 py-1 bg-green-100 text-green-800 rounded-full text-xs font-semibold">
+                  <span className="ml-3 px-3 py-1 bg-emerald-100 text-emerald-800 rounded-full text-xs font-semibold">
                     {service.status === 'COMPLETED' ? 'Completado' : service.status}
                   </span>
                 </div>
@@ -332,7 +332,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
         <Card className="p-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center">
-              <div className="w-16 h-10 bg-gradient-to-r from-blue-600 to-blue-800 rounded-lg flex items-center justify-center text-white font-bold">
+              <div className="w-16 h-10 bg-gradient-to-r from-blue-600 to-blue-800 rounded-control flex items-center justify-center text-white font-bold">
                 VISA
               </div>
               <div className="ml-4">
@@ -344,12 +344,12 @@ const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
           </div>
         </Card>
 
-        <button className="w-full p-6 border-2 border-dashed border-gray-300 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-colors">
+        <button className="w-full p-6 border-2 border-dashed border-gray-300 rounded-control hover:border-blue-500 hover:bg-blue-50 transition-colors">
           <p className="font-semibold text-blue-600">+ Agregar Método de Pago</p>
         </button>
       </div>
 
-      <div className="mt-8 p-6 bg-blue-50 rounded-lg">
+      <div className="mt-8 p-6 bg-blue-50 rounded-control">
         <h4 className="font-semibold mb-2">💳 Pago Seguro</h4>
         <p className="text-sm text-gray-600">
           Todos tus métodos de pago están encriptados con tecnología SSL de 256 bits. Nunca almacenamos información sensible.

@@ -59,7 +59,7 @@ const AboutUs: React.FC<AboutUsProps> = ({ onClose, onNavigateToOnboarding }) =>
         {/* Fundador */}
         <div className="bg-white border border-slate-200 rounded-[2.5rem] p-10 mb-12 shadow-sm">
           <div className="flex flex-col md:flex-row items-start gap-8">
-            <div className="w-24 h-24 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center text-white text-4xl font-black shadow-lg shrink-0">
+            <div className="w-24 h-24 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-card flex items-center justify-center text-white text-4xl font-black shadow-lg shrink-0">
               FS
             </div>
             <div className="flex-1">
@@ -91,35 +91,35 @@ const AboutUs: React.FC<AboutUsProps> = ({ onClose, onNavigateToOnboarding }) =>
           </p>
           <div className="space-y-4">
             <div className="flex items-start gap-4">
-              <div className="w-10 h-10 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center font-black text-lg shrink-0">1</div>
+              <div className="w-10 h-10 bg-blue-100 text-blue-600 rounded-control flex items-center justify-center font-black text-lg shrink-0">1</div>
               <div>
                 <h4 className="font-bold text-slate-900">Validación de Identidad y Antecedentes</h4>
                 <p className="text-sm text-slate-500">Verificamos RUT, cédula de identidad vigente y realizamos una revisión de antecedentes comerciales y judiciales a través de los registros públicos de Chile.</p>
               </div>
             </div>
             <div className="flex items-start gap-4">
-              <div className="w-10 h-10 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center font-black text-lg shrink-0">2</div>
+              <div className="w-10 h-10 bg-blue-100 text-blue-600 rounded-control flex items-center justify-center font-black text-lg shrink-0">2</div>
               <div>
                 <h4 className="font-bold text-slate-900">Certificaciones Técnicas y Licencias</h4>
                 <p className="text-sm text-slate-500">Solicitamos y validamos títulos técnicos o profesionales, certificaciones de especialidad (mecánica diésel, electrónica automotriz, aire acondicionado, etc.) y licencia de conducir vigente al día.</p>
               </div>
             </div>
             <div className="flex items-start gap-4">
-              <div className="w-10 h-10 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center font-black text-lg shrink-0">3</div>
+              <div className="w-10 h-10 bg-blue-100 text-blue-600 rounded-control flex items-center justify-center font-black text-lg shrink-0">3</div>
               <div>
                 <h4 className="font-bold text-slate-900">Documentación Legal y Comercial</h4>
                 <p className="text-sm text-slate-500">Para talleres: verificamos patente municipal, inicio de actividades en SII, seguro de responsabilidad civil vigente y certificado de obras (si aplica). Para mecánicos independientes: validamos boletas de honorarios electrónicas y cobertura de seguro.</p>
               </div>
             </div>
             <div className="flex items-start gap-4">
-              <div className="w-10 h-10 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center font-black text-lg shrink-0">4</div>
+              <div className="w-10 h-10 bg-blue-100 text-blue-600 rounded-control flex items-center justify-center font-black text-lg shrink-0">4</div>
               <div>
                 <h4 className="font-bold text-slate-900">Inspección de Herramientas y Equipamiento</h4>
                 <p className="text-sm text-slate-500">Realizamos una visita técnica o videollamada para verificar que el mecánico cuenta con las herramientas mínimas necesarias: scanner OBD2, gato hidráulico, compresor de aire, llaves de torque calibradas y equipos de seguridad.</p>
               </div>
             </div>
             <div className="flex items-start gap-4">
-              <div className="w-10 h-10 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center font-black text-lg shrink-0">5</div>
+              <div className="w-10 h-10 bg-blue-100 text-blue-600 rounded-control flex items-center justify-center font-black text-lg shrink-0">5</div>
               <div>
                 <h4 className="font-bold text-slate-900">Evaluación Práctica y Período de Prueba</h4>
                 <p className="text-sm text-slate-500">Cada prestador nuevo completa 3 servicios supervisados donde evaluamos calidad técnica, puntualidad, trato al cliente y cumplimiento de presupuesto. Solo con evaluación positiva obtienen el badge "Verificado".</p>
@@ -138,22 +138,22 @@ const AboutUs: React.FC<AboutUsProps> = ({ onClose, onNavigateToOnboarding }) =>
             RedMecánica tiene presencia física y operaciones activas en las siguientes regiones de Chile:
           </p>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-            <div className="bg-slate-50 rounded-xl p-4 text-center">
+            <div className="bg-slate-50 rounded-control p-4 text-center">
               <span className="text-2xl mb-1 block">🏙️</span>
               <span className="font-bold text-slate-900 text-sm">Región Metropolitana</span>
               <span className="text-xs text-slate-400 block">Santiago, Maipú, Las Condes, Providencia, Ñuñoa, La Florida, Puente Alto</span>
             </div>
-            <div className="bg-slate-50 rounded-xl p-4 text-center">
+            <div className="bg-slate-50 rounded-control p-4 text-center">
               <span className="text-2xl mb-1 block">🌊</span>
               <span className="font-bold text-slate-900 text-sm">Región de Valparaíso</span>
               <span className="text-xs text-slate-400 block">Valparaíso, Viña del Mar, Quilpué</span>
             </div>
-            <div className="bg-slate-50 rounded-xl p-4 text-center">
+            <div className="bg-slate-50 rounded-control p-4 text-center">
               <span className="text-2xl mb-1 block">🌲</span>
               <span className="font-bold text-slate-900 text-sm">Región del Biobío</span>
               <span className="text-xs text-slate-400 block">Concepción, Talcahuano</span>
             </div>
-            <div className="bg-slate-50 rounded-xl p-4 text-center">
+            <div className="bg-slate-50 rounded-control p-4 text-center">
               <span className="text-2xl mb-1 block">🏜️</span>
               <span className="font-bold text-slate-900 text-sm">Región de Antofagasta</span>
               <span className="text-xs text-slate-400 block">Antofagasta, Calama</span>
@@ -168,7 +168,7 @@ const AboutUs: React.FC<AboutUsProps> = ({ onClose, onNavigateToOnboarding }) =>
         {/* Misión y Visión */}
         <div className="grid md:grid-cols-2 gap-8 mb-12">
           <div className="bg-white border border-slate-200 rounded-[2rem] p-8 shadow-sm hover:shadow-xl transition-all duration-300 group">
-            <div className="w-14 h-14 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+            <div className="w-14 h-14 bg-blue-50 text-blue-600 rounded-card flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
               <Target className="w-8 h-8" />
             </div>
             <h3 className="text-2xl font-black text-slate-900 mb-4">Nuestra Misión</h3>
@@ -180,7 +180,7 @@ const AboutUs: React.FC<AboutUsProps> = ({ onClose, onNavigateToOnboarding }) =>
           </div>
 
           <div className="bg-white border border-slate-200 rounded-[2rem] p-8 shadow-sm hover:shadow-xl transition-all duration-300 group">
-            <div className="w-14 h-14 bg-indigo-50 text-indigo-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+            <div className="w-14 h-14 bg-indigo-50 text-indigo-600 rounded-card flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
               <Gauge className="w-8 h-8" />
             </div>
             <h3 className="text-2xl font-black text-slate-900 mb-4">Nuestra Visión</h3>
@@ -196,7 +196,7 @@ const AboutUs: React.FC<AboutUsProps> = ({ onClose, onNavigateToOnboarding }) =>
         <div className="mb-16">
           <h3 className="text-2xl font-black text-slate-900 mb-8 px-2">Nuestros Valores Fundamentales</h3>
           <div className="grid md:grid-cols-3 gap-6">
-            <div className="bg-white border border-slate-100 rounded-3xl p-6 shadow-sm hover:border-blue-200 transition-colors">
+            <div className="bg-white border border-slate-100 rounded-card p-6 shadow-sm hover:border-blue-200 transition-colors">
               <ShieldCheck className="w-10 h-10 text-blue-600 mb-4" />
               <h4 className="font-black text-slate-900 mb-2">Confianza</h4>
               <p className="text-sm text-slate-500 font-medium">
@@ -204,7 +204,7 @@ const AboutUs: React.FC<AboutUsProps> = ({ onClose, onNavigateToOnboarding }) =>
               </p>
             </div>
 
-            <div className="bg-white border border-slate-100 rounded-3xl p-6 shadow-sm hover:border-emerald-200 transition-colors">
+            <div className="bg-white border border-slate-100 rounded-card p-6 shadow-sm hover:border-emerald-200 transition-colors">
               <Award className="w-10 h-10 text-emerald-600 mb-4" />
               <h4 className="font-black text-slate-900 mb-2">Calidad</h4>
               <p className="text-sm text-slate-500 font-medium">
@@ -212,7 +212,7 @@ const AboutUs: React.FC<AboutUsProps> = ({ onClose, onNavigateToOnboarding }) =>
               </p>
             </div>
 
-            <div className="bg-white border border-slate-100 rounded-3xl p-6 shadow-sm hover:border-indigo-200 transition-colors">
+            <div className="bg-white border border-slate-100 rounded-card p-6 shadow-sm hover:border-indigo-200 transition-colors">
               <Cpu className="w-10 h-10 text-indigo-600 mb-4" />
               <h4 className="font-black text-slate-900 mb-2">Tecnología</h4>
               <p className="text-sm text-slate-500 font-medium">
@@ -220,7 +220,7 @@ const AboutUs: React.FC<AboutUsProps> = ({ onClose, onNavigateToOnboarding }) =>
               </p>
             </div>
 
-            <div className="bg-white border border-slate-100 rounded-3xl p-6 shadow-sm hover:border-amber-200 transition-colors">
+            <div className="bg-white border border-slate-100 rounded-card p-6 shadow-sm hover:border-amber-200 transition-colors">
               <Zap className="w-10 h-10 text-amber-500 mb-4" />
               <h4 className="font-black text-slate-900 mb-2">Efectividad</h4>
               <p className="text-sm text-slate-500 font-medium">
@@ -228,7 +228,7 @@ const AboutUs: React.FC<AboutUsProps> = ({ onClose, onNavigateToOnboarding }) =>
               </p>
             </div>
 
-            <div className="bg-white border border-slate-100 rounded-3xl p-6 shadow-sm hover:border-slate-300 transition-colors">
+            <div className="bg-white border border-slate-100 rounded-card p-6 shadow-sm hover:border-slate-300 transition-colors">
               <Scale className="w-10 h-10 text-slate-600 mb-4" />
               <h4 className="font-black text-slate-900 mb-2">Transparencia</h4>
               <p className="text-sm text-slate-500 font-medium">
@@ -236,7 +236,7 @@ const AboutUs: React.FC<AboutUsProps> = ({ onClose, onNavigateToOnboarding }) =>
               </p>
             </div>
 
-            <div className="bg-white border border-slate-100 rounded-3xl p-6 shadow-sm hover:border-yellow-200 transition-colors">
+            <div className="bg-white border border-slate-100 rounded-card p-6 shadow-sm hover:border-yellow-200 transition-colors">
               <Star className="w-10 h-10 text-yellow-500 mb-4" />
               <h4 className="font-black text-slate-900 mb-2">Excelencia</h4>
               <p className="text-sm text-slate-500 font-medium">
@@ -266,19 +266,19 @@ const AboutUs: React.FC<AboutUsProps> = ({ onClose, onNavigateToOnboarding }) =>
 
         {/* Cifras Realistas - Fase de Lanzamiento */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-16">
-          <div className="bg-slate-900 text-white rounded-3xl p-8 text-center shadow-lg border border-slate-800">
+          <div className="bg-slate-900 text-white rounded-card p-8 text-center shadow-lg border border-slate-800">
             <div className="text-3xl font-black mb-1">Fase 1</div>
             <div className="text-[10px] uppercase font-bold tracking-widest text-slate-400">Lanzamiento</div>
           </div>
-          <div className="bg-blue-600 text-white rounded-3xl p-8 text-center shadow-lg">
+          <div className="bg-blue-600 text-white rounded-card p-8 text-center shadow-lg">
             <div className="text-3xl font-black mb-1">45+</div>
             <div className="text-[10px] uppercase font-bold tracking-widest text-blue-200">Expertos Unidos</div>
           </div>
-          <div className="bg-indigo-600 text-white rounded-3xl p-8 text-center shadow-lg">
+          <div className="bg-indigo-600 text-white rounded-card p-8 text-center shadow-lg">
             <div className="text-3xl font-black mb-1">4.9★</div>
             <div className="text-[10px] uppercase font-bold tracking-widest text-indigo-200">Valoración Comunidad</div>
           </div>
-          <div className="bg-emerald-600 text-white rounded-3xl p-8 text-center shadow-lg">
+          <div className="bg-emerald-600 text-white rounded-card p-8 text-center shadow-lg">
             <div className="text-3xl font-black mb-1">100%</div>
             <div className="text-[10px] uppercase font-bold tracking-widest text-emerald-200">Compromiso</div>
           </div>
@@ -312,7 +312,7 @@ const AboutUs: React.FC<AboutUsProps> = ({ onClose, onNavigateToOnboarding }) =>
             </p>
             <button
               onClick={() => onNavigateToOnboarding ? onNavigateToOnboarding() : onClose()}
-              className="bg-white text-blue-600 px-8 py-4 rounded-2xl font-black hover:bg-slate-50 transition-all active:scale-95 shadow-xl"
+              className="bg-white text-blue-600 px-8 py-4 rounded-card font-black hover:bg-slate-50 transition-all active:scale-95 shadow-xl"
             >
               Comenzar Ahora
             </button>

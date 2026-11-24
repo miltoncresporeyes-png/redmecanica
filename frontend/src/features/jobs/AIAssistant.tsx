@@ -35,7 +35,7 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ onServiceSelect, availableSer
   }
 
   return (
-    <div className="p-4 border border-blue-200 rounded-lg bg-blue-50">
+    <div className="p-4 border border-blue-200 rounded-control bg-blue-50">
       <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-2 mb-4">
         <input
           type="text"
@@ -45,7 +45,7 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ onServiceSelect, availableSer
           className="flex-grow p-2 border border-gray-300 rounded-md shadow-sm"
           disabled={loading}
         />
-        <button type="submit" className="px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:bg-blue-300" disabled={loading}>
+        <button type="submit" className="px-4 py-2 text-white bg-blue-600 rounded-control hover:bg-blue-700 disabled:bg-blue-300" disabled={loading}>
           {loading ? 'Analizando...' : 'Diagnosticar'}
         </button>
       </form>
@@ -63,9 +63,9 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ onServiceSelect, availableSer
                     <h4 className="font-semibold mt-4 mb-2">Servicios Sugeridos:</h4>
                     <ul className="space-y-2">
                         {response.suggestedServices.map(s => (
-                            <li key={s.id} onClick={() => handleSelect(s.id)} className="p-3 bg-white rounded-lg cursor-pointer hover:bg-gray-100 shadow flex justify-between items-center">
+                            <li key={s.id} onClick={() => handleSelect(s.id)} className="p-3 bg-white rounded-control cursor-pointer hover:bg-gray-100 shadow flex justify-between items-center">
                                 <span>{s.name}</span>
-                                <span className="text-sm capitalize px-2 py-1 bg-green-100 text-green-800 rounded-full">{s.confidence}</span>
+                                <span className="text-sm capitalize px-2 py-1 bg-emerald-100 text-emerald-800 rounded-full">{s.confidence}</span>
                             </li>
                         ))}
                     </ul>

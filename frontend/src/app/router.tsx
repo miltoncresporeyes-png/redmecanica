@@ -20,6 +20,7 @@ import LoadingSpinner from '../components/common/LoadingSpinner';
 const Testimonials = lazyWithRetry(() => import('../components/landing/Testimonials'));
 const WhatsAppButton = lazyWithRetry(() => import('../components/common/WhatsAppButton'));
 const PitchBanners = lazyWithRetry(() => import('../components/landing/PitchBanners'));
+const RecentProviders = lazyWithRetry(() => import('../components/landing/RecentProviders'));
 const CookieConsent = lazyWithRetry(() => import('../components/common/CookieConsent'));
 const NewsletterModal = lazyWithRetry(() => import('../components/common/NewsletterModal'));
 
@@ -41,6 +42,7 @@ const PrivacyPolicy = lazyWithRetry(() => import('../pages/PrivacyPolicy'));
 const ProviderBenefits = lazyWithRetry(() => import('../pages/ProviderBenefits'));
 const ProviderLanding = lazyWithRetry(() => import('../pages/ProviderLanding'));
 const ServiceRequestFlow = lazyWithRetry(() => import('../pages/ServiceRequestFlow'));
+const ResetPassword = lazyWithRetry(() => import('../pages/ResetPassword'));
 const SuccessStories = lazyWithRetry(() => import('../pages/SuccessStories'));
 const Terms = lazyWithRetry(() => import('../pages/Terms'));
 const NotFoundPage = lazyWithRetry(() => import('../pages/NotFoundPage'));
@@ -62,6 +64,7 @@ const AuditLogs = lazyWithRetry(() => import('../pages/admin/AuditLogs'));
 const Monitoring = lazyWithRetry(() => import('../pages/admin/Monitoring'));
 const Jobs = lazyWithRetry(() => import('../pages/admin/Jobs'));
 const SubscriptionsAdmin = lazyWithRetry(() => import('../pages/admin/Subscriptions'));
+const LeadsAdmin = lazyWithRetry(() => import('../pages/admin/LeadsAdmin'));
 
 // Helper for Modal Page
 const HowItWorksPage: React.FC = () => {
@@ -109,7 +112,7 @@ const MainLayout: React.FC = () => {
       <Header />
       <main id="main-content" className="flex-1 w-full max-w-6xl mx-auto px-4 py-6 sm:py-8" tabIndex={-1}>
         <Routes>
-            <Route path="/" element={<div className="space-y-6 sm:space-y-10"><Hero /><Suspense fallback={null}><PitchBanners /><Testimonials /></Suspense></div>} />
+            <Route path="/" element={<div className="space-y-6 sm:space-y-10"><Hero /><Suspense fallback={null}><RecentProviders /><PitchBanners /><Testimonials /></Suspense></div>} />
            <Route path="/onboarding" element={<LazyRoute><ProviderOnboarding onComplete={() => navigate('/provider-dashboard')} onCancel={() => navigate('/')} /></LazyRoute>} />
            <Route path="/search" element={<LazyRoute><ProviderSearch /></LazyRoute>} />
            <Route path="/triage" element={<LazyRoute><TriageChatbot /></LazyRoute>} />
@@ -122,6 +125,7 @@ const MainLayout: React.FC = () => {
            <Route path="/privacy" element={<LazyRoute><PrivacyPolicy onClose={() => navigate('/')} /></LazyRoute>} />
            <Route path="/benefits" element={<LazyRoute><ProviderBenefits onClose={() => navigate('/')} onNavigateToPricing={() => navigate('/pricing')} onNavigateToOnboarding={() => navigate('/onboarding')} /></LazyRoute>} />
            <Route path="/unete" element={<LazyRoute><ProviderLanding /></LazyRoute>} />
+           <Route path="/restablecer" element={<LazyRoute><ResetPassword /></LazyRoute>} />
            <Route path="/solicitar" element={<LazyRoute><ServiceRequestFlow /></LazyRoute>} />
            <Route path="/servicio" element={<LazyRoute><ServiceRequestFlow /></LazyRoute>} />
            <Route path="/stories" element={<LazyRoute><SuccessStories onClose={() => navigate('/')} /></LazyRoute>} />
@@ -190,6 +194,7 @@ const App: React.FC = () => {
                                             <Route path="audit" element={<Suspense fallback={<LoadingSpinner />}><AuditLogs /></Suspense>} />
                                             <Route path="monitoring" element={<Suspense fallback={<LoadingSpinner />}><Monitoring /></Suspense>} />
                                             <Route path="subscriptions" element={<Suspense fallback={<LoadingSpinner />}><SubscriptionsAdmin /></Suspense>} />
+                                            <Route path="leads" element={<Suspense fallback={<LoadingSpinner />}><LeadsAdmin /></Suspense>} />
                                             <Route path="stats" element={<Suspense fallback={<LoadingSpinner />}><AdminDashboardPage /></Suspense>} />
                                         </Route>
                                     </Route>

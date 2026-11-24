@@ -67,7 +67,7 @@ class ErrorBoundary extends Component<Props, State> {
 
       return (
         <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl shadow-xl p-8 max-w-md w-full text-center">
+          <div className="bg-white rounded-card shadow-xl p-8 max-w-md w-full text-center">
             <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
               <span className="text-4xl">😅</span>
             </div>
@@ -82,7 +82,7 @@ class ErrorBoundary extends Component<Props, State> {
             </p>
 
             {import.meta.env.DEV && this.state.error && (
-              <div className="bg-gray-100 rounded-lg p-4 mb-6 text-left">
+              <div className="bg-gray-100 rounded-control p-4 mb-6 text-left">
                 <p className="text-sm font-mono text-red-600 mb-2">
                   {this.state.error.name}: {this.state.error.message}
                 </p>
@@ -97,7 +97,7 @@ class ErrorBoundary extends Component<Props, State> {
             <div className="space-y-3">
               <button
                 onClick={this.handleReload}
-                className="w-full bg-blue-600 text-white py-3 rounded-xl font-bold hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"
+                className="w-full bg-blue-600 text-white py-3 rounded-control font-bold hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -107,7 +107,7 @@ class ErrorBoundary extends Component<Props, State> {
               
               <button
                 onClick={this.handleGoHome}
-                className="w-full bg-gray-100 text-gray-700 py-3 rounded-xl font-medium hover:bg-gray-200 transition-colors"
+                className="w-full bg-gray-100 text-gray-700 py-3 rounded-control font-medium hover:bg-gray-200 transition-colors"
               >
                 Volver al inicio
               </button>

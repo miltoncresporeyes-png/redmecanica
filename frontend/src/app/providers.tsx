@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import api, { setAuthToken } from '../lib/http';
+import { readCache, writeCache, clearAllCaches } from '../lib/cache';
 import { User } from '../types';
 
 interface AuthContextType {
@@ -15,8 +16,17 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  // Con sesion guardada se arranca con el ultimo usuario conocido: las rutas protegidas (panel, perfil) se muestran de
+  // inmediato en vez de esperar la verificacion con el servidor (~1 s), que se hace en segundo plano.
+  const cachedUser = typeof window !== 'undefined' && localStorage.getItem('auth_token') ? readCache<User>('user') : null;
+  const [user, setUserState] = useState<User | null>(cachedUser);
+  const [isLoading, setIsLoading] = useState(!cachedUser);
+
+  const setUser = (u: User | null) => {
+    setUserState(u);
+    if (u) writeCache('user', u);
+    else clearAllCaches();
+  };
 
   useEffect(() => {
     const handleSessionExpired = () => {
@@ -43,11 +53,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const { data } = await api.get('/auth/me');
       setUser(data.user);
     } catch (error: any) {
-      // Si el token es inválido o expirado, limpiar sesión
+      // Token invalido o expirado: se cierra la sesion. Un fallo de red NO la cierra (se conserva lo que ya se ve).
       if (error.response?.status === 401 || error.response?.status === 403) {
         setAuthToken(null);
+        setUser(null);
       }
-      setUser(null);
     } finally {
       setIsLoading(false);
     }

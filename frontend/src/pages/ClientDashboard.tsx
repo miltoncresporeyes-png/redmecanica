@@ -82,7 +82,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ onClose }) => {
         {!editMode ? (
           <button
             onClick={() => setEditMode(true)}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            className="px-4 py-2 bg-blue-600 text-white rounded-control hover:bg-blue-700 transition-colors"
           >
             ✏️ Editar
           </button>
@@ -90,13 +90,13 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ onClose }) => {
           <div className="space-x-2">
             <button
               onClick={handleSaveProfile}
-              className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+              className="px-4 py-2 bg-emerald-600 text-white rounded-control hover:bg-emerald-700 transition-colors"
             >
               💾 Guardar
             </button>
             <button
               onClick={() => setEditMode(false)}
-              className="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition-colors"
+              className="px-4 py-2 bg-gray-300 text-gray-700 rounded-control hover:bg-gray-400 transition-colors"
             >
               Cancelar
             </button>
@@ -112,7 +112,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ onClose }) => {
             value={userData.name}
             onChange={(e) => setUserData({ ...userData, name: e.target.value })}
             disabled={!editMode}
-            className={`w-full p-3 border rounded-lg transition-colors ${editMode ? 'border-blue-300 bg-white' : 'border-gray-200 bg-gray-50'}`}
+            className={`w-full p-3 border rounded-control transition-colors ${editMode ? 'border-blue-300 bg-white' : 'border-gray-200 bg-gray-50'}`}
           />
         </div>
 
@@ -134,7 +134,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ onClose }) => {
             value={userData.rut}
             onChange={(e) => setUserData({ ...userData, rut: formatearRUT(e.target.value) })}
             disabled={!editMode}
-            className={`w-full p-3 border rounded-lg transition-colors ${
+            className={`w-full p-3 border rounded-control transition-colors ${
               editMode && userData.rut && !validarRUT(userData.rut)
                 ? 'border-rose-400 bg-rose-50/20'
                 : editMode ? 'border-blue-300 bg-white' : 'border-gray-200 bg-gray-50'
@@ -154,7 +154,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ onClose }) => {
             value={userData.email}
             onChange={(e) => setUserData({ ...userData, email: e.target.value })}
             disabled={!editMode}
-            className={`w-full p-3 border rounded-lg transition-colors ${editMode ? 'border-blue-300 bg-white' : 'border-gray-200 bg-gray-50'}`}
+            className={`w-full p-3 border rounded-control transition-colors ${editMode ? 'border-blue-300 bg-white' : 'border-gray-200 bg-gray-50'}`}
           />
         </div>
 
@@ -182,7 +182,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ onClose }) => {
             }}
             disabled={!editMode}
             placeholder="+56 9 8341 4730"
-            className={`w-full p-3 border rounded-lg transition-colors ${
+            className={`w-full p-3 border rounded-control transition-colors ${
               editMode && userData.phone && userData.phone.trim() !== '+56' && !validarWhatsAppChile(userData.phone).isValid
                 ? 'border-rose-400 bg-rose-50/20'
                 : editMode ? 'border-blue-300 bg-white' : 'border-gray-200 bg-gray-50'
@@ -202,7 +202,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ onClose }) => {
             value={userData.address}
             onChange={(e) => setUserData({ ...userData, address: e.target.value })}
             disabled={!editMode}
-            className={`w-full p-3 border rounded-lg transition-colors ${editMode ? 'border-blue-300 bg-white' : 'border-gray-200 bg-gray-50'}`}
+            className={`w-full p-3 border rounded-control transition-colors ${editMode ? 'border-blue-300 bg-white' : 'border-gray-200 bg-gray-50'}`}
           />
         </div>
 
@@ -213,7 +213,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ onClose }) => {
             value={userData.region}
             onChange={(e) => setUserData({ ...userData, region: e.target.value })}
             disabled={!editMode}
-            className={`w-full p-3 border rounded-lg transition-colors ${editMode ? 'border-blue-300 bg-white' : 'border-gray-200 bg-gray-50'}`}
+            className={`w-full p-3 border rounded-control transition-colors ${editMode ? 'border-blue-300 bg-white' : 'border-gray-200 bg-gray-50'}`}
           />
         </div>
 
@@ -224,7 +224,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ onClose }) => {
             value={userData.commune}
             onChange={(e) => setUserData({ ...userData, commune: e.target.value })}
             disabled={!editMode}
-            className={`w-full p-3 border rounded-lg transition-colors ${editMode ? 'border-blue-300 bg-white' : 'border-gray-200 bg-gray-50'}`}
+            className={`w-full p-3 border rounded-control transition-colors ${editMode ? 'border-blue-300 bg-white' : 'border-gray-200 bg-gray-50'}`}
           />
         </div>
       </div>
@@ -237,7 +237,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ onClose }) => {
         <h3 className="text-2xl font-bold text-gray-800">Mis Vehículos</h3>
         <button
           onClick={handleAddVehicle}
-          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          className="px-4 py-2 bg-blue-600 text-white rounded-control hover:bg-blue-700 transition-colors"
         >
           + Agregar Vehículo
         </button>
@@ -248,7 +248,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ onClose }) => {
           <Card key={vehicle.id} className="p-6 hover:shadow-lg transition-shadow">
             <div className="flex items-start justify-between mb-4">
               <div className="flex items-center">
-                <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-700 rounded-lg flex items-center justify-center text-white text-2xl">
+                <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-700 rounded-control flex items-center justify-center text-white text-2xl">
                   🚗
                 </div>
                 <div className="ml-4">
@@ -281,7 +281,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ onClose }) => {
               <div className="flex-1">
                 <div className="flex items-center mb-2">
                   <h4 className="font-bold text-lg">{service.service}</h4>
-                  <span className="ml-3 px-3 py-1 bg-green-100 text-green-800 rounded-full text-xs font-semibold">
+                  <span className="ml-3 px-3 py-1 bg-emerald-100 text-emerald-800 rounded-full text-xs font-semibold">
                     {service.status === 'COMPLETED' ? 'Completado' : service.status}
                   </span>
                 </div>
@@ -303,7 +303,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ onClose }) => {
         ))}
       </div>
 
-      <div className="mt-8 p-6 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-100">
+      <div className="mt-8 p-6 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-control border border-blue-100">
         <div className="flex items-center justify-between">
           <div>
             <p className="text-sm text-gray-600">Total invertido este año</p>
@@ -319,7 +319,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ onClose }) => {
 
   return (
     <div className="max-w-6xl mx-auto px-2 sm:px-4 py-4 sm:py-8">
-      <Card className="overflow-hidden shadow-lg border border-slate-200/80 rounded-2xl">
+      <Card className="overflow-hidden shadow-lg border border-slate-200/80 rounded-card">
         {/* Header */}
         <div className="bg-gradient-to-r from-blue-700 via-blue-800 to-indigo-900 text-white p-5 sm:p-8">
           <div className="flex justify-between items-center">

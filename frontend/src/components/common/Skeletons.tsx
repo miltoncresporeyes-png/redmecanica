@@ -14,7 +14,7 @@ export const SkeletonLine: React.FC<{ width?: string; height?: string; className
 
 // Card skeleton
 export const CardSkeleton: React.FC = () => (
-  <div className="bg-white rounded-lg p-4 border border-gray-100 shadow-sm">
+  <div className="bg-white rounded-control p-4 border border-gray-100 shadow-sm">
     <div className="flex items-start space-x-4">
       <div className="w-12 h-12 bg-gray-200 rounded-full animate-pulse" />
       <div className="flex-1 space-y-2">
@@ -41,7 +41,7 @@ export const ListSkeleton: React.FC<{ count?: number }> = ({ count = 3 }) => (
 // Hero section skeleton
 export const HeroSkeleton: React.FC = () => (
   <div className="animate-pulse">
-    <div className="h-64 md:h-96 bg-gray-200 rounded-2xl mb-8" />
+    <div className="h-64 md:h-96 bg-gray-200 rounded-card mb-8" />
     <div className="max-w-2xl mx-auto space-y-4">
       <SkeletonLine width="80%" height="2.5rem" className="mx-auto" />
       <SkeletonLine width="60%" height="1.5rem" className="mx-auto" />
@@ -54,7 +54,7 @@ export const HeroSkeleton: React.FC = () => (
 
 // Provider card skeleton
 export const ProviderCardSkeleton: React.FC = () => (
-  <div className="bg-white rounded-xl p-6 border border-gray-100 shadow-sm animate-pulse">
+  <div className="bg-white rounded-control p-6 border border-gray-100 shadow-sm animate-pulse">
     <div className="flex items-start justify-between mb-4">
       <div className="flex items-center space-x-3">
         <div className="w-14 h-14 bg-gray-200 rounded-full" />
@@ -108,7 +108,7 @@ export const FormSkeleton: React.FC<{ fields?: number }> = ({ fields = 4 }) => (
         <SkeletonLine width="100%" height="2.5rem" />
       </div>
     ))}
-    <SkeletonLine width="100%" height="3rem" className="rounded-lg" />
+    <SkeletonLine width="100%" height="3rem" className="rounded-control" />
   </div>
 );
 

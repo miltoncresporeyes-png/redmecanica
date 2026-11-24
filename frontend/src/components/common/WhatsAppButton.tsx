@@ -17,7 +17,7 @@ const WhatsAppButton: React.FC = () => {
       >
         {/* Sleek Tooltip */}
         <div 
-          className={`bg-slate-900 text-white font-extrabold text-xs px-4 py-2 rounded-2xl mr-3 shadow-xl border border-slate-800 transition-all duration-300 transform origin-right select-none ${
+          className={`bg-slate-900 text-white font-extrabold text-xs px-4 py-2 rounded-card mr-3 shadow-xl border border-slate-800 transition-all duration-300 transform origin-right select-none ${
             showTooltip 
               ? 'opacity-100 translate-x-0 scale-100' 
               : 'opacity-0 translate-x-4 scale-95 pointer-events-none'
@@ -34,7 +34,7 @@ const WhatsAppButton: React.FC = () => {
           type="button"
           onClick={() => setIsModalOpen(true)}
           aria-label="Contactar por WhatsApp"
-          className="relative w-14 h-14 bg-gradient-to-br from-emerald-500 to-green-600 hover:from-emerald-400 hover:to-green-500 text-white rounded-full flex items-center justify-center shadow-2xl transition-all duration-300 hover:scale-110 active:scale-95 border border-emerald-400/20 group cursor-pointer"
+          className="relative w-14 h-14 bg-gradient-to-br from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-white rounded-full flex items-center justify-center shadow-2xl transition-all duration-300 hover:scale-110 active:scale-95 border border-emerald-400/20 group cursor-pointer"
         >
         <svg 
           className="w-7 h-7 fill-current group-hover:rotate-12 transition-transform duration-300" 

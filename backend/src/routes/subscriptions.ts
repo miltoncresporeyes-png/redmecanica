@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import { promoteProviderOnPayment } from '../lib/providerStatus.js';
 import { prisma } from '../db.js';
 import { z } from 'zod';
 import { webpayService } from '../services/webpay.js';
@@ -420,16 +421,12 @@ router.post('/:id/activate', async (req: any, res) => {
 
     const subscription = await prisma.subscription.update({
       where: { id },
-      data: { 
+      data: {
         status: 'ACTIVE',
-        provider: {
-          update: {
-            status: 'ACTIVE'
-          }
-        }
       },
       include: { provider: true }
     });
+    await promoteProviderOnPayment(subscription.providerId);
 
     await prisma.providerHistory.create({
       data: {
@@ -481,7 +478,8 @@ router.post('/:id/cancel', async (req: any, res) => {
       }
     });
 
-    res.json(subscription);
+    const { provider: _prov, ...safeSub } = updatedSub as any;
+    res.json(safeSub);
   } catch (error) {
     console.error('Error cancelling subscription:', error);
     res.status(500).json({ error: 'Failed to cancel subscription' });
@@ -523,14 +521,10 @@ router.post('/:id/renew', async (req: any, res) => {
         endDate: newEndDate,
         lastPaymentDate: new Date(),
         nextBillingDate: current.plan === 'MONTHLY' ? newEndDate : undefined,
-        provider: {
-          update: {
-            status: 'ACTIVE'
-          }
-        }
       },
       include: { provider: true }
     });
+    await promoteProviderOnPayment(subscription.providerId);
 
     await prisma.providerHistory.create({
       data: {

@@ -50,13 +50,13 @@ const CookieConsent: React.FC = () => {
           <div className="flex items-center gap-3 shrink-0">
             <button
               onClick={handleReject}
-              className="px-5 py-2.5 text-sm font-semibold text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-xl transition-colors"
+              className="px-5 py-2.5 text-sm font-semibold text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-control transition-colors"
             >
               Solo esenciales
             </button>
             <button
               onClick={handleAccept}
-              className="px-5 py-2.5 text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-xl transition-colors shadow-sm"
+              className="px-5 py-2.5 text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-control transition-colors shadow-sm"
             >
               Aceptar todas
             </button>

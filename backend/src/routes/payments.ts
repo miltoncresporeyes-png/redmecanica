@@ -1,4 +1,6 @@
 import express from 'express';
+import { PLATFORM_FEE_PERCENT } from '../config/pricing.js';
+import { promoteProviderOnPayment } from '../lib/providerStatus.js';
 import { prisma } from '../db.js';
 import { webpayService } from '../services/webpay.js';
 import { mercadoPagoService } from '../services/mercadopago.js';
@@ -6,7 +8,7 @@ import { requireAuth as authenticateToken, AuthRequest } from '../middlewares/re
 
 const router = express.Router();
 
-const PLATFORM_FEE_PERCENT = 12;
+// La comision vive en config/pricing.ts (una sola fuente; el panel del prestador la recibe del servidor).
 const WEBPAY_RETURN_URL = process.env.WEBPAY_RETURN_URL || 'https://redmecanica.cl/payment/return';
 const WEBPAY_FINAL_URL = process.env.WEBPAY_FINAL_URL || 'https://redmecanica.cl/payment/final';
 const MERCADOPAGO_RETURN_URL = process.env.MERCADOPAGO_RETURN_URL || 'https://redmecanica.cl/payment/return';
@@ -309,11 +311,9 @@ router.post('/webhook/mercadopago', async (req, res) => {
             data: {
               status: 'ACTIVE',
               lastPaymentDate: new Date(),
-              provider: {
-                update: { status: 'ACTIVE' },
-              },
             },
           });
+          await promoteProviderOnPayment(updatedSubscription.providerId);
 
           const invoiceExists = await prisma.invoice.findFirst({
             where: {
@@ -420,13 +420,9 @@ router.post('/confirm', authenticateToken, async (req: AuthRequest, res) => {
           data: {
             status: 'ACTIVE',
             lastPaymentDate: new Date(),
-            provider: {
-              update: {
-                status: 'ACTIVE'
-              }
-            }
           }
         });
+        await promoteProviderOnPayment(subscription.providerId);
 
         await prisma.providerHistory.create({
           data: {

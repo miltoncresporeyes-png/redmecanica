@@ -29,7 +29,7 @@ const SuccessStories: React.FC<SuccessStoriesProps> = ({ onClose, onNavigateToOn
         </button>
       </div>
 
-      <div className="bg-gradient-to-r from-slate-900 to-blue-900 text-white rounded-2xl p-8 mb-8 text-center">
+      <div className="bg-gradient-to-r from-slate-900 to-blue-900 text-white rounded-card p-8 mb-8 text-center">
         <p className="inline-block bg-white/10 border border-white/15 text-xs font-bold px-3 py-1 rounded-full mb-3">
           DIRECTORIO EN CRECIMIENTO
         </p>
@@ -41,7 +41,7 @@ const SuccessStories: React.FC<SuccessStoriesProps> = ({ onClose, onNavigateToOn
         <div className="flex flex-col sm:flex-row justify-center gap-2 max-w-xl mx-auto">
           <button
             onClick={goOnboarding}
-            className="btn-accent w-full sm:w-auto"
+            className="btn-cta w-full sm:w-auto"
           >
             Quiero ser la primera historia
           </button>
@@ -60,7 +60,7 @@ const SuccessStories: React.FC<SuccessStoriesProps> = ({ onClose, onNavigateToOn
           { icon: '⭐', title: 'Qué mediremos', desc: 'Servicios completados, calificación promedio y comunas donde atiendes. Solo datos reales de la plataforma.' },
           { icon: '💬', title: 'Qué publicaremos', desc: 'Tu historia con tu autorización: negocio, comuna, crecimiento y una cita textual tuya.' },
         ].map((c) => (
-          <div key={c.title} className="bg-white border border-gray-200 rounded-2xl p-6">
+          <div key={c.title} className="bg-white border border-gray-200 rounded-card p-6">
             <div className="text-4xl mb-3" aria-hidden>{c.icon}</div>
             <h3 className="font-bold text-gray-900 mb-1">{c.title}</h3>
             <p className="text-sm text-gray-600">{c.desc}</p>

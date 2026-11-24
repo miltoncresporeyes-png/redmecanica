@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { formatMoney } from '../../utils/money';
 import {
   MapPin, Plus, Trash2, AlertCircle, CheckCircle2, ShieldCheck,
   Sparkles, Layers, Info, X, ChevronRight, Search, Loader2, Wrench
@@ -143,7 +144,7 @@ export default function CoverageDashboard({ onUpgradePlan }: CoverageDashboardPr
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center p-12 bg-white rounded-3xl border border-slate-100 shadow-sm">
+      <div className="flex flex-col items-center justify-center p-12 bg-white rounded-card border border-slate-100 shadow-sm">
         <Loader2 className="w-8 h-8 animate-spin text-blue-600 mb-3" />
         <p className="text-sm font-semibold text-slate-600">Cargando tu cobertura territorial...</p>
       </div>
@@ -152,14 +153,14 @@ export default function CoverageDashboard({ onUpgradePlan }: CoverageDashboardPr
 
   if (error || !data) {
     return (
-      <div className="p-6 bg-red-50 rounded-2xl border border-red-200 text-red-700 flex items-center justify-between">
+      <div className="p-6 bg-red-50 rounded-card border border-red-200 text-red-700 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <AlertCircle className="w-5 h-5 shrink-0" />
           <p className="text-sm font-medium">{error || 'Error desconocido'}</p>
         </div>
         <button
           onClick={loadCoverage}
-          className="px-4 py-2 bg-red-600 text-white rounded-xl text-xs font-bold hover:bg-red-700 transition"
+          className="px-4 py-2 bg-red-600 text-white rounded-control text-xs font-bold hover:bg-red-700 transition"
         >
           Reintentar
         </button>
@@ -173,14 +174,14 @@ export default function CoverageDashboard({ onUpgradePlan }: CoverageDashboardPr
     <div className="space-y-6">
       {/* Toast de éxito */}
       {successToast && (
-        <div className="fixed bottom-6 right-6 z-50 bg-emerald-600 text-white px-5 py-3 rounded-2xl shadow-xl flex items-center gap-2 text-sm font-semibold animate-slideUp">
+        <div className="fixed bottom-6 right-6 z-50 bg-emerald-600 text-white px-5 py-3 rounded-card shadow-xl flex items-center gap-2 text-sm font-semibold animate-slideUp">
           <CheckCircle2 className="w-5 h-5" />
           <span>{successToast}</span>
         </div>
       )}
 
       {/* Header Banner de Cobertura */}
-      <div className="relative bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-950 rounded-3xl p-6 sm:p-8 text-white shadow-xl overflow-hidden">
+      <div className="relative bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-950 rounded-card p-6 sm:p-8 text-white shadow-xl overflow-hidden">
         <div className="absolute top-0 right-0 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl -z-10" />
 
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -205,7 +206,7 @@ export default function CoverageDashboard({ onUpgradePlan }: CoverageDashboardPr
                 setShowAddModal(true);
               }
             }}
-            className="w-full sm:w-auto px-5 py-3.5 bg-gradient-to-r from-yellow-400 to-amber-500 hover:from-yellow-300 hover:to-amber-400 text-slate-950 font-black text-sm rounded-2xl shadow-lg transition-all flex items-center justify-center gap-2 shrink-0 cursor-pointer"
+            className="w-full sm:w-auto px-5 py-3.5 bg-gradient-to-r from-yellow-400 to-amber-500 hover:from-yellow-300 hover:to-amber-400 text-slate-950 font-black text-sm rounded-card shadow-lg transition-all flex items-center justify-center gap-2 shrink-0 cursor-pointer"
           >
             {isAtLimit ? (
               <>
@@ -223,7 +224,7 @@ export default function CoverageDashboard({ onUpgradePlan }: CoverageDashboardPr
 
         {/* Barra de progreso de cupos */}
         <div className="mt-6 pt-6 border-t border-white/10 grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div className="bg-white/5 border border-white/10 rounded-2xl p-4">
+          <div className="bg-white/5 border border-white/10 rounded-card p-4">
             <span className="text-xs text-blue-200/80 font-medium block">Tu Plan Actual</span>
             <div className="text-xl font-black mt-1 flex items-center gap-2">
               <span>{data.plan === 'FREE' ? 'Vitrina Gratis' : data.plan === 'MONTHLY' ? 'Plan Destacado' : data.plan}</span>
@@ -239,7 +240,7 @@ export default function CoverageDashboard({ onUpgradePlan }: CoverageDashboardPr
             <span className="text-[11px] text-blue-200/60 mt-0.5 block">{data.planMaxCommunes} comuna(s) base incluidas</span>
           </div>
 
-          <div className="bg-white/5 border border-white/10 rounded-2xl p-4">
+          <div className="bg-white/5 border border-white/10 rounded-card p-4">
             <span className="text-xs text-blue-200/80 font-medium block">Cupos de Comunas</span>
             <div className="text-xl font-black mt-1">
               <span className="text-yellow-400">{data.totalUsedCommunes}</span>
@@ -255,7 +256,7 @@ export default function CoverageDashboard({ onUpgradePlan }: CoverageDashboardPr
             </div>
           </div>
 
-          <div className="bg-white/5 border border-white/10 rounded-2xl p-4">
+          <div className="bg-white/5 border border-white/10 rounded-card p-4">
             <span className="text-xs text-blue-200/80 font-medium block">Expansiones Contratadas</span>
             <div className="text-xl font-black mt-1 text-purple-300">
               +{data.expansionSlots} comunas extra
@@ -271,7 +272,7 @@ export default function CoverageDashboard({ onUpgradePlan }: CoverageDashboardPr
 
       {/* Alerta de Límite Alcanzado */}
       {isAtLimit && (
-        <div className="p-5 bg-amber-50 rounded-2xl border border-amber-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div className="p-5 bg-amber-50 rounded-card border border-amber-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="flex items-start gap-3">
             <Info className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
             <div>
@@ -279,13 +280,13 @@ export default function CoverageDashboard({ onUpgradePlan }: CoverageDashboardPr
                 Has alcanzado el límite de {data.totalAllowedCommunes} comuna(s) de tu cuenta.
               </p>
               <p className="text-xs text-amber-700 mt-0.5">
-                ¿Quieres que te llamen conductores de comunas vecinas? Adquiere un Pack de Expansión Territorial desde $7.990/mes.
+                ¿Quieres que te llamen conductores de comunas vecinas? Adquiere un Pack de Expansión Territorial{data.expansionProducts?.length ? ` desde ${formatMoney(Math.min(...data.expansionProducts.map((p) => p.price)))}/mes` : ''}.
               </p>
             </div>
           </div>
           <button
             onClick={() => setShowExpansionModal(true)}
-            className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5 shrink-0 shadow-sm cursor-pointer"
+            className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-control text-xs font-bold transition flex items-center gap-1.5 shrink-0 shadow-sm cursor-pointer"
           >
             <Sparkles className="w-3.5 h-3.5 text-amber-400" />
             <span>Ver Packs de Expansión</span>
@@ -294,7 +295,7 @@ export default function CoverageDashboard({ onUpgradePlan }: CoverageDashboardPr
       )}
 
       {/* Lista de Comunas Activas */}
-      <div className="bg-white rounded-3xl border border-slate-100 p-6 sm:p-8 shadow-sm">
+      <div className="bg-white rounded-card border border-slate-100 p-6 sm:p-8 shadow-sm">
         <div className="flex justify-between items-center mb-6">
           <div>
             <h3 className="text-lg font-black text-gray-900">Tus Comunas con Vitrina Activa</h3>
@@ -313,10 +314,10 @@ export default function CoverageDashboard({ onUpgradePlan }: CoverageDashboardPr
             return (
               <div
                 key={cov.id}
-                className="p-5 rounded-2xl border border-slate-200 hover:border-blue-300 hover:shadow-md transition-all flex items-start justify-between gap-3 bg-slate-50/50"
+                className="p-5 rounded-card border border-slate-200 hover:border-blue-300 hover:shadow-md transition-all flex items-start justify-between gap-3 bg-slate-50/50"
               >
                 <div className="flex items-start gap-3">
-                  <span className="w-10 h-10 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center text-lg font-bold shrink-0">
+                  <span className="w-10 h-10 rounded-control bg-blue-100 text-blue-700 flex items-center justify-center text-lg font-bold shrink-0">
                     📍
                   </span>
                   <div>
@@ -334,7 +335,7 @@ export default function CoverageDashboard({ onUpgradePlan }: CoverageDashboardPr
                   <button
                     onClick={() => handleRemoveCommune(cov)}
                     disabled={deletingId === cov.id}
-                    className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition"
+                    className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-control transition"
                     title="Remover comuna"
                   >
                     {deletingId === cov.id ? (
@@ -353,7 +354,7 @@ export default function CoverageDashboard({ onUpgradePlan }: CoverageDashboardPr
       {/* Modal: Agregar Comuna */}
       {showAddModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-xs animate-fadeIn">
-          <div className="bg-white rounded-3xl border border-slate-200 max-w-lg w-full p-6 sm:p-8 shadow-2xl relative">
+          <div className="bg-white rounded-card border border-slate-200 max-w-lg w-full p-6 sm:p-8 shadow-2xl relative">
             <div className="flex items-center justify-between pb-4 border-b border-slate-100">
               <div className="flex items-center gap-2">
                 <MapPin className="w-5 h-5 text-blue-600" />
@@ -364,14 +365,14 @@ export default function CoverageDashboard({ onUpgradePlan }: CoverageDashboardPr
                   setShowAddModal(false);
                   setModalError(null);
                 }}
-                className="text-slate-400 hover:text-slate-600 p-1 rounded-lg"
+                className="text-slate-400 hover:text-slate-600 p-1 rounded-control"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             {modalError && (
-              <div className="p-3 my-4 bg-red-50 text-red-700 text-xs font-semibold rounded-xl border border-red-200">
+              <div className="p-3 my-4 bg-red-50 text-red-700 text-xs font-semibold rounded-control border border-red-200">
                 {modalError}
               </div>
             )}
@@ -387,7 +388,7 @@ export default function CoverageDashboard({ onUpgradePlan }: CoverageDashboardPr
                     setSelectedRegion(e.target.value);
                     setSelectedCommune('');
                   }}
-                  className="w-full px-4 py-3 rounded-xl border border-slate-300 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-3 rounded-control border border-slate-300 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   {REGIONES.map((r) => (
                     <option key={r} value={r}>{r}</option>
@@ -406,11 +407,11 @@ export default function CoverageDashboard({ onUpgradePlan }: CoverageDashboardPr
                     value={communeSearch}
                     onChange={(e) => setCommuneSearch(e.target.value)}
                     placeholder="Escribe para buscar (ej: Maipú, La Florida)..."
-                    className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full pl-9 pr-4 py-2.5 rounded-control border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
 
-                <div className="max-h-48 overflow-y-auto border border-slate-200 rounded-xl p-1 divide-y divide-slate-100">
+                <div className="max-h-48 overflow-y-auto border border-slate-200 rounded-control p-1 divide-y divide-slate-100">
                   {availableCommunes.length === 0 ? (
                     <p className="p-3 text-xs text-gray-400 text-center">No se encontraron comunas</p>
                   ) : (
@@ -423,7 +424,7 @@ export default function CoverageDashboard({ onUpgradePlan }: CoverageDashboardPr
                           key={c}
                           disabled={isAlreadyActive}
                           onClick={() => setSelectedCommune(c)}
-                          className={`w-full text-left px-3 py-2 text-xs font-semibold rounded-lg flex items-center justify-between transition ${
+                          className={`w-full text-left px-3 py-2 text-xs font-semibold rounded-control flex items-center justify-between transition ${
                             selectedCommune === c
                               ? 'bg-blue-600 text-white'
                               : isAlreadyActive
@@ -449,14 +450,14 @@ export default function CoverageDashboard({ onUpgradePlan }: CoverageDashboardPr
             <div className="pt-4 border-t border-slate-100 flex justify-end gap-3">
               <button
                 onClick={() => setShowAddModal(false)}
-                className="px-4 py-2.5 text-xs font-bold text-gray-600 hover:bg-slate-100 rounded-xl transition"
+                className="px-4 py-2.5 text-xs font-bold text-gray-600 hover:bg-slate-100 rounded-control transition"
               >
                 Cancelar
               </button>
               <button
                 onClick={handleAddCommune}
                 disabled={!selectedCommune || savingCommune}
-                className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white text-xs font-bold rounded-xl shadow-md transition flex items-center gap-2 cursor-pointer"
+                className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white text-xs font-bold rounded-control shadow-md transition flex items-center gap-2 cursor-pointer"
               >
                 {savingCommune ? (
                   <>
@@ -475,7 +476,7 @@ export default function CoverageDashboard({ onUpgradePlan }: CoverageDashboardPr
       {/* Modal: Compra de Expansión Territorial */}
       {showExpansionModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-xs animate-fadeIn">
-          <div className="bg-white rounded-3xl border border-slate-200 max-w-xl w-full p-6 sm:p-8 shadow-2xl relative">
+          <div className="bg-white rounded-card border border-slate-200 max-w-xl w-full p-6 sm:p-8 shadow-2xl relative">
             <div className="flex items-center justify-between pb-4 border-b border-slate-100">
               <div className="flex items-center gap-2">
                 <Sparkles className="w-6 h-6 text-amber-500" />
@@ -486,7 +487,7 @@ export default function CoverageDashboard({ onUpgradePlan }: CoverageDashboardPr
               </div>
               <button
                 onClick={() => setShowExpansionModal(false)}
-                className="text-slate-400 hover:text-slate-600 p-1 rounded-lg"
+                className="text-slate-400 hover:text-slate-600 p-1 rounded-control"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -496,7 +497,7 @@ export default function CoverageDashboard({ onUpgradePlan }: CoverageDashboardPr
               {data.expansionProducts.map((prod) => (
                 <div
                   key={prod.id}
-                  className={`p-4 rounded-2xl border-2 transition-all flex items-center justify-between gap-4 cursor-pointer ${
+                  className={`p-4 rounded-card border-2 transition-all flex items-center justify-between gap-4 cursor-pointer ${
                     prod.popular
                       ? 'border-blue-500 bg-blue-50/40 shadow-sm'
                       : 'border-slate-200 hover:border-slate-300 bg-white'
@@ -520,7 +521,7 @@ export default function CoverageDashboard({ onUpgradePlan }: CoverageDashboardPr
 
                   <div className="text-right shrink-0">
                     <div className="text-xl font-black text-gray-900">
-                      ${prod.price.toLocaleString('es-CL')}
+                      {formatMoney(prod.price)}
                     </div>
                     <span className="text-[11px] text-gray-500">/mes</span>
                   </div>
@@ -528,7 +529,7 @@ export default function CoverageDashboard({ onUpgradePlan }: CoverageDashboardPr
               ))}
             </div>
 
-            <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100 mb-4 text-xs text-slate-600 flex items-center gap-2">
+            <div className="p-4 bg-slate-50 rounded-card border border-slate-100 mb-4 text-xs text-slate-600 flex items-center gap-2">
               <ShieldCheck className="w-5 h-5 text-emerald-600 shrink-0" />
               <span>Sin comisiones por trabajos. Pagas tarifa plana mensual y atiendes directamente sin intermediarios.</span>
             </div>
@@ -536,7 +537,7 @@ export default function CoverageDashboard({ onUpgradePlan }: CoverageDashboardPr
             <div className="pt-3 border-t border-slate-100 flex justify-end gap-3">
               <button
                 onClick={() => setShowExpansionModal(false)}
-                className="px-4 py-2.5 text-xs font-bold text-gray-600 hover:bg-slate-100 rounded-xl transition"
+                className="px-4 py-2.5 text-xs font-bold text-gray-600 hover:bg-slate-100 rounded-control transition"
               >
                 Cerrar
               </button>
@@ -545,7 +546,7 @@ export default function CoverageDashboard({ onUpgradePlan }: CoverageDashboardPr
                   alert('Redirigiendo a Webpay para contratar pack territorial...');
                   setShowExpansionModal(false);
                 }}
-                className="px-6 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-xs font-bold rounded-xl shadow-md hover:from-blue-700 hover:to-indigo-700 transition flex items-center gap-2 cursor-pointer"
+                className="px-6 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-xs font-bold rounded-control shadow-md hover:from-blue-700 hover:to-indigo-700 transition flex items-center gap-2 cursor-pointer"
               >
                 <span>Contratar Expansión</span>
                 <ChevronRight className="w-4 h-4" />

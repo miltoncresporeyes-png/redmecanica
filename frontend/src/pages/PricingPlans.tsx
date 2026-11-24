@@ -257,12 +257,12 @@ const PricingPlans: React.FC<PricingPlansProps> = ({ onSelectPlan, onNavigateToO
           </p>
 
           {/* ¿Qué eres? */}
-          <div className="mt-8 bg-white border border-slate-200 p-1.5 rounded-2xl inline-flex w-full sm:w-auto shadow-sm" role="tablist" aria-label="Elige tu rol">
+          <div className="mt-8 bg-white border border-slate-200 p-1.5 rounded-card inline-flex w-full sm:w-auto shadow-sm" role="tablist" aria-label="Elige tu rol">
             <button
               role="tab"
               aria-selected={role === 'provider'}
               onClick={() => setRole('provider')}
-              className={`flex-1 sm:flex-none sm:px-8 py-3 text-xs sm:text-sm font-black uppercase tracking-wider rounded-xl transition-all min-h-[44px] flex items-center justify-center gap-2 ${
+              className={`flex-1 sm:flex-none sm:px-8 py-3 text-xs sm:text-sm font-black uppercase tracking-wider rounded-control transition-all min-h-[44px] flex items-center justify-center gap-2 ${
                 role === 'provider' ? 'bg-slate-900 text-white shadow' : 'text-slate-400 hover:text-slate-600'
               }`}
             >
@@ -272,7 +272,7 @@ const PricingPlans: React.FC<PricingPlansProps> = ({ onSelectPlan, onNavigateToO
               role="tab"
               aria-selected={role === 'driver'}
               onClick={() => setRole('driver')}
-              className={`flex-1 sm:flex-none sm:px-8 py-3 text-xs sm:text-sm font-black uppercase tracking-wider rounded-xl transition-all min-h-[44px] flex items-center justify-center gap-2 ${
+              className={`flex-1 sm:flex-none sm:px-8 py-3 text-xs sm:text-sm font-black uppercase tracking-wider rounded-control transition-all min-h-[44px] flex items-center justify-center gap-2 ${
                 role === 'driver' ? 'bg-emerald-600 text-white shadow' : 'text-slate-400 hover:text-slate-600'
               }`}
             >
@@ -321,7 +321,7 @@ const PricingPlans: React.FC<PricingPlansProps> = ({ onSelectPlan, onNavigateToO
                   </li>
                 ))}
               </ul>
-              <button onClick={() => navigate('/search')} className="btn-primary w-full">
+              <button onClick={() => navigate('/search')} className="btn-cta w-full">
                 🔍 Buscar ahora gratis
               </button>
             </div>
@@ -347,13 +347,13 @@ const PricingPlans: React.FC<PricingPlansProps> = ({ onSelectPlan, onNavigateToO
                 ))}
               </ul>
               {user?.id ? (
-                <button onClick={() => navigate('/profile')} className="btn-primary w-full">
+                <button onClick={() => navigate('/profile')} className="btn-cta w-full">
                   Ir a mi cuenta
                 </button>
               ) : (
                 <button
                   onClick={() => { setLoginRole('client'); setShowLoginModal(true); }}
-                  className="w-full py-3.5 rounded-xl font-black text-sm min-h-[44px] bg-emerald-600 text-white hover:bg-emerald-700 shadow-lg transition-all"
+                  className="w-full py-3.5 rounded-control font-black text-sm min-h-[44px] bg-emerald-600 text-white hover:bg-emerald-700 shadow-lg transition-all"
                 >
                   Crear cuenta gratis
                 </button>
@@ -384,7 +384,7 @@ const PricingPlans: React.FC<PricingPlansProps> = ({ onSelectPlan, onNavigateToO
             return (
               <div
                 key={plan.id}
-                className={`relative bg-white rounded-2xl p-1 transition-all duration-300 flex flex-col justify-between ${
+                className={`relative bg-white rounded-card p-1 transition-all duration-300 flex flex-col justify-between ${
                   plan.popular ? 'ring-2 ring-blue-500 shadow-2xl z-10 md:scale-105' : 'shadow-lg border border-slate-100'
                 }`}
               >
@@ -394,9 +394,9 @@ const PricingPlans: React.FC<PricingPlansProps> = ({ onSelectPlan, onNavigateToO
                   </div>
                 )}
 
-                <div className="bg-white rounded-xl p-6 sm:p-7 flex flex-col h-full justify-between">
+                <div className="bg-white rounded-control p-6 sm:p-7 flex flex-col h-full justify-between">
                   <div>
-                    <div className={`w-12 h-12 sm:w-14 sm:h-14 rounded-2xl flex items-center justify-center mb-5 ${
+                    <div className={`w-12 h-12 sm:w-14 sm:h-14 rounded-card flex items-center justify-center mb-5 ${
                       plan.color === 'slate' ? 'bg-slate-100 text-slate-600' :
                       plan.color === 'blue' ? 'bg-blue-100 text-blue-600' :
                       plan.color === 'indigo' ? 'bg-indigo-100 text-indigo-600' :
@@ -447,7 +447,7 @@ const PricingPlans: React.FC<PricingPlansProps> = ({ onSelectPlan, onNavigateToO
 
                   <button
                     onClick={() => handleSelectPlan(plan.id)}
-                    className={`w-full py-3.5 rounded-xl font-black text-sm transition-all min-h-[44px] flex items-center justify-center ${
+                    className={`w-full py-3.5 rounded-control font-black text-sm transition-all min-h-[44px] flex items-center justify-center ${
                       plan.popular
                         ? 'bg-blue-600 text-white hover:bg-blue-700 shadow-lg shadow-blue-200'
                         : 'bg-slate-900 text-white hover:bg-slate-800'
@@ -502,7 +502,7 @@ const PricingPlans: React.FC<PricingPlansProps> = ({ onSelectPlan, onNavigateToO
       {/* Modal de Pago real */}
       {showPaymentModal && selectedPlanForPayment && (
         <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-[100] p-4">
-          <div className="bg-white rounded-3xl shadow-2xl max-w-md w-full p-6 sm:p-8 relative overflow-hidden">
+          <div className="bg-white rounded-card shadow-2xl max-w-md w-full p-6 sm:p-8 relative overflow-hidden">
             <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-blue-600 to-indigo-600" />
             <button
               onClick={() => { setShowPaymentModal(false); setError(null); }}
@@ -513,7 +513,7 @@ const PricingPlans: React.FC<PricingPlansProps> = ({ onSelectPlan, onNavigateToO
             </button>
 
             <div className="text-center mb-6">
-              <div className="w-16 h-16 bg-blue-100 text-blue-600 rounded-3xl flex items-center justify-center mx-auto mb-4">
+              <div className="w-16 h-16 bg-blue-100 text-blue-600 rounded-card flex items-center justify-center mx-auto mb-4">
                 {selectedPlanForPayment.icon}
               </div>
               <h3 className="text-2xl font-black text-slate-900">Activar {selectedPlanForPayment.name}</h3>
@@ -522,7 +522,7 @@ const PricingPlans: React.FC<PricingPlansProps> = ({ onSelectPlan, onNavigateToO
               </p>
             </div>
 
-            <div className="bg-slate-50 rounded-2xl p-5 mb-6 text-center border border-slate-100">
+            <div className="bg-slate-50 rounded-card p-5 mb-6 text-center border border-slate-100">
               <p className="text-xs uppercase font-black text-slate-400 tracking-wider mb-1">Monto a procesar</p>
               <p className="text-4xl font-black text-slate-900">
                 ${(selectedPlanForPayment.billingCycle === 'annual' ? selectedPlanForPayment.priceAnnual : selectedPlanForPayment.priceMonthly).toLocaleString('es-CL')}
@@ -537,7 +537,7 @@ const PricingPlans: React.FC<PricingPlansProps> = ({ onSelectPlan, onNavigateToO
               <div className="grid grid-cols-2 gap-3">
                 <button
                   onClick={() => setPaymentMethod('WEBPAY')}
-                  className={`p-4 rounded-xl border-2 transition-all text-center min-h-[44px] ${
+                  className={`p-4 rounded-control border-2 transition-all text-center min-h-[44px] ${
                     paymentMethod === 'WEBPAY'
                       ? 'border-blue-500 bg-blue-50 shadow-md'
                       : 'border-slate-200 hover:border-slate-300 bg-white'
@@ -549,7 +549,7 @@ const PricingPlans: React.FC<PricingPlansProps> = ({ onSelectPlan, onNavigateToO
                 </button>
                 <button
                   onClick={() => setPaymentMethod('MERCADOPAGO')}
-                  className={`p-4 rounded-xl border-2 transition-all text-center min-h-[44px] ${
+                  className={`p-4 rounded-control border-2 transition-all text-center min-h-[44px] ${
                     paymentMethod === 'MERCADOPAGO'
                       ? 'border-blue-500 bg-blue-50 shadow-md'
                       : 'border-slate-200 hover:border-slate-300 bg-white'
@@ -563,7 +563,7 @@ const PricingPlans: React.FC<PricingPlansProps> = ({ onSelectPlan, onNavigateToO
             </div>
 
             {error && (
-              <div className="bg-red-50 text-red-700 p-3 rounded-xl mb-4 text-sm font-bold border border-red-100">
+              <div className="bg-red-50 text-red-700 p-3 rounded-control mb-4 text-sm font-bold border border-red-100">
                 ⚠️ {error}
               </div>
             )}
@@ -571,7 +571,7 @@ const PricingPlans: React.FC<PricingPlansProps> = ({ onSelectPlan, onNavigateToO
             <button
               onClick={handleProcessPayment}
               disabled={loading}
-              className="w-full bg-blue-600 text-white py-4 rounded-2xl font-black hover:bg-blue-700 shadow-xl shadow-blue-200 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mb-3 min-h-[44px]"
+              className="w-full bg-blue-600 text-white py-4 rounded-card font-black hover:bg-blue-700 shadow-xl shadow-blue-200 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mb-3 min-h-[44px]"
             >
               {loading ? (
                 <>

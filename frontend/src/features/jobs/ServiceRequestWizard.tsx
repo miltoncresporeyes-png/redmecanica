@@ -122,7 +122,7 @@ const ServiceRequestWizard: React.FC<ServiceRequestWizardProps> = ({ onSubmit, o
                             <li 
                                 key={service.id} 
                                 onClick={() => handleSelectService(service)} 
-                                className={`p-4 border rounded-lg cursor-pointer transition-all ${
+                                className={`p-4 border rounded-control cursor-pointer transition-all ${
                                     selectedService?.id === service.id 
                                     ? 'bg-blue-50 border-blue-500 shadow-md ring-2 ring-blue-200' 
                                     : 'bg-white border-gray-200 hover:bg-gray-50'
@@ -167,7 +167,7 @@ const ServiceRequestWizard: React.FC<ServiceRequestWizardProps> = ({ onSubmit, o
         return selectedService && (
              <div>
                 <h2 className="text-2xl font-bold mb-4 text-center">3. Confirmar Solicitud</h2>
-                <div className="space-y-4 p-4 border rounded-lg bg-gray-50">
+                <div className="space-y-4 p-4 border rounded-control bg-gray-50">
                     <div><span className="font-semibold">Vehículo:</span> {vehicle.make} {vehicle.model} {vehicle.year}</div>
                     <div><span className="font-semibold">Servicio:</span> {selectedService.name}</div>
                     <div><span className="font-semibold">Costo Estimado:</span> <span className="text-blue-600 font-bold">{renderPrice(selectedService.price)}</span></div>
@@ -185,13 +185,13 @@ const ServiceRequestWizard: React.FC<ServiceRequestWizardProps> = ({ onSubmit, o
       <div className="p-6">
         {renderStep()}
         <div className="mt-8 flex justify-between">
-          <button onClick={step === 1 ? onCancel : () => setStep(step - 1)} className="px-6 py-2 text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300">
+          <button onClick={step === 1 ? onCancel : () => setStep(step - 1)} className="px-6 py-2 text-gray-700 bg-gray-200 rounded-control hover:bg-gray-300">
             {step === 1 ? 'Cancelar' : 'Atrás'}
           </button>
           {step < 3 && (
             <button 
               onClick={() => setStep(step + 1)} 
-              className={`px-6 py-2 text-white rounded-lg transition-all ${
+              className={`px-6 py-2 text-white rounded-control transition-all ${
                 (step === 2 && !selectedService) ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'
               }`}
               disabled={step === 2 && !selectedService}
@@ -200,7 +200,7 @@ const ServiceRequestWizard: React.FC<ServiceRequestWizardProps> = ({ onSubmit, o
             </button>
           )}
           {step === 3 && (
-            <button onClick={() => onSubmit({ vehicle, service: selectedService! })} className="px-6 py-2 text-white bg-green-600 rounded-lg hover:bg-green-700">
+            <button onClick={() => onSubmit({ vehicle, service: selectedService! })} className="px-6 py-2 text-white bg-emerald-600 rounded-control hover:bg-emerald-700">
               Confirmar y Buscar Mecánico
             </button>
           )}

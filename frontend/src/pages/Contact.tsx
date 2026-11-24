@@ -84,7 +84,7 @@ const Contact: React.FC<ContactProps> = ({ onClose }) => {
       </div>
 
       {/* Hero */}
-      <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg p-8 mb-8 text-center">
+      <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-control p-8 mb-8 text-center">
         <h2 className="text-2xl font-bold mb-3">¿Necesitas ayuda?</h2>
         <p className="text-lg opacity-90">
           Estamos aquí para ayudarte. Contáctanos por cualquiera de nuestros canales
@@ -94,14 +94,14 @@ const Contact: React.FC<ContactProps> = ({ onClose }) => {
       <div className="grid md:grid-cols-2 gap-8">
         {/* Contact Form */}
         <div>
-          <div className="bg-white border border-gray-200 rounded-lg p-6">
+          <div className="bg-white border border-gray-200 rounded-control p-6">
             <h3 className="text-xl font-bold text-gray-900 mb-4">Envíanos un mensaje</h3>
 
             {submitted ? (
-              <div className="bg-green-50 border border-green-200 rounded-lg p-6 text-center">
+              <div className="bg-emerald-50 border border-emerald-200 rounded-control p-6 text-center">
                 <div className="text-4xl mb-3">✅</div>
-                <h4 className="text-lg font-bold text-green-900 mb-2">¡Mensaje enviado!</h4>
-                <p className="text-green-700">
+                <h4 className="text-lg font-bold text-emerald-900 mb-2">¡Mensaje enviado!</h4>
+                <p className="text-emerald-700">
                   Gracias por contactarnos. Te responderemos dentro de 24 horas.
                 </p>
               </div>
@@ -131,7 +131,7 @@ const Contact: React.FC<ContactProps> = ({ onClose }) => {
                     value={formData.name}
                     onChange={handleChange}
                     required
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-control focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     placeholder="Juan Pérez"
                   />
                 </div>
@@ -146,7 +146,7 @@ const Contact: React.FC<ContactProps> = ({ onClose }) => {
                     value={formData.email}
                     onChange={handleChange}
                     required
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-control focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     placeholder="tu@email.com"
                   />
                 </div>
@@ -176,7 +176,7 @@ const Contact: React.FC<ContactProps> = ({ onClose }) => {
                         setFormData((prev) => ({ ...prev, phone: '+56 ' }));
                       }
                     }}
-                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:outline-none transition-all ${
+                    className={`w-full px-4 py-2 border rounded-control focus:ring-2 focus:outline-none transition-all ${
                       formData.phone && formData.phone.trim() !== '+56' && !validarWhatsAppChile(formData.phone).isValid
                         ? 'border-rose-400 bg-rose-50/20 focus:ring-rose-500'
                         : 'border-gray-300 focus:ring-blue-500 focus:border-transparent'
@@ -199,7 +199,7 @@ const Contact: React.FC<ContactProps> = ({ onClose }) => {
                     value={formData.subject}
                     onChange={handleChange}
                     required
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-control focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   >
                     <option value="general">Consulta general</option>
                     <option value="soporte">Soporte técnico</option>
@@ -220,13 +220,13 @@ const Contact: React.FC<ContactProps> = ({ onClose }) => {
                     onChange={handleChange}
                     required
                     rows={5}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-control focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
                     placeholder="Cuéntanos cómo podemos ayudarte..."
                   />
                 </div>
 
                 {error && (
-                  <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">
+                  <div className="p-3 bg-red-50 border border-red-200 rounded-control text-sm text-red-700">
                     {error}
                   </div>
                 )}
@@ -234,7 +234,7 @@ const Contact: React.FC<ContactProps> = ({ onClose }) => {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 rounded-lg font-bold hover:shadow-lg transition-shadow disabled:opacity-50"
+                  className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 rounded-control font-bold hover:shadow-lg transition-shadow disabled:opacity-50"
                 >
                   {loading ? 'Enviando...' : 'Enviar Mensaje'}
                 </button>
@@ -246,7 +246,7 @@ const Contact: React.FC<ContactProps> = ({ onClose }) => {
         {/* Contact Info */}
         <div className="space-y-6">
           {/* Canales de Contacto */}
-          <div className="bg-white border border-gray-200 rounded-lg p-6">
+          <div className="bg-white border border-gray-200 rounded-control p-6">
             <h3 className="text-xl font-bold text-gray-900 mb-4">Canales de Atención</h3>
             <div className="space-y-4">
               <div className="flex items-start">
@@ -303,7 +303,7 @@ const Contact: React.FC<ContactProps> = ({ onClose }) => {
           </div>
 
           {/* Contacto para Prestadores */}
-          <div className="bg-gradient-to-br from-purple-50 to-blue-50 border border-purple-200 rounded-lg p-6">
+          <div className="bg-gradient-to-br from-purple-50 to-blue-50 border border-purple-200 rounded-control p-6">
             <h3 className="text-lg font-bold text-gray-900 mb-3">¿Eres prestador de servicios?</h3>
             <p className="text-gray-600 mb-4">
               Tenemos un equipo dedicado para apoyar a nuestros Prestadores
@@ -325,7 +325,7 @@ const Contact: React.FC<ContactProps> = ({ onClose }) => {
           </div>
 
           {/* Redes Sociales */}
-          <div className="bg-white border border-gray-200 rounded-lg p-6">
+          <div className="bg-white border border-gray-200 rounded-control p-6">
             <h3 className="text-lg font-bold text-gray-900 mb-4">Síguenos en redes sociales</h3>
             <div className="flex space-x-4">
               <a
@@ -368,7 +368,7 @@ const Contact: React.FC<ContactProps> = ({ onClose }) => {
           </div>
 
           {/* Horarios */}
-          <div className="bg-gradient-to-br from-green-50 to-blue-50 border border-green-200 rounded-lg p-6">
+          <div className="bg-gradient-to-br from-emerald-50 to-blue-50 border border-emerald-200 rounded-control p-6">
             <h3 className="text-lg font-bold text-gray-900 mb-3">Horarios de Atención</h3>
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
@@ -383,9 +383,9 @@ const Contact: React.FC<ContactProps> = ({ onClose }) => {
                 <span className="text-gray-600">Domingo:</span>
                 <span className="font-medium text-gray-900">Cerrado</span>
               </div>
-              <div className="flex justify-between border-t border-green-200 pt-2 mt-2">
+              <div className="flex justify-between border-t border-emerald-200 pt-2 mt-2">
                 <span className="text-gray-600">Emergencias:</span>
-                <span className="font-bold text-green-600">24/7</span>
+                <span className="font-bold text-emerald-600">24/7</span>
               </div>
             </div>
           </div>

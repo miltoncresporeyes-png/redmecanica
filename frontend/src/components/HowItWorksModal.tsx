@@ -30,7 +30,7 @@ const HowItWorksModal: React.FC<HowItWorksModalProps> = ({ onClose }) => {
           <div className="grid md:grid-cols-2 gap-4 sm:gap-6">
             {/* Sección para Conductores */}
             <div className="space-y-6">
-              <div className="bg-blue-50/60 p-5 sm:p-6 rounded-2xl border border-blue-100">
+              <div className="bg-blue-50/60 p-5 sm:p-6 rounded-card border border-blue-100">
                 <h3 className="text-lg font-bold text-blue-900 mb-4 flex items-center">
                   <span className="mr-3 text-2xl">🚗</span> Para conductores · gratis
                 </h3>
@@ -57,7 +57,7 @@ const HowItWorksModal: React.FC<HowItWorksModalProps> = ({ onClose }) => {
 
             {/* Sección para Prestadores */}
             <div className="space-y-6">
-              <div className="bg-emerald-50/60 p-5 sm:p-6 rounded-2xl border border-emerald-100">
+              <div className="bg-emerald-50/60 p-5 sm:p-6 rounded-card border border-emerald-100">
                 <h3 className="text-lg font-bold text-emerald-900 mb-4 flex items-center">
                   <span className="mr-3 text-2xl">🏭</span> Para prestadores · 2 min
                 </h3>
@@ -98,7 +98,7 @@ const HowItWorksModal: React.FC<HowItWorksModalProps> = ({ onClose }) => {
             </div>
           </div>
 
-          <div className="mt-12 text-center bg-gray-50 p-6 rounded-2xl border border-gray-100">
+          <div className="mt-12 text-center bg-gray-50 p-6 rounded-card border border-gray-100">
             <h4 className="font-bold text-gray-800 mb-2">💡 ¿Por qué RedMecánica?</h4>
             <p className="text-sm text-gray-600 max-w-2xl mx-auto">
               Nuestra plataforma utiliza Inteligencia Artificial para diagnosticar problemas visualmente, 
@@ -110,7 +110,7 @@ const HowItWorksModal: React.FC<HowItWorksModalProps> = ({ onClose }) => {
           <div className="mt-10 flex justify-center">
             <button 
               onClick={onClose}
-              className="bg-blue-600 text-white px-10 py-4 rounded-xl font-bold hover:bg-blue-700 transition-all shadow-xl hover:-translate-y-1"
+              className="bg-blue-600 text-white px-10 py-4 rounded-control font-bold hover:bg-blue-700 transition-all shadow-xl hover:-translate-y-1"
             >
               ¡Entendido, vamos!
             </button>

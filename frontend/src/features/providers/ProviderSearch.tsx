@@ -1,5 +1,6 @@
 import React, { useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import { useSearchParams, useNavigate } from 'react-router';
+import { Search as SearchIcon, MapPin, Lightbulb, Star, MessageCircle, SearchX, BadgeCheck } from 'lucide-react';
 import Card from '../../components/common/Card';
 import ProviderCard from './ProviderCard';
 import AdBanner from '../../components/common/AdBanner';
@@ -237,9 +238,9 @@ const ProviderSearch: React.FC = () => {
           <span className="w-2 h-2 rounded-full bg-emerald-500" aria-hidden />
           DIRECTORIO GRATUITO · SIN CUENTA · CONTACTO DIRECTO
         </p>
-        <h1 className="text-gray-900">
+        <h1 className="text-slate-900">
           {activeCategory ? `${activeCategory.plural}` : 'Directorio de prestadores automotrices'}
-          {filters.commune && <span className="text-blue-600"> en {filters.commune}</span>}
+          {filters.commune && <span className="text-primary"> en {filters.commune}</span>}
         </h1>
         <p className="section-sub mt-1">
           Busca por <strong>comuna y categoría</strong>, compara perfiles y contacta por WhatsApp sin intermediarios.
@@ -252,7 +253,7 @@ const ProviderSearch: React.FC = () => {
           {/* Buscador principal: qué + dónde */}
           <div className="grid grid-cols-1 md:grid-cols-[1.2fr_1fr_auto] gap-2 sm:gap-3 mb-4">
             <div>
-              <label htmlFor="search-query" className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">¿Qué necesitas?</label>
+              <label htmlFor="search-query" className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">¿Qué necesitas?</label>
               <AutocompleteInput
                 value={filters.query}
                 onChange={(value) => setFilters({ ...filters, query: value })}
@@ -263,7 +264,7 @@ const ProviderSearch: React.FC = () => {
               />
             </div>
             <div>
-              <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Comuna</label>
+              <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Comuna</label>
               <AutocompleteInput
                 value={filters.commune}
                 onChange={(value) => setFilters({ ...filters, commune: value })}
@@ -276,16 +277,16 @@ const ProviderSearch: React.FC = () => {
               <button
                 type="submit"
                 disabled={loading}
-                className="btn-primary w-full md:w-auto"
+                className="btn-cta w-full md:w-auto"
               >
-                {loading ? 'Buscando…' : '🔍 Buscar gratis'}
+                {loading ? 'Buscando…' : <><SearchIcon className="w-4 h-4" aria-hidden="true" /> Buscar gratis</>}
               </button>
             </div>
           </div>
 
           {/* Categorías */}
           <div className="mb-4">
-            <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Categoría</label>
+            <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Categoría</label>
             <div className="flex flex-wrap gap-2" role="group" aria-label="Filtrar por categoría">
               <button
                 type="button"
@@ -313,11 +314,11 @@ const ProviderSearch: React.FC = () => {
           {/* Filtros secundarios */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-3 mb-4">
             <div>
-              <label className="block text-xs font-medium text-gray-500 mb-1">Región</label>
+              <label className="block text-xs font-medium text-slate-500 mb-1">Región</label>
               <select
                 value={filters.region}
                 onChange={(e) => setFilters({ ...filters, region: e.target.value, commune: '' })}
-                className="input-market bg-gray-50"
+                className="input-market bg-slate-50"
               >
                 <option value="">Todas</option>
                 {REGIONES.map((region) => (
@@ -326,11 +327,11 @@ const ProviderSearch: React.FC = () => {
               </select>
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-500 mb-1">Tipo (clásico)</label>
+              <label className="block text-xs font-medium text-slate-500 mb-1">Tipo</label>
               <select
                 value={filters.type}
                 onChange={(e) => setFilters({ ...filters, type: e.target.value, category: '' })}
-                className="input-market bg-gray-50"
+                className="input-market bg-slate-50"
               >
                 <option value="">Todos</option>
                 <option value="MECHANIC">Mecánico</option>
@@ -339,11 +340,11 @@ const ProviderSearch: React.FC = () => {
               </select>
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-500 mb-1">Radio</label>
+              <label className="block text-xs font-medium text-slate-500 mb-1">Radio</label>
               <select
                 value={filters.radius}
                 onChange={(e) => setFilters({ ...filters, radius: e.target.value })}
-                className="input-market bg-gray-50"
+                className="input-market bg-slate-50"
               >
                 <option value="5">5 km</option>
                 <option value="10">10 km</option>
@@ -352,32 +353,32 @@ const ProviderSearch: React.FC = () => {
                 <option value="50">50 km</option>
               </select>
             </div>
-            <label className="flex items-center gap-2 text-xs font-bold text-gray-700 cursor-pointer bg-gray-50 border border-gray-200 rounded-xl px-3 min-h-[44px]">
+            <label className="flex items-center gap-2 text-xs font-bold text-slate-700 cursor-pointer bg-slate-50 border border-slate-200 rounded-control px-3 min-h-[44px]">
               <input
                 type="checkbox"
                 checked={filters.certified}
                 onChange={(e) => setFilters({ ...filters, certified: e.target.checked })}
-                className="w-4 h-4 text-blue-600 rounded"
+                className="w-4 h-4 accent-primary rounded"
               />
-              <span><span className="badge-verified mr-1 !px-1.5">✓</span>Solo verificados</span>
+              <span className="inline-flex items-center gap-1"><BadgeCheck className="w-4 h-4 text-emerald-600" aria-hidden="true" /> Solo verificados</span>
             </label>
-            <label className="flex items-center gap-2 text-xs font-bold text-gray-700 cursor-pointer bg-amber-50 border border-amber-200 rounded-xl px-3 min-h-[44px]">
+            <label className="flex items-center gap-2 text-xs font-bold text-slate-700 cursor-pointer bg-amber-50 border border-amber-200 rounded-control px-3 min-h-[44px]">
               <input
                 type="checkbox"
                 checked={filters.featured}
                 onChange={(e) => setFilters({ ...filters, featured: e.target.checked })}
-                className="w-4 h-4 text-amber-600 rounded"
+                className="w-4 h-4 accent-amber-500 rounded"
               />
-              <span>⭐ Solo destacados</span>
+              <span className="inline-flex items-center gap-1"><Star className="w-3.5 h-3.5 fill-amber-500 text-amber-500" aria-hidden="true" /> Solo destacados</span>
             </label>
           </div>
 
           <div className="flex flex-wrap items-center justify-between gap-2">
-            <p className="text-xs text-gray-400">
-              💡 Tip: escribe tu <strong>comuna</strong> para ordenar prestadores cercanos primero. No necesitas crear cuenta.
+            <p className="inline-flex items-start gap-1.5 text-xs text-slate-500">
+              <Lightbulb className="w-4 h-4 shrink-0 text-amber-500" aria-hidden="true" /> Escribe tu <strong>comuna</strong> para ver primero a los prestadores más cercanos. No necesitas cuenta.
             </p>
             <div className="flex gap-1">
-              <button type="button" onClick={clearFilters} className="text-xs font-bold text-gray-500 hover:text-gray-800 px-3 min-h-[44px]">
+              <button type="button" onClick={clearFilters} className="text-sm font-bold text-slate-600 hover:text-slate-900 px-3 min-h-[44px]">
                 Limpiar
               </button>
               <button
@@ -389,9 +390,9 @@ const ProviderSearch: React.FC = () => {
                     );
                   }
                 }}
-                className="text-xs font-bold text-blue-600 hover:text-blue-800 px-3 min-h-[44px]"
+                className="inline-flex items-center gap-1.5 text-sm font-bold text-primary hover:text-blue-800 px-3 min-h-[44px]"
               >
-                📍 Usar mi ubicación
+                <MapPin className="w-4 h-4" aria-hidden="true" /> Usar mi ubicación
               </button>
             </div>
           </div>
@@ -401,13 +402,13 @@ const ProviderSearch: React.FC = () => {
       <div ref={resultadosRef} className="space-y-3 sm:space-y-4" aria-live="polite">
         {!searched && results.length === 0 && !loading && (
           <div className="card-market text-center p-8 sm:p-10 border-dashed">
-            <div className="text-4xl mb-2" aria-hidden>🔍</div>
-            <p className="font-bold text-gray-800">Busca prestadores en tu comuna</p>
+            <SearchIcon className="w-10 h-10 mx-auto mb-3 text-primary" aria-hidden="true" />
+            <p className="font-bold text-slate-800">Busca prestadores en tu comuna</p>
             <p className="section-sub mt-1 mb-4">Es gratis y sin cuenta. Prueba con tu comuna + una categoría.</p>
             <div className="flex flex-wrap justify-center gap-2">
               {['Maipú', 'Puente Alto', 'Temuco', 'Viña del Mar'].map((c) => (
                 <button key={c} onClick={() => navigate(`/search?commune=${encodeURIComponent(c)}`)} className="chip chip-idle">
-                  📍 {c}
+                  <MapPin className="w-3.5 h-3.5" aria-hidden="true" /> {c}
                 </button>
               ))}
             </div>
@@ -416,30 +417,32 @@ const ProviderSearch: React.FC = () => {
         {loading && (
           <div className="text-center py-10">
             <div className="w-8 h-8 border-2 border-blue-200 border-t-blue-600 rounded-full animate-spin mx-auto mb-3" aria-hidden />
-            <p className="text-sm text-gray-500 font-medium">Buscando prestadores en tu zona…</p>
+            <p className="text-sm text-slate-500 font-medium">Buscando prestadores en tu zona…</p>
           </div>
         )}
         {searched && !loading && results.length === 0 && (
           <div className="card-market text-center p-8 sm:p-10">
-            <div className="text-4xl mb-2" aria-hidden>📭</div>
-            <p className="font-bold text-gray-800">Aún no hay prestadores publicados{filters.commune ? ` en ${filters.commune}` : ''}</p>
+            <SearchX className="w-10 h-10 mx-auto mb-3 text-slate-400" aria-hidden="true" />
+            <p className="font-bold text-slate-800">Aún no hay prestadores publicados{filters.commune ? ` en ${filters.commune}` : ''}</p>
             <p className="section-sub mt-1 mb-4">
               Prueba ampliando el radio, quitando filtros o buscando en una comuna cercana.
             </p>
-            <button onClick={clearFilters} className="btn-primary">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+            <button onClick={clearFilters} className="btn-cta">
               Ver todos los prestadores
             </button>
             <a
               href="https://wa.me/56983414730?text=Hola%2C%20no%20encontr%C3%A9%20prestador%20en%20mi%20comuna%20y%20necesito%20ayuda%20con%20mi%20auto."
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-2 px-4 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl transition-all"
+              className="btn-whatsapp"
             >
-              💬 Escríbenos por WhatsApp
+              <MessageCircle className="w-4 h-4" aria-hidden="true" /> Escríbenos por WhatsApp
             </a>
+            </div>
 
             <form onSubmit={handleLeadSubmit} className="w-full max-w-md mx-auto mt-4 space-y-2">
-              <p className="text-xs font-bold text-gray-600">¿Quieres que te avisemos cuando haya prestadores en tu comuna?</p>
+              <p className="text-xs font-bold text-slate-600">¿Quieres que te avisemos cuando haya prestadores en tu comuna?</p>
               <div className="flex gap-2">
                 <input
                   type="email"
@@ -450,11 +453,11 @@ const ProviderSearch: React.FC = () => {
                   required
                 />
                 <input type="text" value={leadHoneypot} onChange={(e) => setLeadHoneypot(e.target.value)} className="hidden" tabIndex={-1} autoComplete="off" />
-                <button type="submit" disabled={leadStatus === 'loading'} className="btn-primary whitespace-nowrap">
+                <button type="submit" disabled={leadStatus === 'loading'} className="btn-cta whitespace-nowrap">
                   {leadStatus === 'loading' ? 'Enviando…' : 'Avisarme'}
                 </button>
               </div>
-              {leadStatus === 'success' && <p className="text-xs text-emerald-600 font-bold">✓ Te avisaremos cuando haya prestadores.</p>}
+              {leadStatus === 'success' && <p className="text-xs text-emerald-700 font-bold">Listo: te avisaremos cuando haya prestadores.</p>}
               {leadStatus === 'error' && <p className="text-xs text-red-600 font-bold">No se pudo registrar. Intenta de nuevo.</p>}
             </form>
           </div>
@@ -468,10 +471,10 @@ const ProviderSearch: React.FC = () => {
       </div>
 
       {/* CTA prestadores */}
-      <div className="mt-6 sm:mt-8 bg-slate-900 rounded-2xl p-6 text-center text-white">
+      <div className="mt-6 sm:mt-8 bg-slate-900 rounded-card p-6 text-center text-white">
         <p className="font-extrabold">¿Eres prestador automotriz{filters.commune ? ` en ${filters.commune}` : ''}?</p>
         <p className="text-sm text-slate-300 mt-1 mb-4">Publica tus servicios gratis y aparece en este directorio cuando busquen en tu comuna.</p>
-        <button onClick={() => navigate('/unete')} className="btn-accent">
+        <button onClick={() => navigate('/unete')} className="btn-cta">
           Publicar mi negocio gratis
         </button>
       </div>

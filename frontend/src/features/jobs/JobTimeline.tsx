@@ -25,13 +25,13 @@ const JOB_STATES = [
   { key: 'SEARCHING', label: 'Buscando Proveedor', icon: Search, color: 'bg-blue-500', bgColor: 'bg-blue-50' },
   { key: 'QUOTING', label: 'Esperando Cotizaciones', icon: FileText, color: 'bg-yellow-500', bgColor: 'bg-yellow-50' },
   { key: 'COMPARING_QUOTES', label: 'Comparando Cotizaciones', icon: Users, color: 'bg-purple-500', bgColor: 'bg-purple-50' },
-  { key: 'CONFIRMED', label: 'Trabajo Confirmado', icon: CheckCircle, color: 'bg-green-500', bgColor: 'bg-green-50' },
+  { key: 'CONFIRMED', label: 'Trabajo Confirmado', icon: CheckCircle, color: 'bg-emerald-500', bgColor: 'bg-emerald-50' },
   { key: 'PROVIDER_EN_ROUTE', label: 'Proveedor en Camino', icon: Truck, color: 'bg-orange-500', bgColor: 'bg-orange-50' },
   { key: 'PROVIDER_ARRIVED', label: 'Proveedor ha Llegado', icon: MapPin, color: 'bg-orange-600', bgColor: 'bg-orange-50' },
   { key: 'DIAGNOSING', label: 'Diagnosticando', icon: ClipboardList, color: 'bg-cyan-500', bgColor: 'bg-cyan-50' },
   { key: 'IN_PROGRESS', label: 'Servicio en Progreso', icon: Wrench, color: 'bg-blue-600', bgColor: 'bg-blue-50' },
   { key: 'WORK_COMPLETED', label: 'Trabajo Completado', icon: Package, color: 'bg-teal-500', bgColor: 'bg-teal-50' },
-  { key: 'DELIVERED', label: 'Entregado', icon: CheckCircle, color: 'bg-green-600', bgColor: 'bg-green-50' },
+  { key: 'DELIVERED', label: 'Entregado', icon: CheckCircle, color: 'bg-emerald-600', bgColor: 'bg-emerald-50' },
   { key: 'REVIEWED', label: 'Evaluado', icon: Star, color: 'bg-yellow-500', bgColor: 'bg-yellow-50' },
   { key: 'CLOSED', label: 'Cerrado', icon: Shield, color: 'bg-emerald-500', bgColor: 'bg-emerald-50' },
 ];
@@ -98,7 +98,7 @@ const JobTimeline: React.FC<JobTimelineProps> = ({ currentStatus, showPast = tru
               <div 
                 key={state.key} 
                 className={`relative flex items-start gap-4 p-4 ${
-                  isCurrent ? 'bg-blue-50 rounded-xl' : ''
+                  isCurrent ? 'bg-blue-50 rounded-control' : ''
                 }`}
               >
                 <div className={`relative z-10 w-16 h-16 rounded-full flex items-center justify-center transition-all ${
@@ -111,7 +111,7 @@ const JobTimeline: React.FC<JobTimelineProps> = ({ currentStatus, showPast = tru
                   <Icon className="w-7 h-7" />
                   {isCompleted && (
                     <div className="absolute -top-1 -right-1 w-5 h-5 bg-white rounded-full flex items-center justify-center">
-                      <svg className="w-3 h-3 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                      <svg className="w-3 h-3 text-emerald-500" fill="currentColor" viewBox="0 0 20 20">
                         <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                       </svg>
                     </div>
@@ -168,7 +168,7 @@ const JobTimeline: React.FC<JobTimelineProps> = ({ currentStatus, showPast = tru
     const progress = Math.round((currentIndex / (JOB_STATES.length - 1)) * 100);
     
     return (
-      <div className="mb-6 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-100">
+      <div className="mb-6 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-control border border-blue-100">
         <div className="flex items-center justify-between mb-2">
           <span className="text-sm font-medium text-gray-600">Progreso del servicio</span>
           <span className="text-sm font-bold text-blue-600">{progress}%</span>
@@ -190,7 +190,7 @@ const JobTimeline: React.FC<JobTimelineProps> = ({ currentStatus, showPast = tru
   };
 
   return (
-    <div className="bg-white rounded-2xl shadow-lg p-6">
+    <div className="bg-white rounded-card shadow-lg p-6">
       {getStatusSummary()}
       {renderTimeline()}
     </div>

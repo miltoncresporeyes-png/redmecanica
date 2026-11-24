@@ -1,4 +1,6 @@
 
+import { invalidateAuthCache } from '../middlewares/requireAuth.js';
+import { providerReviewQueueWhere, VISIBLE_PROVIDER_STATUSES } from '../lib/providerStatus.js';
 import { Router } from 'express';
 import { prisma } from '../db.js';
 import { Prisma } from '@prisma/client';
@@ -22,10 +24,15 @@ router.get('/stats', async (req: AuthRequest, res, next) => {
       jobsByStatus,
       communeStats,
       cancellations,
-      avgRating
+      ratedAgg,
+      visibleProviders,
+      verifiedProviders,
+      paidAgg,
+      cancellations24h,
+      selectedJobs
     ] = await Promise.all([
       prisma.serviceProvider.count(),
-      prisma.serviceProvider.count({ where: { status: { in: ['PENDING', 'UNDER_REVIEW'] } } }),
+      prisma.serviceProvider.count({ where: providerReviewQueueWhere }),
       prisma.job.count({ where: { status: { notIn: ['CLOSED', 'CANCELLED', 'REVIEWED'] } } }),
       prisma.job.groupBy({
         by: ['status'],
@@ -39,37 +46,39 @@ router.get('/stats', async (req: AuthRequest, res, next) => {
         take: 5
       }),
       prisma.job.count({ where: { status: 'CANCELLED' } }),
-      prisma.serviceProvider.aggregate({
-        _avg: { rating: true }
-      })
+      // Satisfaccion: promedio de las calificaciones reales de los servicios (no de prestadores sin notas)
+      prisma.job.aggregate({ where: { rating: { not: null } }, _avg: { rating: true }, _count: { rating: true } }),
+      prisma.serviceProvider.count({ where: { status: { in: [...VISIBLE_PROVIDER_STATUSES] } } }),
+      prisma.serviceProvider.count({ where: { status: 'APPROVED' } }),
+      // Ingresos reales: comprobantes pagados
+      prisma.invoice.aggregate({ where: { status: 'PAID' }, _sum: { total: true } }),
+      prisma.job.count({ where: { status: 'CANCELLED', updatedAt: { gte: new Date(Date.now() - 24 * 3600 * 1000) } } }),
+      prisma.job.count({ where: { selectedQuoteId: { not: null } } }),
     ]);
 
-    const totalRequests = await prisma.serviceRequest.count();
     const totalJobs = await prisma.job.count();
-    const acceptanceRate = totalRequests > 0 ? (totalJobs / totalRequests) * 100 : 0;
+    // Conversion: de las solicitudes que llegaron a ser un trabajo, cuantas terminaron con una cotizacion aceptada
+    const conversionRate = totalJobs > 0 ? Math.round((selectedJobs / totalJobs) * 1000) / 10 : 0;
 
     res.json({
       summary: {
         totalProviders,
+        visibleProviders,
+        verifiedProviders,
         pendingProviders,
         activeJobsCount,
-        totalRevenue: 0,
-        avgRating: avgRating._avg.rating || 0,
-        acceptanceRate: acceptanceRate.toFixed(2) + '%'
+        totalRevenue: paidAgg._sum.total || 0,
+        avgRating: ratedAgg._avg.rating || 0,
+        ratedJobs: ratedAgg._count.rating || 0,
+        totalJobs,
+        conversionRate,
       },
       jobsByStatus,
       topCommunes: communeStats,
       issues: {
-        cancellations
+        cancellations,
+        cancellations24h,
       }
-    });
-
-    await auditLog({
-      userId: req.user?.id,
-      action: 'VIEW_ADMIN_STATS',
-      resource: 'Dashboard',
-      ipAddress: req.ip,
-      userAgent: String(req.headers['user-agent'] || 'unknown')
     });
   } catch (error) {
     next(error);
@@ -80,7 +89,7 @@ router.get('/stats', async (req: AuthRequest, res, next) => {
 router.get('/providers/pending', async (_req, res, next) => {
   try {
     const providers = await prisma.serviceProvider.findMany({
-      where: { status: { in: ['PENDING', 'UNDER_REVIEW'] } },
+      where: providerReviewQueueWhere,
       include: { user: { select: { name: true, email: true } } },
       orderBy: { createdAt: 'asc' }
     });
@@ -147,15 +156,94 @@ router.post('/providers/:id/approve', async (req: AuthRequest, res, next) => {
   }
 });
 
-// GET /api/admin/audit - Ver rastro de auditoría
-router.get('/audit', async (_req, res, next) => {
+// POST /api/admin/providers/:id/reject - Rechazar vitrina (queda oculta, con motivo visible para el prestador)
+router.post('/providers/:id/reject', async (req: AuthRequest, res, next) => {
   try {
-    // @ts-ignore
-    const logs = await prisma.auditLog.findMany({
-      orderBy: { createdAt: 'desc' },
-      take: 100
+    const { id } = req.params;
+    const reason = typeof req.body?.reason === 'string' ? req.body.reason.trim().slice(0, 500) : '';
+    if (!reason) {
+      return res.status(400).json({ error: 'Indica el motivo del rechazo' });
+    }
+
+    const exists = await prisma.serviceProvider.findUnique({ where: { id: String(id) }, select: { id: true } });
+    if (!exists) throw new NotFoundError('Proveedor no encontrado');
+
+    const updated = await prisma.serviceProvider.update({
+      where: { id: String(id) },
+      data: {
+        status: 'REJECTED',
+        rejectionReason: reason,
+        reviewedAt: new Date(),
+        reviewedBy: req.user!.email,
+      },
     });
-    res.json(logs);
+
+    await prisma.providerHistory.create({
+      data: {
+        providerId: String(id),
+        action: 'REJECTED',
+        description: reason,
+        metadata: JSON.stringify({ adminId: req.user?.id }),
+      },
+    });
+
+    await auditLog({
+      userId: req.user?.id,
+      action: 'REJECT_PROVIDER',
+      resource: 'ServiceProvider',
+      resourceId: String(id),
+      newValue: reason,
+      ipAddress: req.ip,
+      userAgent: String(req.headers['user-agent'] || 'unknown'),
+    });
+
+    res.json({ message: 'Proveedor rechazado', provider: updated });
+  } catch (error) {
+    next(error);
+  }
+});
+
+// GET /api/admin/audit - Ver rastro de auditoría
+router.get('/audit', async (req, res, next) => {
+  try {
+    const page = Math.max(1, Number.parseInt(String(req.query.page ?? '1'), 10) || 1);
+    const limit = Math.min(100, Math.max(1, Number.parseInt(String(req.query.limit ?? '25'), 10) || 25));
+    const action = typeof req.query.action === 'string' ? req.query.action.trim() : '';
+    const search = typeof req.query.search === 'string' ? req.query.search.trim() : '';
+    const from = typeof req.query.from === 'string' && req.query.from ? new Date(req.query.from) : null;
+    const to = typeof req.query.to === 'string' && req.query.to ? new Date(req.query.to) : null;
+    if (to) to.setHours(23, 59, 59, 999); // "hasta" incluye todo ese dia
+
+    const where: any = {};
+    if (action) where.action = action;
+    if (from && !Number.isNaN(from.getTime())) where.createdAt = { ...where.createdAt, gte: from };
+    if (to && !Number.isNaN(to.getTime())) where.createdAt = { ...where.createdAt, lte: to };
+    if (search) {
+      where.OR = [
+        { action: { contains: search, mode: 'insensitive' } },
+        { resource: { contains: search, mode: 'insensitive' } },
+        { userId: { contains: search, mode: 'insensitive' } },
+        { resourceId: { contains: search, mode: 'insensitive' } },
+      ];
+    }
+
+    // @ts-ignore
+    const [total, logs, actionRows] = await Promise.all([
+      // @ts-ignore
+      prisma.auditLog.count({ where }),
+      // @ts-ignore
+      prisma.auditLog.findMany({ where, orderBy: { createdAt: 'desc' }, skip: (page - 1) * limit, take: limit }),
+      // @ts-ignore
+      prisma.auditLog.groupBy({ by: ['action'], _count: { _all: true }, orderBy: { action: 'asc' } }),
+    ]);
+
+    res.json({
+      logs,
+      total,
+      page,
+      pages: Math.max(1, Math.ceil(total / limit)),
+      actions: (actionRows as any[]).map((r) => r.action),
+    });
   } catch (error) {
     next(error);
   }
@@ -179,7 +267,10 @@ router.get('/users', async (req, res, next) => {
 
     const users = await prisma.user.findMany({
       where,
-      include: {
+      // Nunca devolver el hash de contraseña ni tokens de verificacion
+      select: {
+        id: true, name: true, email: true, phone: true, role: true, status: true,
+        emailVerified: true, createdAt: true, updatedAt: true,
         _count: { select: { serviceRequests: true } }
       },
       orderBy: { createdAt: 'desc' },
@@ -251,7 +342,8 @@ router.get('/providers/:id', async (req, res, next) => {
     const provider = await prisma.serviceProvider.findUnique({
       where: { id: String(id) },
       include: {
-        user: true,
+        // Nunca devolver el hash de contraseña ni tokens de verificacion al panel
+        user: { select: { id: true, name: true, email: true, phone: true, role: true, status: true, emailVerified: true, createdAt: true } },
         subscription: true,
         categories: { include: { category: true } },
         zones: { include: { zone: true } },
@@ -290,7 +382,7 @@ router.patch('/providers/:id', async (req, res, next) => {
         ...(commune !== undefined && { commune }),
         ...(region !== undefined && { region })
       },
-      include: { user: true }
+      include: { user: { select: { id: true, name: true, email: true, phone: true, role: true, status: true } } }
     });
 
     await auditLog({
@@ -350,9 +442,12 @@ router.post('/providers/:id/reactivate', async (req, res, next) => {
   try {
     const { id } = req.params;
 
+    // Reactivar restaura el estado previo: verificada si ya fue revisada, publicada si no.
+    const current = await prisma.serviceProvider.findUnique({ where: { id: String(id) }, select: { reviewedAt: true } });
+    if (!current) throw new NotFoundError('Proveedor no encontrado');
     const provider = await prisma.serviceProvider.update({
       where: { id: String(id) },
-      data: { status: 'APPROVED' }
+      data: { status: current.reviewedAt ? 'APPROVED' : 'ACTIVE' }
     });
 
     await prisma.providerHistory.create({
@@ -520,6 +615,7 @@ router.get('/launch-leads/stats', async (req: AuthRequest, res, next) => {
 router.post('/users/:id/suspend', async (req, res, next) => {
   try {
     const { id } = req.params;
+    invalidateAuthCache(String(id));
     const user = await prisma.user.update({
       where: { id: String(id) },
       data: { status: 'SUSPENDED' }
@@ -546,6 +642,7 @@ router.post('/users/:id/suspend', async (req, res, next) => {
 router.post('/users/:id/reactivate', async (req, res, next) => {
   try {
     const { id } = req.params;
+    invalidateAuthCache(String(id));
     const user = await prisma.user.update({
       where: { id: String(id) },
       data: { status: 'ACTIVE' }

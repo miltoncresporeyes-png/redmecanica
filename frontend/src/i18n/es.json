@@ -1,0 +1,36 @@
+{
+  "nav": { "home": "Inicio", "requests": "Solicitudes", "business": "Mi negocio", "account": "Cuenta" },
+  "home": {
+    "attention": "Requiere tu atención",
+    "allDone": "Todo al día",
+    "allDoneHint": "Cuando llegue una solicitud nueva la verás aquí.",
+    "newRequests_one": "{{count}} solicitud nueva para cotizar",
+    "newRequests_other": "{{count}} solicitudes nuevas para cotizar",
+    "activeJobs_one": "{{count}} servicio en curso",
+    "activeJobs_other": "{{count}} servicios en curso",
+    "viewRequests": "Ver solicitudes",
+    "continue": "Continuar",
+    "upload": "Subir",
+    "uploadDocs": "Sube tus documentos para obtener la insignia “Verificado”",
+    "contactsWeek": "Contactos esta semana",
+    "views": "Visitas a tu vitrina",
+    "rating": "Calificación",
+    "noRatings": "Sin calificaciones",
+    "setupTitle": "Termina de configurar tu vitrina",
+    "stepData": "Completa los datos de tu negocio",
+    "stepDataHint": "Nombre, teléfono y {{zone}}."
+  },
+  "verification": {
+    "title": "Verificación",
+    "verified": "Tu vitrina está verificada y muestra la insignia “Verificado”.",
+    "reviewing": "Recibimos tus documentos. Nuestro equipo los está revisando.",
+    "pending": "Sube tus documentos para obtener la insignia “Verificado”. Solo los ve nuestro equipo.",
+    "received": "Recibido",
+    "upload": "Subir",
+    "replace": "Reemplazar",
+    "uploading": "Subiendo…",
+    "idHint": "Foto clara por ambos lados.",
+    "backgroundHint": "Foto o PDF vigente."
+  },
+  "language": { "label": "Idioma" }
+}

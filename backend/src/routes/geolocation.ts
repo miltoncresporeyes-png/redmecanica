@@ -17,7 +17,7 @@ const searchProvidersSchema = z.object({
   categoryId: z.string().uuid().optional(),
   serviceType: z.enum(['MECHANIC', 'WORKSHOP', 'TOWING', 'INSURANCE']).optional(),
   availableNow: z.coerce.boolean().optional().default(false),
-  status: z.enum(['ACTIVE', 'PENDING', 'UNDER_REVIEW', 'SUSPENDED']).optional().default('ACTIVE'),
+  status: z.enum(['ACTIVE', 'APPROVED', 'PENDING', 'UNDER_REVIEW', 'SUSPENDED']).optional().default('ACTIVE'),
   useRawQuery: z.coerce.boolean().optional().default(false),
 });
 
@@ -52,6 +52,20 @@ router.get('/search', async (req, res) => {
         rating: provider.rating,
         latitude: provider.latitude,
         longitude: provider.longitude,
+        // Campos publicos de la vitrina (el buscador y las tarjetas los usan para
+        // filtrar por comuna/categoria y para el contacto directo por WhatsApp).
+        businessName: 'businessName' in provider ? provider.businessName : undefined,
+        experience: 'experience' in provider ? provider.experience : undefined,
+        commune: 'commune' in provider ? provider.commune : undefined,
+        region: 'region' in provider ? provider.region : undefined,
+        address: 'address' in provider ? provider.address : undefined,
+        bio: 'bio' in provider ? provider.bio : undefined,
+        specialties: 'specialties' in provider ? provider.specialties : undefined,
+        phone: 'phone' in provider ? provider.phone : undefined,
+        paymentMethods: 'paymentMethods' in provider ? provider.paymentMethods : undefined,
+        trustScore: 'trustScore' in provider ? provider.trustScore : undefined,
+        completedJobs: 'completedJobs' in provider ? provider.completedJobs : undefined,
+        plan: 'subscription' in provider ? (provider.subscription?.plan ?? 'FREE') : 'FREE',
         distance: Math.round(provider.distance * 10) / 10,
         etaMinutes,
         isAvailableNow: 'availability' in provider ? isProviderAvailableNow(provider.availability || []) : null,

@@ -94,13 +94,13 @@ const QuoteComparison: React.FC<QuoteComparisonProps> = ({ jobId, onQuoteAccepte
 
   if (quotes.length === 0) {
     return (
-      <div className="text-center p-12 bg-gray-50 rounded-xl">
+      <div className="text-center p-12 bg-gray-50 rounded-control">
         <Clock className="w-16 h-16 text-gray-400 mx-auto mb-4" />
         <h3 className="text-xl font-bold text-gray-700 mb-2">Esperando cotizaciones</h3>
         <p className="text-gray-500">Los Prestadores están preparando sus cotizaciones...</p>
         <button
           onClick={loadQuotes}
-          className="mt-4 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          className="mt-4 px-6 py-2 bg-blue-600 text-white rounded-control hover:bg-blue-700 transition-colors"
         >
           Actualizar
         </button>
@@ -123,7 +123,7 @@ const QuoteComparison: React.FC<QuoteComparisonProps> = ({ jobId, onQuoteAccepte
         {quotes.map((quote, index) => (
           <div
             key={quote.id}
-            className={`relative bg-white rounded-2xl shadow-lg border-2 transition-all hover:shadow-xl ${
+            className={`relative bg-white rounded-card shadow-lg border-2 transition-all hover:shadow-xl ${
               index === 1 ? 'border-blue-500 ring-4 ring-blue-100' : 'border-gray-100'
             }`}
           >
@@ -145,8 +145,8 @@ const QuoteComparison: React.FC<QuoteComparisonProps> = ({ jobId, onQuoteAccepte
                       <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
                       <span className="font-medium">{quote.provider?.rating?.toFixed(1) || '5.0'}</span>
                       <span className="text-gray-400">•</span>
-                      <Shield className="w-4 h-4 text-green-500" />
-                      <span className="text-green-600 font-medium">{quote.provider?.trustScore || 100}%</span>
+                      <Shield className="w-4 h-4 text-emerald-500" />
+                      <span className="text-emerald-600 font-medium">{quote.provider?.trustScore || 100}%</span>
                     </div>
                   </div>
                 </div>
@@ -189,14 +189,14 @@ const QuoteComparison: React.FC<QuoteComparisonProps> = ({ jobId, onQuoteAccepte
                 </div>
               </div>
 
-              <div className="bg-gray-50 rounded-xl p-4 mb-4">
+              <div className="bg-gray-50 rounded-control p-4 mb-4">
                 <div className="flex justify-between items-center mb-2">
                   <span className="text-gray-500">Tiempo estimado:</span>
                   <span className="font-semibold">{quote.estimatedDuration || 60} min</span>
                 </div>
                 <div className="flex justify-between items-center mb-2">
                   <span className="text-gray-500">Garantía:</span>
-                  <span className="font-semibold text-green-600">{quote.warranty || 'Sin garantía'}</span>
+                  <span className="font-semibold text-emerald-600">{quote.warranty || 'Sin garantía'}</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-gray-500">Formas de pago:</span>
@@ -218,7 +218,7 @@ const QuoteComparison: React.FC<QuoteComparisonProps> = ({ jobId, onQuoteAccepte
                 <button
                   onClick={() => handleAccept(quote.id)}
                   disabled={acceptingId === quote.id}
-                  className="w-full py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                  className="w-full py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold rounded-control hover:from-blue-700 hover:to-indigo-700 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
                 >
                   {acceptingId === quote.id ? (
                     <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
@@ -231,7 +231,7 @@ const QuoteComparison: React.FC<QuoteComparisonProps> = ({ jobId, onQuoteAccepte
                 </button>
                 <button
                   onClick={() => handleReject(quote.id)}
-                  className="w-full py-2 border-2 border-gray-200 text-gray-600 font-semibold rounded-xl hover:bg-gray-50 transition-colors flex items-center justify-center gap-2"
+                  className="w-full py-2 border-2 border-gray-200 text-gray-600 font-semibold rounded-control hover:bg-gray-50 transition-colors flex items-center justify-center gap-2"
                 >
                   <X className="w-4 h-4" />
                   Rechazar

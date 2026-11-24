@@ -26,7 +26,7 @@ const ProviderBenefits: React.FC<ProviderBenefitsProps> = ({
       </div>
 
       {/* Hero */}
-      <div className="bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg p-8 mb-8 text-center">
+      <div className="bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-control p-8 mb-8 text-center">
         <h2 className="text-3xl font-bold mb-3">Haz crecer tu negocio con RedMecánica</h2>
         <p className="text-lg opacity-90 mb-6">
           Únete a la red de profesionales automotrices más grande de Chile y accede a 
@@ -35,13 +35,13 @@ const ProviderBenefits: React.FC<ProviderBenefitsProps> = ({
         <div className="flex justify-center gap-4 flex-wrap">
           <button
             onClick={onNavigateToOnboarding}
-            className="bg-white text-purple-600 px-6 py-3 rounded-lg font-bold hover:bg-gray-100 transition-colors"
+            className="bg-white text-purple-600 px-6 py-3 rounded-control font-bold hover:bg-gray-100 transition-colors"
           >
             Registrarse Ahora
           </button>
           <button
             onClick={onNavigateToPricing}
-            className="bg-purple-800 bg-opacity-50 text-white px-6 py-3 rounded-lg font-bold hover:bg-opacity-70 transition-colors border border-white"
+            className="bg-purple-800 bg-opacity-50 text-white px-6 py-3 rounded-control font-bold hover:bg-opacity-70 transition-colors border border-white"
           >
             Ver Planes y Precios
           </button>
@@ -52,7 +52,7 @@ const ProviderBenefits: React.FC<ProviderBenefitsProps> = ({
       <div className="mb-8">
         <h2 className="text-2xl font-bold text-gray-900 mb-6">¿Por qué elegir RedMecánica?</h2>
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <div className="bg-white border-2 border-blue-200 rounded-lg p-6 hover:shadow-lg transition-shadow">
+          <div className="bg-white border-2 border-blue-200 rounded-control p-6 hover:shadow-lg transition-shadow">
             <div className="text-4xl mb-3">💼</div>
             <h3 className="text-xl font-bold text-gray-900 mb-2">Más Clientes</h3>
             <p className="text-gray-600">
@@ -61,7 +61,7 @@ const ProviderBenefits: React.FC<ProviderBenefitsProps> = ({
             </p>
           </div>
 
-          <div className="bg-white border-2 border-green-200 rounded-lg p-6 hover:shadow-lg transition-shadow">
+          <div className="bg-white border-2 border-emerald-200 rounded-control p-6 hover:shadow-lg transition-shadow">
             <div className="text-4xl mb-3">✅</div>
             <h3 className="text-xl font-bold text-gray-900 mb-2">Verificación de Confianza</h3>
             <p className="text-gray-600">
@@ -70,7 +70,7 @@ const ProviderBenefits: React.FC<ProviderBenefitsProps> = ({
             </p>
           </div>
 
-          <div className="bg-white border-2 border-purple-200 rounded-lg p-6 hover:shadow-lg transition-shadow">
+          <div className="bg-white border-2 border-purple-200 rounded-control p-6 hover:shadow-lg transition-shadow">
             <div className="text-4xl mb-3">💳</div>
             <h3 className="text-xl font-bold text-gray-900 mb-2">Cobra Directo</h3>
             <p className="text-gray-600">
@@ -79,7 +79,7 @@ const ProviderBenefits: React.FC<ProviderBenefitsProps> = ({
             </p>
           </div>
 
-          <div className="bg-white border-2 border-yellow-200 rounded-lg p-6 hover:shadow-lg transition-shadow">
+          <div className="bg-white border-2 border-yellow-200 rounded-control p-6 hover:shadow-lg transition-shadow">
             <div className="text-4xl mb-3">📱</div>
             <h3 className="text-xl font-bold text-gray-900 mb-2">Gestión Digital</h3>
             <p className="text-gray-600">
@@ -88,7 +88,7 @@ const ProviderBenefits: React.FC<ProviderBenefitsProps> = ({
             </p>
           </div>
 
-          <div className="bg-white border-2 border-red-200 rounded-lg p-6 hover:shadow-lg transition-shadow">
+          <div className="bg-white border-2 border-red-200 rounded-control p-6 hover:shadow-lg transition-shadow">
             <div className="text-4xl mb-3">📊</div>
             <h3 className="text-xl font-bold text-gray-900 mb-2">Analytics Avanzados</h3>
             <p className="text-gray-600">
@@ -97,7 +97,7 @@ const ProviderBenefits: React.FC<ProviderBenefitsProps> = ({
             </p>
           </div>
 
-          <div className="bg-white border-2 border-indigo-200 rounded-lg p-6 hover:shadow-lg transition-shadow">
+          <div className="bg-white border-2 border-indigo-200 rounded-control p-6 hover:shadow-lg transition-shadow">
             <div className="text-4xl mb-3">🎓</div>
             <h3 className="text-xl font-bold text-gray-900 mb-2">Capacitación Continua</h3>
             <p className="text-gray-600">
@@ -114,7 +114,7 @@ const ProviderBenefits: React.FC<ProviderBenefitsProps> = ({
         
         <div className="grid md:grid-cols-2 gap-6">
           {/* Vitrina Gratis */}
-          <div className="bg-gradient-to-br from-blue-50 to-blue-100 border border-blue-300 rounded-lg p-6">
+          <div className="bg-gradient-to-br from-blue-50 to-blue-100 border border-blue-300 rounded-control p-6">
             <div className="flex items-center mb-4">
               <div className="text-3xl mr-3">🚀</div>
               <div>
@@ -124,19 +124,19 @@ const ProviderBenefits: React.FC<ProviderBenefitsProps> = ({
             </div>
             <ul className="space-y-2">
               <li className="flex items-start">
-                <span className="text-green-600 mr-2">✓</span>
+                <span className="text-emerald-600 mr-2">✓</span>
                 <span className="text-sm">Vitrina pública con tus servicios</span>
               </li>
               <li className="flex items-start">
-                <span className="text-green-600 mr-2">✓</span>
+                <span className="text-emerald-600 mr-2">✓</span>
                 <span className="text-sm">Apareces en tu comuna base</span>
               </li>
               <li className="flex items-start">
-                <span className="text-green-600 mr-2">✓</span>
+                <span className="text-emerald-600 mr-2">✓</span>
                 <span className="text-sm">Contacto directo por WhatsApp</span>
               </li>
               <li className="flex items-start">
-                <span className="text-green-600 mr-2">✓</span>
+                <span className="text-emerald-600 mr-2">✓</span>
                 <span className="text-sm">Soporte por email</span>
               </li>
             </ul>
@@ -148,7 +148,7 @@ const ProviderBenefits: React.FC<ProviderBenefitsProps> = ({
           </div>
 
           {/* Destacado */}
-          <div className="bg-gradient-to-br from-purple-50 to-purple-100 border-2 border-purple-400 rounded-lg p-6 relative">
+          <div className="bg-gradient-to-br from-purple-50 to-purple-100 border-2 border-purple-400 rounded-control p-6 relative">
             <div className="absolute -top-3 right-4 bg-yellow-400 text-yellow-900 px-3 py-1 rounded-full text-xs font-bold">
               MÁS POPULAR
             </div>
@@ -161,27 +161,27 @@ const ProviderBenefits: React.FC<ProviderBenefitsProps> = ({
             </div>
             <ul className="space-y-2">
               <li className="flex items-start">
-                <span className="text-green-600 mr-2">✓</span>
+                <span className="text-emerald-600 mr-2">✓</span>
                 <span className="text-sm"><strong>Primeros lugares en tu comuna</strong></span>
               </li>
               <li className="flex items-start">
-                <span className="text-green-600 mr-2">✓</span>
+                <span className="text-emerald-600 mr-2">✓</span>
                 <span className="text-sm">Badge "Verificado" destacado</span>
               </li>
               <li className="flex items-start">
-                <span className="text-green-600 mr-2">✓</span>
+                <span className="text-emerald-600 mr-2">✓</span>
                 <span className="text-sm">Hasta 3 comunas de cobertura</span>
               </li>
               <li className="flex items-start">
-                <span className="text-green-600 mr-2">✓</span>
+                <span className="text-emerald-600 mr-2">✓</span>
                 <span className="text-sm">Estadísticas de visitas y contactos</span>
               </li>
               <li className="flex items-start">
-                <span className="text-green-600 mr-2">✓</span>
+                <span className="text-emerald-600 mr-2">✓</span>
                 <span className="text-sm">Soporte por WhatsApp</span>
               </li>
               <li className="flex items-start">
-                <span className="text-green-600 mr-2">✓</span>
+                <span className="text-emerald-600 mr-2">✓</span>
                 <span className="text-sm">Sin comisión por contacto</span>
               </li>
             </ul>
@@ -193,7 +193,7 @@ const ProviderBenefits: React.FC<ProviderBenefitsProps> = ({
           </div>
 
           {/* Taller Premium */}
-          <div className="bg-gradient-to-br from-yellow-50 to-yellow-100 border border-yellow-300 rounded-lg p-6">
+          <div className="bg-gradient-to-br from-yellow-50 to-yellow-100 border border-yellow-300 rounded-control p-6">
             <div className="flex items-center mb-4">
               <div className="text-3xl mr-3">👑</div>
               <div>
@@ -203,35 +203,35 @@ const ProviderBenefits: React.FC<ProviderBenefitsProps> = ({
             </div>
             <ul className="space-y-2">
               <li className="flex items-start">
-                <span className="text-green-600 mr-2">✓</span>
+                <span className="text-emerald-600 mr-2">✓</span>
                 <span className="text-sm">Todo lo del plan Destacado, más:</span>
               </li>
               <li className="flex items-start">
-                <span className="text-green-600 mr-2">✓</span>
+                <span className="text-emerald-600 mr-2">✓</span>
                 <span className="text-sm"><strong>Badge "Premium"</strong></span>
               </li>
               <li className="flex items-start">
-                <span className="text-green-600 mr-2">✓</span>
+                <span className="text-emerald-600 mr-2">✓</span>
                 <span className="text-sm">Destacado en primera posición</span>
               </li>
               <li className="flex items-start">
-                <span className="text-green-600 mr-2">✓</span>
+                <span className="text-emerald-600 mr-2">✓</span>
                 <span className="text-sm">Cobertura regional y nacional</span>
               </li>
               <li className="flex items-start">
-                <span className="text-green-600 mr-2">✓</span>
+                <span className="text-emerald-600 mr-2">✓</span>
                 <span className="text-sm">Multi-usuario (hasta 5 cuentas)</span>
               </li>
               <li className="flex items-start">
-                <span className="text-green-600 mr-2">✓</span>
+                <span className="text-emerald-600 mr-2">✓</span>
                 <span className="text-sm">Dashboard con analytics</span>
               </li>
               <li className="flex items-start">
-                <span className="text-green-600 mr-2">✓</span>
+                <span className="text-emerald-600 mr-2">✓</span>
                 <span className="text-sm">Gestor de cuenta dedicado</span>
               </li>
               <li className="flex items-start">
-                <span className="text-green-600 mr-2">✓</span>
+                <span className="text-emerald-600 mr-2">✓</span>
                 <span className="text-sm">API para integración con tu sistema</span>
               </li>
             </ul>
@@ -243,7 +243,7 @@ const ProviderBenefits: React.FC<ProviderBenefitsProps> = ({
           </div>
 
           {/* Plan Empresarial */}
-          <div className="bg-gradient-to-br from-green-50 to-green-100 border border-green-300 rounded-lg p-6">
+          <div className="bg-gradient-to-br from-emerald-50 to-emerald-100 border border-emerald-300 rounded-control p-6">
             <div className="flex items-center mb-4">
               <div className="text-3xl mr-3">🏢</div>
               <div>
@@ -253,39 +253,39 @@ const ProviderBenefits: React.FC<ProviderBenefitsProps> = ({
             </div>
             <ul className="space-y-2">
               <li className="flex items-start">
-                <span className="text-green-600 mr-2">✓</span>
+                <span className="text-emerald-600 mr-2">✓</span>
                 <span className="text-sm">Todo lo del Plan Premium, más:</span>
               </li>
               <li className="flex items-start">
-                <span className="text-green-600 mr-2">✓</span>
+                <span className="text-emerald-600 mr-2">✓</span>
                 <span className="text-sm">Contrato personalizado a medida</span>
               </li>
               <li className="flex items-start">
-                <span className="text-green-600 mr-2">✓</span>
+                <span className="text-emerald-600 mr-2">✓</span>
                 <span className="text-sm">SLA garantizado</span>
               </li>
               <li className="flex items-start">
-                <span className="text-green-600 mr-2">✓</span>
+                <span className="text-emerald-600 mr-2">✓</span>
                 <span className="text-sm">Integración completa con ERP</span>
               </li>
               <li className="flex items-start">
-                <span className="text-green-600 mr-2">✓</span>
+                <span className="text-emerald-600 mr-2">✓</span>
                 <span className="text-sm">Usuarios ilimitados</span>
               </li>
               <li className="flex items-start">
-                <span className="text-green-600 mr-2">✓</span>
+                <span className="text-emerald-600 mr-2">✓</span>
                 <span className="text-sm">Dashboard corporativo</span>
               </li>
               <li className="flex items-start">
-                <span className="text-green-600 mr-2">✓</span>
+                <span className="text-emerald-600 mr-2">✓</span>
                 <span className="text-sm">Soporte 24/7 dedicado</span>
               </li>
               <li className="flex items-start">
-                <span className="text-green-600 mr-2">✓</span>
+                <span className="text-emerald-600 mr-2">✓</span>
                 <span className="text-sm">Asesor comercial exclusivo</span>
               </li>
             </ul>
-            <div className="mt-4 pt-4 border-t border-green-300">
+            <div className="mt-4 pt-4 border-t border-emerald-300">
               <p className="text-sm text-gray-700">
                 <strong>Sin comisión</strong> por contacto · precio a medida
               </p>
@@ -295,7 +295,7 @@ const ProviderBenefits: React.FC<ProviderBenefitsProps> = ({
       </div>
 
       {/* Beneficios Adicionales */}
-      <div className="bg-gradient-to-r from-indigo-50 to-purple-50 border border-indigo-200 rounded-lg p-8 mb-8">
+      <div className="bg-gradient-to-r from-indigo-50 to-purple-50 border border-indigo-200 rounded-control p-8 mb-8">
         <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">
           Beneficios Adicionales para Todos los Prestadores
         </h2>
@@ -345,7 +345,7 @@ const ProviderBenefits: React.FC<ProviderBenefitsProps> = ({
             { icon: '⭐', title: 'Construye reputación real', desc: 'Cada servicio completado suma a tu calificación. Nada simulado.' },
             { icon: '💬', title: 'Recibe contacto directo', desc: 'WhatsApp y teléfono visibles. El conductor te escribe a ti, sin intermediarios.' },
           ].map((c) => (
-            <div key={c.title} className="bg-white border border-gray-200 rounded-lg p-6">
+            <div key={c.title} className="bg-white border border-gray-200 rounded-control p-6">
               <div className="text-4xl mb-3" aria-hidden>{c.icon}</div>
               <h3 className="font-bold text-gray-900 mb-1">{c.title}</h3>
               <p className="text-sm text-gray-600">{c.desc}</p>
@@ -355,7 +355,7 @@ const ProviderBenefits: React.FC<ProviderBenefitsProps> = ({
       </div>
 
       {/* Call to Action Final */}
-      <div className="bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg p-8 text-center">
+      <div className="bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-control p-8 text-center">
         <h2 className="text-3xl font-bold mb-3">¿Listo para hacer crecer tu negocio?</h2>
         <p className="text-lg mb-6 opacity-90">
           Únete a RedMecánica hoy y empieza a recibir nuevos clientes desde el primer día
@@ -363,13 +363,13 @@ const ProviderBenefits: React.FC<ProviderBenefitsProps> = ({
         <div className="flex justify-center gap-4 flex-wrap">
           <button
             onClick={onNavigateToOnboarding}
-            className="bg-white text-purple-600 px-8 py-4 rounded-lg font-bold text-lg hover:bg-gray-100 transition-colors shadow-lg"
+            className="bg-white text-purple-600 px-8 py-4 rounded-control font-bold text-lg hover:bg-gray-100 transition-colors shadow-lg"
           >
             Comenzar Ahora Gratis
           </button>
           <button
             onClick={onNavigateToPricing}
-            className="bg-purple-800 bg-opacity-50 text-white px-8 py-4 rounded-lg font-bold text-lg hover:bg-opacity-70 transition-colors border-2 border-white"
+            className="bg-purple-800 bg-opacity-50 text-white px-8 py-4 rounded-control font-bold text-lg hover:bg-opacity-70 transition-colors border-2 border-white"
           >
             Ver Todos los Planes
           </button>

@@ -9,10 +9,10 @@ import {
   CheckCircle2, 
   Clock, 
   ChevronRight,
-  Filter,
-  Download,
-  Calendar
+  Download
 } from 'lucide-react';
+import { useNavigate } from 'react-router';
+import { downloadCsv } from '../../lib/csv';
 import { 
   BarChart, 
   Bar, 
@@ -30,6 +30,7 @@ import { motion } from 'framer-motion';
 const COLORS = ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#6366F1'];
 
 const AdminDashboard: React.FC = () => {
+  const navigate = useNavigate();
   const [stats, setStats] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
@@ -66,6 +67,31 @@ const AdminDashboard: React.FC = () => {
     count: c._count?._all || c._count || 0
   })) || [];
 
+  const exportReport = () => {
+    const sm = stats?.summary || {};
+    const rows: { seccion: string; metrica: string; valor: string | number }[] = [
+      { seccion: 'Resumen', metrica: 'Prestadores totales', valor: sm.totalProviders ?? 0 },
+      { seccion: 'Resumen', metrica: 'Prestadores visibles en el directorio', valor: sm.visibleProviders ?? 0 },
+      { seccion: 'Resumen', metrica: 'Prestadores verificados', valor: sm.verifiedProviders ?? 0 },
+      { seccion: 'Resumen', metrica: 'Prestadores por revisar', valor: sm.pendingProviders ?? 0 },
+      { seccion: 'Resumen', metrica: 'Servicios activos', valor: sm.activeJobsCount ?? 0 },
+      { seccion: 'Resumen', metrica: 'Servicios totales', valor: sm.totalJobs ?? 0 },
+      { seccion: 'Resumen', metrica: 'Conversión a servicio (%)', valor: sm.conversionRate ?? 0 },
+      { seccion: 'Resumen', metrica: 'Satisfacción promedio', valor: sm.avgRating ? Number(sm.avgRating).toFixed(2) : 'sin datos' },
+      { seccion: 'Resumen', metrica: 'Servicios calificados', valor: sm.ratedJobs ?? 0 },
+      { seccion: 'Resumen', metrica: 'Ingresos cobrados (CLP)', valor: sm.totalRevenue ?? 0 },
+      { seccion: 'Resumen', metrica: 'Cancelaciones (total)', valor: stats?.issues?.cancellations ?? 0 },
+      { seccion: 'Resumen', metrica: 'Cancelaciones (últimas 24 h)', valor: stats?.issues?.cancellations24h ?? 0 },
+      ...jobDistribution.map((j: any) => ({ seccion: 'Servicios por estado', metrica: j.name, valor: j.value })),
+      ...topCommunes.map((c: any) => ({ seccion: 'Comunas con más prestadores', metrica: c.name, valor: c.count })),
+    ];
+    downloadCsv(`reporte-${new Date().toISOString().slice(0, 10)}`, rows, [
+      { header: 'Sección', value: (r) => r.seccion },
+      { header: 'Métrica', value: (r) => r.metrica },
+      { header: 'Valor', value: (r) => r.valor },
+    ]);
+  };
+
   return (
     <div className="space-y-8 pb-12 font-sans">
       {/* Header Section */}
@@ -75,50 +101,42 @@ const AdminDashboard: React.FC = () => {
           <p className="text-gray-500 mt-1">Monitoreo en tiempo real de la red RedMecánica.</p>
         </div>
         <div className="flex items-center gap-3">
-          <button className="flex items-center gap-2 px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-all shadow-sm">
-            <Calendar size={16} />
-            Últimos 30 días
-          </button>
-          <button className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 rounded-xl text-sm font-bold text-white hover:bg-blue-700 transition-all shadow-lg shadow-blue-200">
-            <Download size={16} />
-            Exportar Reporte
+          <button onClick={exportReport} className="btn-primary !min-h-[40px] !py-2">
+            <Download size={16} aria-hidden="true" />
+            Exportar reporte
           </button>
         </div>
       </div>
 
       {/* KPI Section */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <KPICard 
-          title="Técnicos Activos" 
-          value={stats?.summary?.totalProviders || 0}
-          trend="+12%"
+        <KPICard
+          title="Prestadores visibles"
+          value={stats?.summary?.visibleProviders ?? 0}
           icon={Users}
           gradient="from-blue-600 to-indigo-600"
-          subtitle="Prestadores verificados"
+          subtitle={`${stats?.summary?.verifiedProviders ?? 0} verificados · ${stats?.summary?.pendingProviders ?? 0} por revisar`}
         />
-        <KPICard 
-          title="Tasa Aceptación" 
-          value={stats?.summary?.acceptanceRate || "0%"}
-          trend="+5.4%"
+        <KPICard
+          title="Conversión a servicio"
+          value={`${stats?.summary?.conversionRate ?? 0}%`}
           icon={TrendingUp}
           gradient="from-emerald-500 to-teal-600"
-          subtitle="Solicitudes concretadas"
+          subtitle="Solicitudes con cotización aceptada"
         />
-        <KPICard 
-          title="Jobs en Progreso" 
-          value={stats?.summary?.activeJobsCount || 0}
-          trend="-2"
+        <KPICard
+          title="Servicios activos"
+          value={stats?.summary?.activeJobsCount ?? 0}
           icon={Clock}
           gradient="from-amber-400 to-orange-500"
-          subtitle="En ruta o diagnóstico"
+          subtitle="Abiertos o en curso"
         />
-        <KPICard 
-          title="Satisfacción Promedio" 
-          value={stats?.summary?.avgRating ? stats.summary.avgRating.toFixed(1) : "0.0"}
-          trend="+0.2"
+        <KPICard
+          title="Satisfacción promedio"
+          value={stats?.summary?.avgRating ? Number(stats.summary.avgRating).toFixed(1) : '—'}
           icon={CheckCircle2}
           gradient="from-purple-500 to-pink-600"
-          subtitle="Calificación de usuarios"
+          subtitle={stats?.summary?.ratedJobs ? `${stats.summary.ratedJobs} calificaciones` : 'Aún sin calificaciones'}
         />
       </div>
 
@@ -135,9 +153,6 @@ const AdminDashboard: React.FC = () => {
               <h3 className="text-xl font-bold text-gray-900">Distribución de Flujo</h3>
               <p className="text-sm text-gray-500">Estado de todos los servicios históricos.</p>
             </div>
-            <button className="p-2 hover:bg-gray-50 rounded-lg transition-all">
-              <Filter size={20} className="text-gray-400" />
-            </button>
           </div>
           
           <div className="h-[300px] w-full">
@@ -228,16 +243,19 @@ const AdminDashboard: React.FC = () => {
         
         <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-8">
           <div className="flex items-center gap-8">
-            <div className="w-20 h-20 bg-red-500/10 rounded-3xl flex items-center justify-center border border-red-500/20 shadow-inner">
+            <div className="w-20 h-20 bg-red-500/10 rounded-card flex items-center justify-center border border-red-500/20 shadow-inner">
                <AlertCircle size={36} className="text-red-500" />
             </div>
             <div>
-              <h4 className="text-white text-2xl font-black tracking-tight">Anomalías Detectadas</h4>
-              <p className="text-gray-400 mt-1 max-w-md font-medium">Se detectaron {stats?.issues?.cancellations || 0} cancelaciones sospechosas en las últimas 24 horas.</p>
+              <h4 className="text-white text-2xl font-black tracking-tight">Cancelaciones de servicios</h4>
+              <p className="text-gray-300 mt-1 max-w-md font-medium">
+                {stats?.issues?.cancellations24h ?? 0} en las últimas 24 horas · {stats?.issues?.cancellations ?? 0} en total.
+                {(stats?.issues?.cancellations24h ?? 0) >= 5 ? ' Conviene revisar el motivo en el rastro de auditoría.' : ''}
+              </p>
             </div>
           </div>
-          <button className="w-full lg:w-auto px-10 py-5 bg-white text-[#0F172A] rounded-2xl font-black flex items-center justify-center gap-3 hover:bg-gray-100 active:scale-95 transition-all group shadow-2xl shadow-white/5">
-            Iniciar Auditoría Manual
+          <button onClick={() => navigate('/admin/audit')} className="w-full lg:w-auto px-10 py-5 bg-white text-[#0F172A] rounded-card font-black flex items-center justify-center gap-3 hover:bg-gray-100 active:scale-95 transition-all group shadow-2xl">
+            Ver rastro de auditoría
             <ChevronRight size={20} className="group-hover:translate-x-1 transition-all" />
           </button>
         </div>
@@ -249,7 +267,7 @@ const AdminDashboard: React.FC = () => {
 const KPICard: React.FC<{
   title: string, 
   value: string | number, 
-  trend: string, 
+  trend?: string, 
   icon: any, 
   gradient: string,
   subtitle: string
@@ -259,20 +277,22 @@ const KPICard: React.FC<{
     className="bg-white p-7 rounded-[32px] shadow-sm border border-gray-100 flex flex-col justify-between h-full group transition-all hover:shadow-xl hover:shadow-gray-200/50"
   >
     <div className="flex items-center justify-between">
-      <div className={cn("w-14 h-14 rounded-2xl bg-gradient-to-br flex items-center justify-center text-white shadow-xl transform transition-transform group-hover:scale-110", gradient)}>
+      <div className={cn("w-14 h-14 rounded-card bg-gradient-to-br flex items-center justify-center text-white shadow-xl transform transition-transform group-hover:scale-110", gradient)}>
         <Icon size={28} />
       </div>
-      <div className={cn(
-        "px-3 py-1.5 rounded-full text-[11px] font-black tracking-tighter shadow-sm",
-        trend.startsWith('+') ? "bg-emerald-50 text-emerald-700" : "bg-red-50 text-red-700"
-      )}>
-        {trend}
-      </div>
+      {trend && (
+        <div className={cn(
+          "px-3 py-1.5 rounded-full text-xs font-black tracking-tighter shadow-sm",
+          trend.startsWith('+') ? "bg-emerald-50 text-emerald-700" : "bg-red-50 text-red-700"
+        )}>
+          {trend}
+        </div>
+      )}
     </div>
     <div className="mt-10">
-      <p className="text-gray-400 text-[10px] font-black uppercase tracking-[0.2em]">{title}</p>
+      <p className="text-gray-600 text-xs font-bold uppercase tracking-[0.15em]">{title}</p>
       <h3 className="text-4xl font-black text-gray-900 mt-1 tracking-tighter">{value}</h3>
-      <p className="text-[11px] text-gray-400 mt-2 font-bold italic opacity-80">{subtitle}</p>
+      <p className="text-xs text-gray-600 mt-2 font-semibold">{subtitle}</p>
     </div>
   </motion.div>
 );

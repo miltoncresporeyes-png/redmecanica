@@ -283,21 +283,21 @@ const ServiceRequestFlow: React.FC = () => {
                     const make = carMakes.find(m => m.make === e.target.value);
                     setVehicle({ ...vehicle, make: e.target.value, model: make?.models[0] || '' });
                   }}
-                  className="p-3 border border-slate-200 rounded-xl bg-slate-50 focus:bg-white text-sm font-medium outline-none min-h-[44px]"
+                  className="p-3 border border-slate-200 rounded-control bg-slate-50 focus:bg-white text-sm font-medium outline-none min-h-[44px]"
                 >
                   {carMakes.map(m => <option key={m.make} value={m.make}>{m.make}</option>)}
                 </select>
                 <select 
                   value={vehicle.model}
                   onChange={(e) => setVehicle({ ...vehicle, model: e.target.value })}
-                  className="p-3 border border-slate-200 rounded-xl bg-slate-50 focus:bg-white text-sm font-medium outline-none min-h-[44px]"
+                  className="p-3 border border-slate-200 rounded-control bg-slate-50 focus:bg-white text-sm font-medium outline-none min-h-[44px]"
                 >
                   {carMakes.find(m => m.make === vehicle.make)?.models.map(m => <option key={m} value={m}>{m}</option>)}
                 </select>
                 <select 
                   value={vehicle.year}
                   onChange={(e) => setVehicle({ ...vehicle, year: parseInt(e.target.value) })}
-                  className="p-3 border border-slate-200 rounded-xl bg-slate-50 focus:bg-white text-sm font-medium outline-none min-h-[44px]"
+                  className="p-3 border border-slate-200 rounded-control bg-slate-50 focus:bg-white text-sm font-medium outline-none min-h-[44px]"
                 >
                   {vehicleYears.map(y => <option key={y} value={y}>{y}</option>)}
                 </select>
@@ -311,7 +311,7 @@ const ServiceRequestFlow: React.FC = () => {
                   <div
                     key={service.id}
                     onClick={() => setSelectedService(service)}
-                    className={`p-4 rounded-xl border cursor-pointer transition-all touch-target justify-start ${
+                    className={`p-4 rounded-control border cursor-pointer transition-all touch-target justify-start ${
                       selectedService?.id === service.id 
                         ? 'border-blue-600 bg-blue-50/80 shadow-sm ring-1 ring-blue-500' 
                         : 'border-slate-200 hover:border-slate-300 bg-white'
@@ -337,7 +337,7 @@ const ServiceRequestFlow: React.FC = () => {
                 value={problemDescription}
                 onChange={(e) => setProblemDescription(e.target.value)}
                 placeholder="Ej: Ruido al frenar, no parte el auto, pérdida de aceite..."
-                className="w-full p-3 border border-slate-200 rounded-xl bg-slate-50 focus:bg-white text-sm outline-none"
+                className="w-full p-3 border border-slate-200 rounded-control bg-slate-50 focus:bg-white text-sm outline-none"
                 rows={3}
               />
             </div>
@@ -345,7 +345,7 @@ const ServiceRequestFlow: React.FC = () => {
             <button
               onClick={handleSearchProviders}
               disabled={!selectedService || loading}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3.5 rounded-xl font-extrabold shadow-md transition-all disabled:opacity-50 min-h-[48px] flex items-center justify-center gap-2 text-sm"
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3.5 rounded-control font-extrabold shadow-md transition-all disabled:opacity-50 min-h-[48px] flex items-center justify-center gap-2 text-sm"
             >
               {loading ? 'Buscando Prestadores...' : 'Buscar Prestadores'}
             </button>
@@ -381,7 +381,7 @@ const ServiceRequestFlow: React.FC = () => {
                   <div
                     key={provider.id}
                     onClick={() => handleSelectProvider(provider)}
-                    className="p-4 border rounded-lg cursor-pointer hover:border-blue-500 transition-all"
+                    className="p-4 border rounded-control cursor-pointer hover:border-blue-500 transition-all"
                   >
                     <div className="flex justify-between items-start">
                       <div>
@@ -389,10 +389,10 @@ const ServiceRequestFlow: React.FC = () => {
                         <p className="text-sm text-gray-500">{provider.type} • {provider.commune}</p>
                         <div className="flex items-center gap-2 mt-1">
                           <span className="text-yellow-500">⭐ {provider.rating || '5.0'}</span>
-                          <span className="text-green-600 text-sm">✓ Verificado</span>
+                          <span className="text-emerald-600 text-sm">✓ Verificado</span>
                         </div>
                       </div>
-                      <button className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium">
+                      <button className="bg-blue-600 text-white px-4 py-2 rounded-control text-sm font-medium">
                         Solicitar Cotización
                       </button>
                     </div>
@@ -421,7 +421,7 @@ const ServiceRequestFlow: React.FC = () => {
             </div>
 
             {quotes.length > 0 ? (
-              <div className="border rounded-lg p-4">
+              <div className="border rounded-control p-4">
                 <div className="flex justify-between items-center mb-4">
                   <div>
                     <p className="font-bold text-lg">{selectedProvider?.user?.name}</p>
@@ -449,7 +449,7 @@ const ServiceRequestFlow: React.FC = () => {
 
                 <button
                   onClick={() => handleAcceptQuote(quotes[0])}
-                  className="w-full bg-green-600 text-white py-3 rounded-lg font-bold mt-4"
+                  className="w-full bg-emerald-600 text-white py-3 rounded-control font-bold mt-4"
                 >
                   Aceptar Cotización
                 </button>
@@ -485,7 +485,7 @@ const ServiceRequestFlow: React.FC = () => {
                 <div
                   key={method.id}
                   onClick={() => setSelectedPaymentMethod(method.id)}
-                  className={`p-4 border rounded-lg cursor-pointer transition-all ${
+                  className={`p-4 border rounded-control cursor-pointer transition-all ${
                     selectedPaymentMethod === method.id 
                       ? 'border-blue-500 bg-blue-50' 
                       : 'border-gray-200'
@@ -498,14 +498,14 @@ const ServiceRequestFlow: React.FC = () => {
                       <p className="text-sm text-gray-500">{method.description}</p>
                     </div>
                     {selectedPaymentMethod === method.id && (
-                      <span className="text-green-600 font-bold">✓</span>
+                      <span className="text-emerald-600 font-bold">✓</span>
                     )}
                   </div>
                 </div>
               ))}
             </div>
 
-            <div className="bg-yellow-50 p-4 rounded-lg">
+            <div className="bg-yellow-50 p-4 rounded-control">
               <p className="text-sm text-yellow-800">
                 🔒 Tu dinero estará protegido en escrow hasta que confirmes que el servicio fue completado a tu satisfacción.
               </p>
@@ -514,7 +514,7 @@ const ServiceRequestFlow: React.FC = () => {
             <button
               onClick={handlePayment}
               disabled={loading}
-              className="w-full bg-green-600 text-white py-4 rounded-lg font-bold disabled:opacity-50"
+              className="w-full bg-emerald-600 text-white py-4 rounded-control font-bold disabled:opacity-50"
             >
               {loading ? 'Procesando...' : `Pagar $${selectedService?.price?.toLocaleString('es-CL')}`}
             </button>
@@ -533,7 +533,7 @@ const ServiceRequestFlow: React.FC = () => {
       case 5:
         return (
           <div className="text-center py-8">
-            <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <div className="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <span className="text-4xl">✅</span>
             </div>
             <h2 className="text-2xl font-bold mb-2">¡Solicitud enviada!</h2>
@@ -542,7 +542,7 @@ const ServiceRequestFlow: React.FC = () => {
               Te contactará pronto para confirmar los detalles.
             </p>
             
-            <div className="bg-gray-50 p-4 rounded-lg text-left mb-6">
+            <div className="bg-gray-50 p-4 rounded-control text-left mb-6">
               <p className="font-medium mb-2">Resumen:</p>
               <div className="text-sm space-y-1">
                 <p><span className="text-gray-500">Servicio:</span> {selectedService?.name}</p>
@@ -553,7 +553,7 @@ const ServiceRequestFlow: React.FC = () => {
 
             <button
               onClick={() => navigate('/')}
-              className="bg-blue-600 text-white px-8 py-3 rounded-lg font-bold"
+              className="bg-blue-600 text-white px-8 py-3 rounded-control font-bold"
             >
               Volver al inicio
             </button>
@@ -580,9 +580,9 @@ const ServiceRequestFlow: React.FC = () => {
             <p className="text-gray-500">Conecta con los mejores profesionales</p>
           </div>
 
-        <div className="bg-white rounded-2xl shadow-xl p-6">
+        <div className="bg-white rounded-card shadow-xl p-6">
           {error && (
-            <div className="bg-red-50 text-red-600 p-3 rounded-lg mb-4">
+            <div className="bg-red-50 text-red-600 p-3 rounded-control mb-4">
               {error}
             </div>
           )}

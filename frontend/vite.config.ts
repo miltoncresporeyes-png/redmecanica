@@ -98,6 +98,8 @@ export default defineConfig(({ mode }) => {
       // Optimize dependencies
       optimizeDeps: {
         include: ['react', 'react-dom', 'react-router', 'axios'],
+        // Evita que esbuild intente transpilar destructuring a safari14 (falla en axios/react-helmet-async)
+        esbuildOptions: { target: 'esnext' },
       },
       
       // CSS configuration

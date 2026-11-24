@@ -75,13 +75,13 @@ const Monitoring: React.FC = () => {
           <p className="text-gray-500 mt-1">Telemetría y salud de la infraestructura en tiempo real.</p>
         </div>
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2 px-4 py-2 bg-emerald-50 text-emerald-700 rounded-xl text-xs font-black uppercase tracking-widest border border-emerald-100 shadow-sm">
+          <div className="flex items-center gap-2 px-4 py-2 bg-emerald-50 text-emerald-700 rounded-control text-xs font-black uppercase tracking-widest border border-emerald-100 shadow-sm">
             <span className="w-2.5 h-2.5 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.5)]"></span>
             En Línea
           </div>
           <button 
             onClick={fetchMonitoringData}
-            className="p-3 bg-white border border-gray-200 rounded-xl text-gray-600 hover:bg-gray-50 transition-all shadow-sm active:scale-95"
+            className="p-3 bg-white border border-gray-200 rounded-control text-gray-600 hover:bg-gray-50 transition-all shadow-sm active:scale-95"
           >
             <RefreshCw size={20} className={loading ? "animate-spin" : ""} />
           </button>
@@ -118,7 +118,7 @@ const Monitoring: React.FC = () => {
                <h3 className="text-2xl font-black text-gray-900 tracking-tight">Memoria del Proceso (RSS)</h3>
                <p className="text-sm text-gray-400 font-medium">Uso dinámico de recursos en el servidor backend.</p>
              </div>
-             <div className="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600 shadow-inner">
+             <div className="w-14 h-14 bg-blue-50 rounded-card flex items-center justify-center text-blue-600 shadow-inner">
                <HardDrive size={28} />
              </div>
            </div>
@@ -197,7 +197,7 @@ const HealthCard: React.FC<{name: string, status: string, icon: any, details: st
     className="bg-white p-7 rounded-[32px] shadow-sm border border-gray-100 transition-all group"
   >
     <div className="flex items-center justify-between mb-6">
-      <div className="w-12 h-12 bg-gray-50 rounded-2xl flex items-center justify-center text-gray-400 group-hover:bg-blue-50 group-hover:text-blue-500 transition-colors shadow-inner">
+      <div className="w-12 h-12 bg-gray-50 rounded-card flex items-center justify-center text-gray-400 group-hover:bg-blue-50 group-hover:text-blue-500 transition-colors shadow-inner">
         <Icon size={24} />
       </div>
       <div className={cn(
@@ -217,7 +217,7 @@ const MetricSummaryCard: React.FC<{title: string, value: number, label: string, 
   <div className="bg-white p-7 rounded-[32px] shadow-sm border border-gray-100 group transition-all hover:bg-gray-50/50">
      <div className="flex items-center gap-5">
        <div className={cn(
-         "w-14 h-14 rounded-2xl flex items-center justify-center shadow-inner transform transition-transform group-hover:scale-110",
+         "w-14 h-14 rounded-card flex items-center justify-center shadow-inner transform transition-transform group-hover:scale-110",
          color === 'blue' ? "bg-blue-50 text-blue-600" : "bg-emerald-50 text-emerald-600"
        )}>
          <Icon size={28} />

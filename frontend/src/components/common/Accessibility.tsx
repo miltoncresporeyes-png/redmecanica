@@ -16,7 +16,7 @@ export const SkipToContent: React.FC = () => {
       href="#main-content"
       onClick={handleClick}
       className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 
-                 bg-blue-600 text-white px-4 py-2 rounded-lg z-50 
+                 bg-blue-600 text-white px-4 py-2 rounded-control z-50 
                  focus:outline-none focus:ring-2 focus:ring-blue-400"
     >
       Saltar al contenido principal
@@ -93,7 +93,7 @@ export const useAnnounce = () => {
 
 // Focus visible utility
 export const FocusVisible: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <div className="focus-within:ring-2 focus-within:ring-blue-500 focus-within:ring-offset-2 rounded-lg">
+  <div className="focus-within:ring-2 focus-within:ring-blue-500 focus-within:ring-offset-2 rounded-control">
     {children}
   </div>
 );

@@ -68,7 +68,7 @@ const AutocompleteInput: React.FC<AutocompleteInputProps> = ({
         className={className}
       />
       {showSuggestions && (
-        <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-slate-200 rounded-xl shadow-xl max-h-64 overflow-y-auto z-50 divide-y divide-slate-100 animate-fadeIn">
+        <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-slate-200 rounded-control shadow-xl max-h-64 overflow-y-auto z-50 divide-y divide-slate-100 animate-fadeIn">
           {/* Header explicativo */}
           <div className="px-3.5 py-2 bg-slate-50 flex items-center justify-between text-[11px] font-semibold text-slate-500">
             <span>💡 {suggestionsLabel}</span>

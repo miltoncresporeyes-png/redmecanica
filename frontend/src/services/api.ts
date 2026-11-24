@@ -104,6 +104,16 @@ export const getProviders = async (params: Record<string, string> = {}): Promise
     return response.data;
 };
 
+export const getRecentProviders = async (limit = 6): Promise<any[]> => {
+    const response = await api.get('/providers/recent', { params: { limit } });
+    return Array.isArray(response.data?.providers) ? response.data.providers : [];
+};
+
+export const getFeaturedProviders = async (limit = 5): Promise<any[]> => {
+    const response = await api.get('/providers/featured', { params: { limit } });
+    return Array.isArray(response.data?.providers) ? response.data.providers : [];
+};
+
 export const getProviderById = async (id: string): Promise<any> => {
     const response = await api.get(`/providers/${id}`);
     return response.data;

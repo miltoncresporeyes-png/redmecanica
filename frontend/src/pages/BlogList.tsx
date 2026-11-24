@@ -57,7 +57,7 @@ const BlogList: React.FC = () => {
       </div>
 
       {/* Filters & Search Bar */}
-      <Card className="p-5 mb-10 border border-gray-100 shadow-sm bg-white/80 backdrop-blur rounded-2xl flex flex-col md:flex-row gap-4 items-center justify-between">
+      <Card className="p-5 mb-10 border border-gray-100 shadow-sm bg-white/80 backdrop-blur rounded-card flex flex-col md:flex-row gap-4 items-center justify-between">
         {/* Search input */}
         <div className="w-full md:max-w-sm relative">
           <input
@@ -65,7 +65,7 @@ const BlogList: React.FC = () => {
             placeholder="🔍 Buscar artículo por palabras clave..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm transition-all"
+            className="w-full border border-gray-200 rounded-control px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm transition-all"
           />
         </div>
 
@@ -75,7 +75,7 @@ const BlogList: React.FC = () => {
             <button
               key={cat}
               onClick={() => setSelectedCategory(cat)}
-              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all border ${
+              className={`px-4 py-2 rounded-control text-xs font-bold transition-all border ${
                 selectedCategory === cat
                   ? 'bg-blue-600 text-white border-blue-600 shadow-sm'
                   : 'bg-white text-gray-600 border-gray-150 hover:border-blue-300'
@@ -99,7 +99,7 @@ const BlogList: React.FC = () => {
           {filteredArticles.map((article, index) => (
             <React.Fragment key={article.slug}>
             <Card 
-              className="group flex flex-col border border-gray-100 hover:border-blue-200 shadow-sm hover:shadow-xl transition-all duration-300 rounded-2xl overflow-hidden cursor-pointer"
+              className="group flex flex-col border border-gray-100 hover:border-blue-200 shadow-sm hover:shadow-xl transition-all duration-300 rounded-card overflow-hidden cursor-pointer"
             >
               <Link to={`/blog/${article.slug}`} className="flex flex-col h-full">
                 {/* Article Image wrapper */}

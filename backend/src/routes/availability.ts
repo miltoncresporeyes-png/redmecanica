@@ -63,6 +63,18 @@ router.post('/bulk', authenticateToken, async (req: AuthRequest, res) => {
       return res.status(403).json({ error: 'Acceso denegado: No tienes permiso para este proveedor' });
     }
 
+    // Validaciones que el esquema no hace: cierre posterior a la apertura y un solo tramo por dia
+    const days = new Set<number>();
+    for (const s of schedule) {
+      if (s.endTime <= s.startTime) {
+        return res.status(400).json({ error: 'La hora de cierre debe ser posterior a la de apertura.' });
+      }
+      if (days.has(s.dayOfWeek)) {
+        return res.status(400).json({ error: 'Cada día solo puede tener un horario.' });
+      }
+      days.add(s.dayOfWeek);
+    }
+
     await prisma.providerAvailability.deleteMany({
       where: { providerId },
     });

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import api from '../../lib/http';
+import { downloadCsv } from '../../lib/csv';
 import { 
   Search, 
   Filter, 
@@ -92,9 +93,23 @@ const UserManagement: React.FC = () => {
           <p className="text-gray-500 mt-1">Control de acceso, suspensión y perfiles de la plataforma.</p>
         </div>
         <div className="flex items-center gap-3">
-          <button 
+          <button
+            onClick={() => downloadCsv(`usuarios-${new Date().toISOString().slice(0, 10)}`, filteredUsers, [
+              { header: 'Nombre', value: (u: any) => u.name },
+              { header: 'Correo', value: (u: any) => u.email },
+              { header: 'Rol', value: (u: any) => u.role },
+              { header: 'Estado', value: (u: any) => u.status },
+              { header: 'Solicitudes', value: (u: any) => u._count?.serviceRequests ?? 0 },
+              { header: 'Registrado', value: (u: any) => new Date(u.createdAt).toLocaleDateString('es-CL') },
+            ])}
+            disabled={filteredUsers.length === 0}
+            className="btn-ghost !min-h-[44px] disabled:opacity-40"
+          >
+            Exportar CSV
+          </button>
+          <button
             onClick={fetchUsers}
-            className="p-3 bg-white border border-gray-200 rounded-xl text-gray-600 hover:bg-gray-50 transition-all shadow-sm cursor-pointer"
+            className="p-3 bg-white border border-gray-200 rounded-control text-gray-600 hover:bg-gray-50 transition-all shadow-sm cursor-pointer"
             title="Actualizar lista"
           >
             <RefreshCw size={20} className={loading ? "animate-spin" : ""} />
@@ -103,7 +118,7 @@ const UserManagement: React.FC = () => {
       </div>
 
       <div className="bg-white p-4 rounded-[24px] shadow-sm border border-gray-100 flex flex-col md:flex-row gap-4 items-center">
-        <div className="flex-1 flex items-center gap-3 bg-gray-50 px-4 py-2.5 rounded-xl border border-gray-100 w-full font-medium">
+        <div className="flex-1 flex items-center gap-3 bg-gray-50 px-4 py-2.5 rounded-control border border-gray-100 w-full font-medium">
           <Search size={18} className="text-gray-400" />
           <input 
             type="text" 
@@ -114,7 +129,7 @@ const UserManagement: React.FC = () => {
           />
         </div>
         <div className="flex items-center gap-3 w-full md:w-auto">
-          <div className="flex items-center gap-2 bg-white border border-gray-200 rounded-xl px-3 py-2 text-sm font-bold text-gray-700">
+          <div className="flex items-center gap-2 bg-white border border-gray-200 rounded-control px-3 py-2 text-sm font-bold text-gray-700">
             <Filter size={16} className="text-gray-400" />
             <select
               value={roleFilter}
@@ -218,7 +233,7 @@ const UserManagement: React.FC = () => {
                             <button 
                               onClick={() => handleToggleSuspend(user)}
                               disabled={isBusy || user.role === 'ADMIN'}
-                              className={`p-2 rounded-lg transition-all cursor-pointer flex items-center gap-1 text-xs font-bold ${
+                              className={`p-2 rounded-control transition-all cursor-pointer flex items-center gap-1 text-xs font-bold ${
                                 isSuspended 
                                   ? 'text-emerald-700 bg-emerald-50 hover:bg-emerald-100' 
                                   : 'text-red-600 hover:text-red-700 hover:bg-red-50'

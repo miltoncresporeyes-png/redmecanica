@@ -522,7 +522,7 @@ const HelpCenter: React.FC<HelpCenterProps> = ({ onClose }) => {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Busca tu pregunta aquí..."
-            className="w-full px-6 py-4 border-2 border-gray-300 rounded-lg text-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full px-6 py-4 border-2 border-gray-300 rounded-control text-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
           <svg
             className="absolute right-4 top-1/2 transform -translate-y-1/2 w-6 h-6 text-gray-400"
@@ -544,7 +544,7 @@ const HelpCenter: React.FC<HelpCenterProps> = ({ onClose }) => {
               setActiveCategory(category.id);
               setSelectedArticle(null);
             }}
-            className={`px-4 py-2 rounded-lg font-medium transition-all ${
+            className={`px-4 py-2 rounded-control font-medium transition-all ${
               activeCategory === category.id
                 ? 'bg-blue-600 text-white shadow-md'
                 : 'bg-white border border-gray-200 text-gray-700 hover:border-blue-400'
@@ -563,7 +563,7 @@ const HelpCenter: React.FC<HelpCenterProps> = ({ onClose }) => {
             <button
               key={index}
               onClick={() => setSelectedArticle(article)}
-              className="w-full bg-white border border-gray-200 rounded-lg p-5 hover:shadow-md transition-shadow text-left flex justify-between items-center"
+              className="w-full bg-white border border-gray-200 rounded-control p-5 hover:shadow-md transition-shadow text-left flex justify-between items-center"
             >
               <div>
                 <h3 className="font-bold text-gray-900 mb-1">{article.title}</h3>
@@ -592,7 +592,7 @@ const HelpCenter: React.FC<HelpCenterProps> = ({ onClose }) => {
           )}
         </div>
       ) : (
-        <div className="bg-white border border-gray-200 rounded-lg p-8">
+        <div className="bg-white border border-gray-200 rounded-control p-8">
           <button
             onClick={() => setSelectedArticle(null)}
             className="text-blue-600 hover:text-blue-700 mb-4 flex items-center"
@@ -613,7 +613,7 @@ const HelpCenter: React.FC<HelpCenterProps> = ({ onClose }) => {
       )}
 
       {/* Contact Support */}
-      <div className="mt-8 bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-200 rounded-lg p-6">
+      <div className="mt-8 bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-200 rounded-control p-6">
         <div className="text-center">
           <h3 className="text-xl font-bold text-gray-900 mb-2">¿No encontraste lo que buscabas?</h3>
           <p className="text-gray-600 mb-4">
@@ -622,7 +622,7 @@ const HelpCenter: React.FC<HelpCenterProps> = ({ onClose }) => {
           <div className="flex justify-center gap-4 flex-wrap">
             <a
               href="mailto:contacto@redmecanica.cl"
-              className="bg-blue-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors"
+              className="bg-blue-600 text-white px-6 py-2 rounded-control font-medium hover:bg-blue-700 transition-colors"
             >
               📧 Email de Soporte
             </a>
@@ -630,7 +630,7 @@ const HelpCenter: React.FC<HelpCenterProps> = ({ onClose }) => {
               href="https://wa.me/56983414730"
               target="_blank"
               rel="noopener noreferrer"
-              className="bg-green-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-green-700 transition-colors"
+              className="bg-emerald-600 text-white px-6 py-2 rounded-control font-medium hover:bg-emerald-700 transition-colors"
             >
               💬 WhatsApp: +56 9 83414730
             </a>
