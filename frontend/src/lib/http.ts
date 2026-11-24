@@ -1,18 +1,10 @@
 
 import axios from 'axios';
+import { resolveApiBase } from './apiBase';
 
 const TOKEN_KEY = 'auth_token';
 
 let accessToken: string | null = localStorage.getItem(TOKEN_KEY);
-
-const resolveApiUrl = (): string => {
-  const envApiUrl = (import.meta.env.VITE_API_URL || '').trim();
-
-  // El sitio esta en un hosting estatico que no reenvia /api: en produccion se usa la URL absoluta de la API (VITE_API_URL).
-  if (/^https?:\/\//.test(envApiUrl)) return envApiUrl;
-
-  return '/api';
-};
 
 export const setAuthToken = (token: string | null) => {
   accessToken = token;
@@ -24,7 +16,7 @@ export const setAuthToken = (token: string | null) => {
 };
 
 const api = axios.create({
-  baseURL: resolveApiUrl().replace(/\/$/, ''),
+  baseURL: resolveApiBase(),
   withCredentials: true,
   headers: {
     'Content-Type': 'application/json',

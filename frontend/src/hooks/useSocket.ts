@@ -1,3 +1,4 @@
+import { resolveApiBase } from '../lib/apiBase';
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { io, Socket } from 'socket.io-client';
 
@@ -18,7 +19,7 @@ export function useSocket(options: UseSocketOptions) {
 
   useEffect(() => {
     // Derivar la URL del socket de VITE_API_URL (removiendo /api si existe)
-    const socketUrl = (import.meta.env.VITE_API_URL || 'http://localhost:3011').replace(/\/api$/, '');
+    const socketUrl = (import.meta.env.VITE_API_URL || (resolveApiBase().startsWith('http') ? resolveApiBase() : 'http://localhost:3011')).replace(/\/api$/, '');
     
     const socket = io(socketUrl, {
       auth: {

@@ -1,16 +1,8 @@
 import axios from 'axios';
+import { resolveApiBase } from '../lib/apiBase';
 import { Job, ServiceRequest } from '../types';
 
-const resolveApiUrl = (): string => {
-  const envApiUrl = (import.meta.env.VITE_API_URL || '').trim();
-  if (envApiUrl) {
-    return envApiUrl;
-  }
-
-  return '/api';
-};
-
-const API_URL = resolveApiUrl().replace(/\/$/, '');
+const API_URL = resolveApiBase();
 
 const api = axios.create({
   baseURL: API_URL,
