@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { prisma } from '../db.js';
 import bcrypt from 'bcrypt';
-import { generateTokens, verifyRefreshToken, passwordFingerprint } from '../utils/auth.js';
+import { generateTokens, verifyRefreshToken, passwordFingerprint, COOKIE_SAMESITE } from '../utils/auth.js';
 import { requireAuth as authenticateToken, AuthRequest } from '../middlewares/requireAuth.js';
 import crypto from 'node:crypto';
 import { signupLimiter, forgotPasswordEmailLimiter, forgotPasswordIpLimiter } from '../middlewares/rateLimiter.js';
@@ -182,7 +182,7 @@ router.post('/login', async (req, res) => {
     res.cookie('refresh_token', tokens.refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production', // true en prod
-      sameSite: 'lax', // o 'strict' según necesidades
+      sameSite: COOKIE_SAMESITE,
       maxAge: 7 * 24 * 60 * 60 * 1000 // 7 días
     });
 
@@ -252,7 +252,7 @@ router.post('/verify-email', async (req, res) => {
     res.cookie('refresh_token', tokens.refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
+      sameSite: COOKIE_SAMESITE,
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
@@ -414,7 +414,7 @@ router.post('/google', async (req, res) => {
     res.cookie('refresh_token', tokens.refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
+      sameSite: COOKIE_SAMESITE,
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
@@ -455,7 +455,7 @@ router.post('/refresh', async (req, res) => {
     res.cookie('refresh_token', tokens.refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
+      sameSite: COOKIE_SAMESITE,
       maxAge: 7 * 24 * 60 * 60 * 1000
     });
 
@@ -564,7 +564,7 @@ router.post('/reset-password', forgotPasswordIpLimiter, async (req, res) => {
     res.cookie('refresh_token', tokens.refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
+      sameSite: COOKIE_SAMESITE,
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 

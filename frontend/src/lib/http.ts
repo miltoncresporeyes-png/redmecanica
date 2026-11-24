@@ -8,11 +8,10 @@ let accessToken: string | null = localStorage.getItem(TOKEN_KEY);
 const resolveApiUrl = (): string => {
   const envApiUrl = (import.meta.env.VITE_API_URL || '').trim();
 
-  if (typeof window !== 'undefined' && window.location.hostname.endsWith('redmecanica.cl')) {
-    return '/api';
-  }
+  // El sitio esta en un hosting estatico que no reenvia /api: en produccion se usa la URL absoluta de la API (VITE_API_URL).
+  if (/^https?:\/\//.test(envApiUrl)) return envApiUrl;
 
-  return envApiUrl || '/api';
+  return '/api';
 };
 
 export const setAuthToken = (token: string | null) => {

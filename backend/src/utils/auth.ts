@@ -34,3 +34,10 @@ export const verifyRefreshToken = (token: string) => {
     return null;
   }
 };
+
+/**
+ * SameSite de la cookie de sesion. En produccion el frontend (redmecanica.cl) y la API (Railway) son sitios distintos,
+ * por lo que debe ser 'none' (con Secure). Con un subdominio propio de la API se puede volver a 'lax' con COOKIE_SAMESITE=lax.
+ */
+export const COOKIE_SAMESITE = (process.env.COOKIE_SAMESITE as 'lax' | 'none' | 'strict' | undefined)
+  || (process.env.NODE_ENV === 'production' ? 'none' : 'lax');

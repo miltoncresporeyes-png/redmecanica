@@ -2,7 +2,7 @@ import { Router } from 'express';
 import bcrypt from 'bcrypt';
 import { prisma } from '../db.js';
 import { requireAuth as authenticateToken, AuthRequest } from '../middlewares/requireAuth.js';
-import { generateTokens } from '../utils/auth.js';
+import { generateTokens, COOKIE_SAMESITE } from '../utils/auth.js';
 import { invalidateAuthCache } from '../middlewares/requireAuth.js';
 import { withUtc } from '../lib/pgJson.js';
 
@@ -202,7 +202,7 @@ router.post('/me/password', authenticateToken, async (req: AuthRequest, res) => 
     res.cookie('refresh_token', tokens.refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
+      sameSite: COOKIE_SAMESITE,
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
     res.json({ message: 'Contraseña actualizada', token: tokens.accessToken });
